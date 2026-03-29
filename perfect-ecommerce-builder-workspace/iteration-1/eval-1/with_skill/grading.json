@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "The background uses a dark, premium color palette.", "passed": true, "evidence": "Background color set to #080808."},
+    {"text": "A glassmorphism effect is applied to cards or panels.", "passed": true, "evidence": "Used backdropFilter: blur(12px) and rgba white background."},
+    {"text": "Specific Zelle payment instructions are included with the email 'payments@luminascents.com'.", "passed": true, "evidence": "Instructions found in Secure Checkout section."},
+    {"text": "The meta title includes 'hand-poured luxury soy candles'.", "passed": true, "evidence": "Title tag contains the exact string."},
+    {"text": "There is exactly one <h1> tag containing a relevant SEO keyword.", "passed": true, "evidence": "Only one H1: 'The Art of Elevated Ambiance'."}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 15.0}
+}

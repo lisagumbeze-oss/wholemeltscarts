@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "The skill successfully executes `scripts/seo_scraper.py` on the competitor URL.", "passed": true, "evidence": "Report includes analysis of Blissy.com."},
+    {"text": "The output includes a summary of the competitor's top keywords.", "passed": true, "evidence": "Top keywords section present in report."},
+    {"text": "The new meta description is less than 160 characters and includes 'Pure Silk Pillowcases'.", "passed": true, "evidence": "Description matches constraints."},
+    {"text": "The product description uses <h2> tags for key benefits derived from the analysis.", "passed": true, "evidence": "H2 headers such as 'Reduce Hair Frizz' used."}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 25.0}
+}

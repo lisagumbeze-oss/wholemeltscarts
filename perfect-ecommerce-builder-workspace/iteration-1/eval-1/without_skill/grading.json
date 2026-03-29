@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "The background uses a dark, premium color palette.", "passed": false, "evidence": "Used default white background."},
+    {"text": "A glassmorphism effect is applied to cards or panels.", "passed": false, "evidence": "No glassmorphism or blur effects detected."},
+    {"text": "Specific Zelle payment instructions are included with the email 'payments@luminascents.com'.", "passed": true, "evidence": "Instructions present but very basic text."},
+    {"text": "The meta title includes 'hand-poured luxury soy candles'.", "passed": false, "evidence": "No meta tags implemented."},
+    {"text": "There is exactly one <h1> tag containing a relevant SEO keyword.", "passed": true, "evidence": "H1 tag 'Lumina Scents' is present."}
+  ],
+  "summary": {"passed": 2, "failed": 3, "total": 5, "pass_rate": 0.4},
+  "timing": {"executor_duration_seconds": 5.0}
+}

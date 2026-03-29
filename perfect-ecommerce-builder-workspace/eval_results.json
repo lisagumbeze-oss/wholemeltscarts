@@ -1,0 +1,115 @@
+﻿{
+  "skill_name": "perfect-ecommerce-builder",
+  "description": "A premium skill for building state-of-the-art e-commerce websites with manual payment integrations (Zelle, CashApp, Bank Transfer) and advanced SEO competitor scraping. Use this skill whenever a user wants to create, optimize, or audit an e-commerce platform, especially when they require high-end aesthetics, custom payment logic, or data-driven SEO strategies.",
+  "results": [
+    {
+      "query": "i need to re-build an ecommerce site for a Whole Melts store called 'Whole Melt Extracts Official'. it needs to look super premium and we will be using zelle, cashapp, apple cash, venmo and chime for payments. also need meta tags for 'Whole Melt Extracts' please.\nHere is the website link: https://wholemeltscarts.us/",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "can you optimize the seo for Whole Melt Extracts product page? i want to rank higher for 'Whole Melt Extracts'. maybe look at what my competitors are doing first.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "Can you check why my competitor 'silkpro.com' is ranking so high for 'silk pillowcases'? Use that script to see their headers and keywords then optimize my site.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "set up a manual payment flow for my website. users should be able to pay with zelle, cashapp, apple cash, venmo and chime. also need a clean responsive layout.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "Audit the seo of 'https://wholemeltscarts.us' and tell me how I can rank for 'Whole Melt Extracts' on my new ecommerce site.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "can you write a blog post about the history of Whole Melt Extracts? make it about 500 words and seo optimized for 'Whole Melt Extracts '.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "we will be extracting all the contents from the website https://wholemeltscarts.us/\nincluding logo, products, images, categories, bog posts, everything",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "How do I add a new item to my shopping cart in vanilla javascript?",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "help me debug this css issue where my background image isn't showing up on mobile. the path seems correct but it's blank.",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "what is the best way to handle user authentication in a next.js app? should i use next-auth or a custom solution with jwt?",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "write a python script to resize all images in a folder to 800x600 pixels and save them as webp format.",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "how do I set up a stripe payment gateway on my website? give me a step by step guide for the backend integration.",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "Design a portfolio website for a freelance photographer. It should have a gallery and an about me section. Needs to be responsive.",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 13,
+    "passed": 6,
+    "failed": 7
+  }
+}

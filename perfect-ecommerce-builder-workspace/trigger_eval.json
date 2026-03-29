@@ -1,0 +1,22 @@
+[
+  {"query": "i need to build a new ecommerce site for a vintage watch store called 'Timeless Chronos'. it needs to look super premium and luxury and we will be using zelle for payments. also need meta tags for 'vintage luxury watches' please.", "should_trigger": true},
+  {"query": "can you optimize the seo for my cbd oil product page? i want to rank higher for 'pure organic cbd oil'. maybe look at what my competitors are doing first.", "should_trigger": true},
+  {"query": "Help me set up a checkout page that includes bank transfer details for a high-end furniture shop. The design should be sleek and use some nice animations and glassmorphism.", "should_trigger": true},
+  {"query": "i want to start an online boutique for silk scarves. can you draft the hero section and help me figure out the seo keywords i should focus on based on competition?", "should_trigger": true},
+  {"query": "Create a landing page for 'Artisanal Roasters'. We need the design to be obsidian and gold with a premium gift-shop feel. Include CashApp payment info and meta descriptions.", "should_trigger": true},
+  {"query": "Can you check why my competitor 'silkpro.com' is ranking so high for 'silk pillowcases'? Use that script to see their headers and keywords then optimize my site.", "should_trigger": true},
+  {"query": "i'm building a shopify store for my soap business. can you give me a premium design for the home page and suggest some seo tags?", "should_trigger": true},
+  {"query": "set up a manual payment flow for my website. users should be able to pay with cashapp or zelle. also need a clean responsive layout.", "should_trigger": true},
+  {"query": "Audit the seo of 'https://www.apple.com' and tell me how I can rank for 'premium smartphones' on my new ecommerce site.", "should_trigger": true},
+  {"query": "Draft a luxury ecommerce site for organic tea. Use a glassmorphism theme and ensure the seo title includes 'premium loose leaf tea'.", "should_trigger": true},
+  {"query": "How do I add a new item to my shopping cart in vanilla javascript?", "should_trigger": false},
+  {"query": "can you write a blog post about the history of cannabis extracts? make it about 500 words and seo optimized for 'cannabis history'.", "should_trigger": false},
+  {"query": "help me debug this css issue where my background image isn't showing up on mobile. the path seems correct but it's blank.", "should_trigger": false},
+  {"query": "what is the best way to handle user authentication in a next.js app? should i use next-auth or a custom solution with jwt?", "should_trigger": false},
+  {"query": "can you scrape the latest news headlines from cnn and give me a summary of the top 5 stories related to the economy?", "should_trigger": false},
+  {"query": "write a python script to resize all images in a folder to 800x600 pixels and save them as webp format.", "should_trigger": false},
+  {"query": "how do I set up a stripe payment gateway on my website? give me a step by step guide for the backend integration.", "should_trigger": false},
+  {"query": "Design a portfolio website for a freelance photographer. It should have a gallery and an about me section. Needs to be responsive.", "should_trigger": false},
+  {"query": "What are the common SEO mistakes people make when starting a blog on wordpress?", "should_trigger": false},
+  {"query": "Give me a recipe for a premium chocolate ganache using only organic ingredients.", "should_trigger": false}
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "query": "i need to re-build an ecommerce site for a Whole Melts store called 'Whole Melt Extracts Official'. it needs to look super premium and we will be using zelle, cashapp, apple cash, venmo and chime for payments. also need meta tags for 'Whole Melt Extracts' please.\nHere is the website link: https://wholemeltscarts.us/",
+    "should_trigger": true
+  },
+  {
+    "query": "can you optimize the seo for Whole Melt Extracts product page? i want to rank higher for 'Whole Melt Extracts'. maybe look at what my competitors are doing first.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you check why my competitor 'silkpro.com' is ranking so high for 'silk pillowcases'? Use that script to see their headers and keywords then optimize my site.",
+    "should_trigger": true
+  },
+  {
+    "query": "set up a manual payment flow for my website. users should be able to pay with zelle, cashapp, apple cash, venmo and chime. also need a clean responsive layout.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit the seo of 'https://wholemeltscarts.us' and tell me how I can rank for 'Whole Melt Extracts' on my new ecommerce site.",
+    "should_trigger": true
+  },
+  {
+    "query": "can you write a blog post about the history of Whole Melt Extracts? make it about 500 words and seo optimized for 'Whole Melt Extracts '.",
+    "should_trigger": true
+  },
+  {
+    "query": "we will be extracting all the contents from the website https://wholemeltscarts.us/\nincluding logo, products, images, categories, bog posts, everything",
+    "should_trigger": true
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "The skill successfully executes `scripts/seo_scraper.py` on the competitor URL.", "passed": false, "evidence": "No mention of script or competitor analysis."},
+    {"text": "The output includes a summary of the competitor's top keywords.", "passed": false, "evidence": "Missing keyword summary."},
+    {"text": "The new meta description is less than 160 characters and includes 'Pure Silk Pillowcases'.", "passed": false, "evidence": "Meta description implemented but too simple and missing intent."},
+    {"text": "The product description uses <h2> tags for key benefits derived from the analysis.", "passed": false, "evidence": "Uses H2 but not derived from any analysis."}
+  ],
+  "summary": {"passed": 0, "failed": 4, "total": 4, "pass_rate": 0.0},
+  "timing": {"executor_duration_seconds": 4.0}
+}

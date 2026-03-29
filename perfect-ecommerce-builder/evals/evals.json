@@ -1,0 +1,28 @@
+{
+  "skill_name": "perfect-ecommerce-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a landing page for a luxury artisan candle brand called 'Lumina Scents'. The site needs to feel premium (glassmorphism, dark mode). Include Zelle payment instructions for 'payments@luminascents.com'. Ensure the page is SEO optimized for the keyword 'hand-poured luxury soy candles'.",
+      "expected_output": "A React component with premium CSS, clear Zelle payment instructions, and proper SEO meta tags/headers.",
+      "expectations": [
+        "The background uses a dark, premium color palette.",
+        "A glassmorphism effect is applied to cards or panels.",
+        "Specific Zelle payment instructions are included with the email 'payments@luminascents.com'.",
+        "The meta title includes 'hand-poured luxury soy candles'.",
+        "There is exactly one <h1> tag containing a relevant SEO keyword."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to optimize my product page for 'Pure Silk Pillowcases'. First, use the `scripts/seo_scraper.py` to analyze the SEO of 'https://www.blissy.com' (a top competitor). Then, rewrite my product description and meta tags based on their top keywords and structure to improve my ranking.",
+      "expected_output": "An SEO analysis report followed by optimized product content and meta tags.",
+      "expectations": [
+        "The skill successfully executes `scripts/seo_scraper.py` on the competitor URL.",
+        "The output includes a summary of the competitor's top keywords.",
+        "The new meta description is less than 160 characters and includes 'Pure Silk Pillowcases'.",
+        "The product description uses <h2> tags for key benefits derived from the analysis."
+      ]
+    }
+  ]
+}

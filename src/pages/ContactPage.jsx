@@ -1,0 +1,76 @@
+import { useState } from 'react';
+import { Send, Mail, MessageSquare } from 'lucide-react';
+
+export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <>
+      <div className="page-header">
+        <div className="container">
+          <h1 className="page-header__title">Contact Us</h1>
+          <p className="page-header__desc">Have a question? We're here to help 24/7.</p>
+        </div>
+      </div>
+
+      <section className="section" style={{ paddingTop: '2rem' }}>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
+            {/* Contact Info */}
+            <div>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Get in Touch</h2>
+
+              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <Mail size={18} style={{ color: 'var(--primary)' }} />
+                  <strong>Email</strong>
+                </div>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>sales@wholemeltscarts.us</p>
+              </div>
+
+              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <MessageSquare size={18} style={{ color: 'var(--primary)' }} />
+                  <strong>Telegram</strong>
+                </div>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>@wholemeltscartsus</p>
+              </div>
+
+              <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
+                  Our support team is available 24/7. We typically respond within 1-2 hours during business hours. For urgent order inquiries, please include your Order ID.
+                </p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div>
+              {submitted ? (
+                <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-lg)' }}>
+                  <Send size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
+                  <h3 style={{ marginBottom: '0.5rem' }}>Message Sent!</h3>
+                  <p style={{ color: 'var(--text-secondary)' }}>We'll get back to you as soon as possible.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group"><label className="form-label">Name *</label><input className="form-input" required /></div>
+                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" type="email" required /></div>
+                  <div className="form-group"><label className="form-label">Subject</label><input className="form-input" /></div>
+                  <div className="form-group"><label className="form-label">Message *</label><textarea className="form-textarea" required placeholder="How can we help?" /></div>
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                    <Send size={16} /> Send Message
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
