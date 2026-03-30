@@ -1,35 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Truck, Tag, Save, Plus, Trash2, Edit2, XCircle } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+
+const mockSettings = [
+  { type: 'payment', status: 'active', config: { name: 'CashApp', detail: '$wholemeltsus' } },
+  { type: 'payment', status: 'active', config: { name: 'Zelle', detail: 'sales@wholemeltscarts.us' } },
+  { type: 'payment', status: 'active', config: { name: 'Venmo', detail: '@WholeMeltExtracts' } },
+  { type: 'shipping', status: 'active', config: { name: 'Standard Shipping', rate: 0.00, condition: 'Orders above $200 (3-5 Days)', region: 'usa' } },
+  { type: 'shipping', status: 'active', config: { name: 'USPS Priority', rate: 15.00, condition: 'Flat Rate (2-3 Days)', region: 'usa' } },
+  { type: 'shipping', status: 'disabled', config: { name: 'Overnight Express', rate: 45.00, condition: 'Next Day Delivery', region: 'usa' } },
+  { type: 'shipping', status: 'active', config: { name: 'Global Standard', rate: 35.00, condition: '6-10 Business Days', region: 'intl' } },
+  { type: 'coupon', status: 'active', config: { code: 'WHOLE20', discount: '20% Off', limit: 'One per user' } },
+  { type: 'coupon', status: 'active', config: { code: 'FREESHIP', discount: 'Free Shipping', limit: 'Min order $150' } },
+  { type: 'coupon', status: 'expired', config: { code: 'SUMMERVIBES', discount: '15% Off', limit: 'Expired' } }
+];
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState('payments');
 
-  // State
-  const [payments, setPayments] = useState([
-    { id: 1, name: 'CashApp', detail: '$wholemeltsus', status: 'active' },
-    { id: 2, name: 'Zelle', detail: 'sales@wholemeltscarts.us', status: 'active' },
-    { id: 3, name: 'Venmo', detail: '@WholeMeltExtracts', status: 'active' }
-  ]);
+  const [payments, setPayments] = useState([]);
+  const [shipping, setShipping] = useState([]);
+  const [coupons, setCoupons] = useState([]);
 
-  const [shipping, setShipping] = useState([
-    { id: 1, name: 'Standard Shipping', rate: 0.00, condition: 'Orders above $200 (3-5 Days)', status: 'active' },
-    { id: 2, name: 'USPS Priority', rate: 15.00, condition: 'Flat Rate (2-3 Days)', status: 'active' },
-    { id: 3, name: 'Overnight Express', rate: 45.00, condition: 'Next Day Delivery', status: 'disabled' }
-  ]);
+  const [editingItem, setEditingItem] = useState(null);
 
-  const [coupons, setCoupons] = useState([
-    { id: 1, code: 'WHOLE20', discount: '20% Off', limit: 'One per user', status: 'active' },
-    { id: 2, code: 'FREESHIP', discount: 'Free Shipping', limit: 'Min order $150', status: 'active' },
-    { id: 3, code: 'SUMMERVIBES', discount: '15% Off', limit: 'Expired', status: 'expired' }
-  ]);
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
-  const [editingItem, setEditingItem] = useState(null); // { type, item }
+  const processSettings = (items) => {
+    setPayments(items.filter(i => i.type === 'payment').map(i => ({ id: i.id, status: i.status, ...i.config })));
+    setShipping(items.filter(i => i.type === 'shipping').map(i => ({ id: i.id, status: i.status, ...i.config })));
+    setCoupons(items.filter(i => i.type === 'coupon').map(i => ({ id: i.id, status: i.status, ...i.config })));
+  };
 
-  // Generic Handlers
-  const handleDelete = (type, id) => {
-    if (type === 'payment') setPayments(payments.filter(p => p.id !== id));
-    if (type === 'shipping') setShipping(shipping.filter(s => s.id !== id));
-    if (type === 'coupon') setCoupons(coupons.filter(c => c.id !== id));
+  const fetchSettings = async () => {
+    const { data, error } = await supabase.from('settings').select('*');
+    if (!error && data) {
+      if (data.length === 0) {
+        await supabase.from('settings').insert(mockSettings);
+        const { data: newData } = await supabase.from('settings').select('*');
+        processSettings(newData || []);
+      } else {
+        processSettings(data);
+      }
+    }
+  };
+
+  const handleDelete = async (type, id) => {
+    const { error } = await supabase.from('settings').delete().eq('id', id);
+    if (!error) {
+      if (type === 'payment') setPayments(payments.filter(p => p.id !== id));
+      if (type === 'shipping') setShipping(shipping.filter(s => s.id !== id));
+      if (type === 'coupon') setCoupons(coupons.filter(c => c.id !== id));
+    }
   };
 
   const handleEdit = (type, item) => {
@@ -37,28 +61,22 @@ export default function AdminSettings() {
   };
 
   const handleAdd = (type) => {
-    if (type === 'payment') setEditingItem({ type, item: { id: Date.now(), name: '', detail: '', status: 'active' } });
-    if (type === 'shipping') setEditingItem({ type, item: { id: Date.now(), name: '', rate: 0, condition: '', status: 'active' } });
-    if (type === 'coupon') setEditingItem({ type, item: { id: Date.now(), code: '', discount: '', limit: '', status: 'active' } });
+    if (type === 'payment') setEditingItem({ type, item: { id: 'new', name: '', detail: '', status: 'active' } });
+    if (type === 'shipping') setEditingItem({ type, item: { id: 'new', name: '', rate: 0, condition: '', region: 'usa', status: 'active' } });
+    if (type === 'coupon') setEditingItem({ type, item: { id: 'new', code: '', discount: '', limit: '', status: 'active' } });
   };
 
-  const handleSaveModal = () => {
+  const handleSaveModal = async () => {
     const { type, item } = editingItem;
-    if (type === 'payment') {
-      const exists = payments.find(p => p.id === item.id);
-      if (exists) setPayments(payments.map(p => p.id === item.id ? item : p));
-      else setPayments([...payments, item]);
+    const { id, status, ...config } = item;
+    
+    if (id === 'new') {
+      await supabase.from('settings').insert({ type, status, config });
+    } else {
+      await supabase.from('settings').update({ status, config }).eq('id', id);
     }
-    if (type === 'shipping') {
-      const exists = shipping.find(s => s.id === item.id);
-      if (exists) setShipping(shipping.map(s => s.id === item.id ? item : s));
-      else setShipping([...shipping, item]);
-    }
-    if (type === 'coupon') {
-      const exists = coupons.find(c => c.id === item.id);
-      if (exists) setCoupons(coupons.map(c => c.id === item.id ? item : c));
-      else setCoupons([...coupons, item]);
-    }
+    
+    await fetchSettings();
     setEditingItem(null);
   };
 
@@ -69,8 +87,8 @@ export default function AdminSettings() {
           <h1 className="admin-title">Store Settings</h1>
           <div style={{ color: 'var(--text-secondary)' }}>Configure payments, shipping rates, and promotional codes.</div>
         </div>
-        <button className="btn btn-primary" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <Save size={18} /> Save Settings
+        <button onClick={fetchSettings} className="btn btn-primary" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <Save size={18} /> Refresh Settings
         </button>
       </div>
 
@@ -122,38 +140,84 @@ export default function AdminSettings() {
 
           {/* Shipping */}
           {activeTab === 'shipping' && (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', color: '#fff', margin: 0 }}>Shipping Rates & Thresholds</h2>
-                <button onClick={() => handleAdd('shipping')} className="btn btn-outline btn-sm" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Plus size={14} /> Add Shipping Rate</button>
-              </div>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Method Name</th>
-                    <th>Rate</th>
-                    <th>Condition / Delivery Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shipping.map(ship => (
-                    <tr key={ship.id}>
-                      <td style={{ fontWeight: 600 }}>{ship.name}</td>
-                      <td>${Number(ship.rate).toFixed(2)}</td>
-                      <td>{ship.condition}</td>
-                      <td><span className={`status-badge ${ship.status === 'active' ? 'paid' : 'pending'}`}>{ship.status.toUpperCase()}</span></td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                          <Edit2 onClick={() => handleEdit('shipping', ship)} size={16} style={{ cursor: 'pointer', color: 'var(--text-secondary)' }} />
-                          <Trash2 onClick={() => handleDelete('shipping', ship.id)} size={16} style={{ cursor: 'pointer', color: '#ff4d4f' }} />
-                        </div>
-                      </td>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+              
+              {/* USA Shipping */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <h2 style={{ fontSize: '1.25rem', color: '#fff', margin: 0 }}>📍 Local Shipping (USA)</h2>
+                  <button onClick={() => { handleAdd('shipping'); setEditingItem(prev => ({...prev, item: {...prev.item, region: 'usa'}})); }} className="btn btn-outline btn-sm" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Plus size={14} /> Add USA Rate</button>
+                </div>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Method Name</th>
+                      <th>Rate</th>
+                      <th>Condition / Time</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {shipping.filter(s => s.region === 'usa').map(ship => (
+                      <tr key={ship.id}>
+                        <td style={{ fontWeight: 600 }}>{ship.name}</td>
+                        <td>${Number(ship.rate).toFixed(2)}</td>
+                        <td>{ship.condition}</td>
+                        <td><span className={`status-badge ${ship.status === 'active' ? 'paid' : 'pending'}`}>{ship.status.toUpperCase()}</span></td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Edit2 onClick={() => handleEdit('shipping', ship)} size={16} style={{ cursor: 'pointer', color: 'var(--text-secondary)' }} />
+                            <Trash2 onClick={() => handleDelete('shipping', ship.id)} size={16} style={{ cursor: 'pointer', color: '#ff4d4f' }} />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {shipping.filter(s => s.region === 'usa').length === 0 && (
+                      <tr><td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No USA shipping methods found.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* International Shipping */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '2rem' }}>
+                  <h2 style={{ fontSize: '1.25rem', color: '#fff', margin: 0 }}>🌎 International Shipping</h2>
+                  <button onClick={() => { handleAdd('shipping'); setEditingItem(prev => ({...prev, item: {...prev.item, region: 'intl'}})); }} className="btn btn-outline btn-sm" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Plus size={14} /> Add International Rate</button>
+                </div>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Method Name</th>
+                      <th>Rate</th>
+                      <th>Condition / Time</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shipping.filter(s => s.region === 'intl').map(ship => (
+                      <tr key={ship.id}>
+                        <td style={{ fontWeight: 600 }}>{ship.name}</td>
+                        <td>${Number(ship.rate).toFixed(2)}</td>
+                        <td>{ship.condition}</td>
+                        <td><span className={`status-badge ${ship.status === 'active' ? 'paid' : 'pending'}`}>{ship.status.toUpperCase()}</span></td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Edit2 onClick={() => handleEdit('shipping', ship)} size={16} style={{ cursor: 'pointer', color: 'var(--text-secondary)' }} />
+                            <Trash2 onClick={() => handleDelete('shipping', ship.id)} size={16} style={{ cursor: 'pointer', color: '#ff4d4f' }} />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {shipping.filter(s => s.region === 'intl').length === 0 && (
+                      <tr><td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No International shipping methods found.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
             </div>
           )}
 
@@ -202,7 +266,7 @@ export default function AdminSettings() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="glass" style={{ background: '#080808', width: '100%', maxWidth: '450px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
             <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '1.25rem', color: '#fff', margin: 0, textTransform: 'capitalize' }}>Edit {editingItem.type}</h2>
+              <h2 style={{ fontSize: '1.25rem', color: '#fff', margin: 0, textTransform: 'capitalize' }}>{editingItem.item.id === 'new' ? 'Add' : 'Edit'} {editingItem.type}</h2>
               <XCircle onClick={() => setEditingItem(null)} size={20} style={{ cursor: 'pointer', color: 'var(--text-muted)' }} />
             </div>
             
@@ -225,9 +289,18 @@ export default function AdminSettings() {
               {/* Shipping Fields */}
               {editingItem.type === 'shipping' && (
                 <>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Method Name</label>
-                    <input type="text" value={editingItem.item.name} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, name: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} />
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Region/Zone</label>
+                      <select value={editingItem.item.region} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, region: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none', appearance: 'none' }}>
+                        <option value="usa" style={{ background: '#080808' }}>Local (USA)</option>
+                        <option value="intl" style={{ background: '#080808' }}>International (Global)</option>
+                      </select>
+                    </div>
+                    <div style={{ flex: 2 }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Method Name</label>
+                      <input type="text" value={editingItem.item.name} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, name: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} />
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '1rem' }}>
                     <div style={{ flex: 1 }}>
@@ -235,8 +308,8 @@ export default function AdminSettings() {
                       <input type="number" value={editingItem.item.rate} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, rate: parseFloat(e.target.value) || 0}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} />
                     </div>
                     <div style={{ flex: 2 }}>
-                      <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Conditions</label>
-                      <input type="text" value={editingItem.item.condition} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, condition: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} />
+                      <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Conditions & Delivery Info</label>
+                      <input type="text" placeholder="e.g. Orders above $200 (3-5 Days)" value={editingItem.item.condition} onChange={(e) => setEditingItem({...editingItem, item: {...editingItem.item, condition: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} />
                     </div>
                   </div>
                 </>

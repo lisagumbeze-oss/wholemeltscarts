@@ -1,16 +1,47 @@
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, ChevronRight, Minus, Plus } from 'lucide-react';
-import { useState } from 'react';
-import { products } from '../data/products';
+import { ShoppingBag, ChevronRight, Minus, Plus, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
+import { supabase } from '../lib/supabase';
+import { products as localProducts } from '../data/products';
 
 export default function ProductPage() {
   const { slug } = useParams();
-  const product = products.find(p => p.slug === slug);
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+
+  useEffect(() => {
+    async function fetchProduct() {
+      setLoading(true);
+      const { data } = await supabase.from('products').select('*').eq('slug', slug).single();
+      if (data) {
+        // Fallback: merge local reviews if DB has none
+        if (!data.reviews || data.reviews.length === 0) {
+          const localMatch = localProducts.find(lp => lp.name.trim().toLowerCase() === data.name.trim().toLowerCase());
+          if (localMatch?.reviews) data.reviews = localMatch.reviews;
+        }
+        setProduct(data);
+        const { data: relData } = await supabase.from('products').select('*').eq('category', data.category).neq('id', data.id).limit(4);
+        if (relData) setRelated(relData);
+      }
+      setLoading(false);
+    }
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container section" style={{ textAlign: 'center', padding: '10rem 0' }}>
+         <Loader2 className="animate-spin" style={{ animation: 'spin 1.5s linear infinite', color: 'var(--primary)', margin: '0 auto' }} size={40} />
+         <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading product details...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -21,8 +52,8 @@ export default function ProductPage() {
     );
   }
 
-  const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-  const price = product.salePrice || product.price;
+  const activePrice = parseFloat(product.price);
+  const hasSale = product.original_price && parseFloat(product.original_price) > activePrice;
 
   return (
     <>
@@ -40,7 +71,7 @@ export default function ProductPage() {
             {/* Image */}
             <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', padding: '1rem' }}>
               <img
-                src={product.image}
+                src={product.images?.[0] || product.image}
                 alt={product.name}
                 style={{ width: '100%', borderRadius: 'var(--radius-md)' }}
                 onError={(e) => { e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt'; }}
@@ -62,8 +93,8 @@ export default function ProductPage() {
               )}
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>${price}</span>
-                {product.salePrice && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>${product.price}</span>}
+                <span style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>${activePrice.toFixed(2)}</span>
+                {hasSale && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>${parseFloat(product.original_price).toFixed(2)}</span>}
               </div>
 
               <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '2rem' }}>
@@ -78,7 +109,7 @@ export default function ProductPage() {
                   <button onClick={() => setQty(qty + 1)}><Plus size={16} /></button>
                 </div>
                 <button className="btn btn-primary btn-lg" onClick={() => addToCart(product, qty)} style={{ flex: 1 }}>
-                  <ShoppingBag size={18} /> Add to Cart — ${(price * qty).toFixed(2)}
+                  <ShoppingBag size={18} /> Add to Cart — ${(activePrice * qty).toFixed(2)}
                 </button>
               </div>
 

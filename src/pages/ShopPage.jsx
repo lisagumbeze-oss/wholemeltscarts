@@ -1,25 +1,44 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { products, categories } from '../data/products';
+import { supabase } from '../lib/supabase';
 import lifestyleBanner from '../assets/images/lifestyle-disposable.png';
+import { Loader2 } from 'lucide-react';
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category') || 'all';
   const [search, setSearch] = useState('');
 
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [prodRes, catRes] = await Promise.all([
+        supabase.from('products').select('*'),
+        supabase.from('categories').select('*')
+      ]);
+      if (prodRes.data) setProducts(prodRes.data);
+      if (catRes.data) setCategories(catRes.data);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
   const filtered = useMemo(() => {
+    if (loading) return [];
     let result = products;
     if (activeCategory !== 'all') {
       result = result.filter(p => p.category === activeCategory);
     }
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      result = result.filter(p => p.name.toLowerCase().includes(q) || (p.category && p.category.toLowerCase().includes(q)));
     }
     return result;
-  }, [activeCategory, search]);
+  }, [activeCategory, search, products, loading]);
 
   return (
     <>
@@ -59,7 +78,12 @@ export default function ShopPage() {
           </div>
 
           {/* Product Grid */}
-          {filtered.length > 0 ? (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+              <Loader2 className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} size={32} />
+              <p>Loading premium catalog...</p>
+            </div>
+          ) : filtered.length > 0 ? (
             <div className="product-grid">
               {filtered.map(p => <ProductCard key={p.id} product={p} />)}
             </div>

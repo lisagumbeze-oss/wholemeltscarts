@@ -1,31 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Search } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+
+const mockOrders = [
+  { id: '#1024', customer_name: 'Alex Johnson', email: 'alex@example.com', total: 145.00, payment_method: 'CashApp', account_detail: '$alexbuy', status: 'pending' },
+  { id: '#1023', customer_name: 'Maria Silva', email: 'maria@example.com', total: 89.50, payment_method: 'Zelle', account_detail: 'maria@example.com', status: 'verified' },
+  { id: '#1022', customer_name: 'James Wilson', email: 'james.w@example.com', total: 210.00, payment_method: 'Venmo', account_detail: '@JamesW', status: 'verified' },
+  { id: '#1021', customer_name: 'Sarah Connor', email: 's.connor@example.com', total: 320.00, payment_method: 'Apple Cash', account_detail: '(555) 019-2834', status: 'pending' }
+];
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([
-    { id: '#1024', customer: 'Alex Johnson', email: 'alex@example.com', total: 145.00, method: 'CashApp', account: '$alexbuy', status: 'pending', date: 'Oct 24, 2023 - 14:30' },
-    { id: '#1023', customer: 'Maria Silva', email: 'maria@example.com', total: 89.50, method: 'Zelle', account: 'maria@example.com', status: 'verified', date: 'Oct 24, 2023 - 11:15' },
-    { id: '#1022', customer: 'James Wilson', email: 'james.w@example.com', total: 210.00, method: 'Venmo', account: '@JamesW', status: 'verified', date: 'Oct 23, 2023 - 16:45' },
-    { id: '#1021', customer: 'Sarah Connor', email: 's.connor@example.com', total: 320.00, method: 'Apple Cash', account: '(555) 019-2834', status: 'pending', date: 'Oct 23, 2023 - 09:20' }
-  ]);
-
+  const [orders, setOrders] = useState([]);
   const [editingOrder, setEditingOrder] = useState(null);
 
-  const approveOrder = (id) => {
-    setOrders(orders.map(o => o.id === id ? { ...o, status: 'verified' } : o));
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      if (data.length === 0) {
+         await supabase.from('orders').insert(mockOrders);
+         const { data: newData } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+         setOrders(newData || []);
+      } else {
+        setOrders(data);
+      }
+    }
+  };
+
+  const approveOrder = async (id) => {
+    const { error } = await supabase.from('orders').update({ status: 'verified' }).eq('id', id);
+    if (!error) {
+      setOrders(orders.map(o => o.id === id ? { ...o, status: 'verified' } : o));
+    }
   };
 
   const handleEditClick = (order) => {
     setEditingOrder({ ...order });
   };
 
-  const handleSaveOrder = () => {
-    setOrders(orders.map(o => o.id === editingOrder.id ? editingOrder : o));
+  const handleSaveOrder = async () => {
+    const { error } = await supabase.from('orders').update({
+      customer_name: editingOrder.customer_name,
+      payment_method: editingOrder.payment_method,
+      total: editingOrder.total,
+      status: editingOrder.status
+    }).eq('id', editingOrder.id);
+
+    if (!error) {
+       setOrders(orders.map(o => o.id === editingOrder.id ? editingOrder : o));
+    }
     setEditingOrder(null);
   };
 
-  const deleteOrder = (id) => {
-    setOrders(orders.filter(o => o.id !== id));
+  const deleteOrder = async (id) => {
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (!error) {
+      setOrders(orders.filter(o => o.id !== id));
+    }
   };
 
   return (
@@ -61,17 +95,19 @@ export default function AdminOrders() {
             {orders.map(order => (
               <tr key={order.id}>
                 <td style={{ fontWeight: 600 }}>{order.id}
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', fontWeight: 400 }}>{order.date}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', fontWeight: 400 }}>
+                    {order.created_at ? new Date(order.created_at).toLocaleDateString() : ''}
+                  </div>
                 </td>
                 <td>
-                  <div>{order.customer}</div>
+                  <div>{order.customer_name}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.email}</div>
                 </td>
                 <td>
-                  <span style={{ color: 'var(--primary)' }}>{order.method}</span>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>From: {order.account}</div>
+                  <span style={{ color: 'var(--primary)' }}>{order.payment_method}</span>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>From: {order.account_detail}</div>
                 </td>
-                <td style={{ fontWeight: 600 }}>${order.total.toFixed(2)}</td>
+                <td style={{ fontWeight: 600 }}>${Number(order.total).toFixed(2)}</td>
                 <td>
                   <span className={`status-badge ${order.status}`}>{order.status}</span>
                 </td>
@@ -113,8 +149,8 @@ export default function AdminOrders() {
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Customer Name</label>
                 <input 
                   type="text" 
-                  value={editingOrder.customer} 
-                  onChange={(e) => setEditingOrder({...editingOrder, customer: e.target.value})}
+                  value={editingOrder.customer_name || ''} 
+                  onChange={(e) => setEditingOrder({...editingOrder, customer_name: e.target.value})}
                   style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} 
                 />
               </div>
@@ -122,8 +158,8 @@ export default function AdminOrders() {
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Payment Method</label>
                 <input 
                   type="text" 
-                  value={editingOrder.method} 
-                  onChange={(e) => setEditingOrder({...editingOrder, method: e.target.value})}
+                  value={editingOrder.payment_method || ''} 
+                  onChange={(e) => setEditingOrder({...editingOrder, payment_method: e.target.value})}
                   style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', outline: 'none' }} 
                 />
               </div>

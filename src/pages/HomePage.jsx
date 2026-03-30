@@ -1,11 +1,25 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Zap, Leaf, FlaskConical, Truck, Clock, HeadphonesIcon, Play, Star, Award } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Leaf, FlaskConical, Truck, Clock, HeadphonesIcon, Play, Star, Award, Loader2 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { supabase } from '../lib/supabase';
 
 export default function HomePage() {
-  const featured = products.filter(p => p.badge).slice(0, 8);
-  const onSale = products.filter(p => p.salePrice).slice(0, 4);
+  const [featured, setFeatured] = useState([]);
+  const [onSale, setOnSale] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHomeProducts() {
+      const { data } = await supabase.from('products').select('*').limit(15);
+      if (data) {
+        setFeatured(data.slice(0, 8));
+        setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
+      }
+      setLoading(false);
+    }
+    fetchHomeProducts();
+  }, []);
 
   return (
     <>
@@ -103,9 +117,16 @@ export default function HomePage() {
             <h2 className="section-header__title">Whole Melt Extracts Official</h2>
             <p className="section-header__desc">Curated selection of our most popular products.</p>
           </div>
-          <div className="product-grid animate-reveal" style={{ animationDelay: '0.2s' }}>
-            {featured.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+              <Loader2 className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} size={32} />
+              <p>Loading Elite Selection...</p>
+            </div>
+          ) : (
+            <div className="product-grid animate-reveal" style={{ animationDelay: '0.2s' }}>
+              {featured.map(p => <ProductCard key={p.id} product={p} />)}
+            </div>
+          )}
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>
             <Link to="/shop" className="btn btn-outline">View All Products <ArrowRight size={16} /></Link>
           </div>
@@ -162,7 +183,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ Sale Section ═══ */}
-      {onSale.length > 0 && (
+      {!loading && onSale.length > 0 && (
         <section className="section bg-deep">
           <div className="container">
             <div className="section-header">

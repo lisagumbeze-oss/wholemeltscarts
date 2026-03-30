@@ -30,10 +30,10 @@ export default function CartPage() {
             <div>
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
-                  <img className="cart-item__img" src={item.image} alt={item.name}
+                  <img className="cart-item__img" src={item.images?.[0] || item.image} alt={item.name}
                     onError={(e) => { e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }} />
                   <div>
-                    <Link to={`/product/${item.slug}`} className="cart-item__name" style={{ color: 'var(--text-primary)' }}>
+                    <Link to={`/product/${item.slug || item.id}`} className="cart-item__name" style={{ color: 'var(--text-primary)' }}>
                       {item.name}
                     </Link>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{item.category?.replace('-', ' ')}</p>
@@ -43,7 +43,7 @@ export default function CartPage() {
                     <span>{item.qty}</span>
                     <button onClick={() => updateQty(item.id, item.qty + 1)}><Plus size={14} /></button>
                   </div>
-                  <span className="cart-item__price">${((item.salePrice || item.price) * item.qty).toFixed(2)}</span>
+                  <span className="cart-item__price">${(parseFloat(item.price) * item.qty).toFixed(2)}</span>
                   <button className="cart-item__remove" onClick={() => removeFromCart(item.id)}>
                     <Trash2 size={18} />
                   </button>

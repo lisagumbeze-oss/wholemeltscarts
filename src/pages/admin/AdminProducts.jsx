@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, Save } from 'lucide-react';
-import { products as initialProducts } from '../../data/products';
+import { supabase } from '../../lib/supabase';
 
 export default function AdminProducts() {
-  const [productList, setProductList] = useState(initialProducts.slice(0, 15));
+  const [productList, setProductList] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const { data, count, error } = await supabase.from('products').select('*', { count: 'exact' }).limit(15);
+    if (!error && data) {
+      setProductList(data);
+      setTotalProducts(count || 0);
+    }
+  };
 
   const handleEditClick = (prod) => {
     setEditingProduct({ ...prod });
   };
 
-  const handleSave = () => {
-    setProductList(prev => prev.map(p => p.id === editingProduct.id ? editingProduct : p));
+  const handleSave = async () => {
+    const { error } = await supabase.from('products')
+      .update({
+        name: editingProduct.name,
+        price: editingProduct.price,
+        category: editingProduct.category
+      })
+      .eq('id', editingProduct.id);
+      
+    if (!error) {
+      setProductList(prev => prev.map(p => p.id === editingProduct.id ? editingProduct : p));
+    }
     setEditingProduct(null);
   };
 
-  const handleDelete = (id) => {
-    setProductList(prev => prev.filter(p => p.id !== id));
+  const handleDelete = async (id) => {
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (!error) {
+      setProductList(prev => prev.filter(p => p.id !== id));
+      setTotalProducts(prev => prev - 1);
+    }
   };
   return (
     <div>
@@ -69,7 +96,7 @@ export default function AdminProducts() {
           </tbody>
         </table>
         <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          Showing {productList.length} of {initialProducts.length} products
+          Showing {productList.length} of {totalProducts} products
         </div>
       </div>
 

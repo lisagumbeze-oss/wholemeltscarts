@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import PaymentMethods from '../components/PaymentMethods';
 import { CheckCircle, Truck, Bitcoin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 const COUNTRIES = [
   "United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "Italy", "Spain", "Netherlands", "Norway", "Sweden", "Other"
@@ -18,8 +19,29 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: 'United States', notes: ''
   });
 
-  const [shippingMethod, setShippingMethod] = useState('standard');
-  const [paymentMethod, setPaymentMethod] = useState('Zelle');
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [paymentOptions, setPaymentOptions] = useState([]);
+  const [coupons, setCoupons] = useState([]);
+  const [shippingMethod, setShippingMethod] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState('');
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const { data } = await supabase.from('settings').select('*').in('type', ['shipping', 'payment', 'coupon']).eq('status', 'active');
+      if (data) {
+        setShippingOptions(data.filter(d => d.type === 'shipping'));
+        const payments = data.filter(d => d.type === 'payment');
+        setPaymentOptions(payments);
+        setCoupons(data.filter(d => d.type === 'coupon'));
+        if (payments.length > 0) setPaymentMethod(payments[0].config.name);
+      }
+    }
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     if (cart.length > 0 && cartTotal < 100) {
@@ -28,23 +50,55 @@ export default function CheckoutPage() {
     }
   }, [cartTotal, cart.length, navigate]);
 
+  useEffect(() => {
+    // Auto-select first available shipping method based on region
+    const available = shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'));
+    if (available.length > 0 && !available.find(o => o.id === shippingMethod)) {
+      setShippingMethod(available[0].id);
+    } else if (available.length === 0) {
+      setShippingMethod('');
+    }
+  }, [form.country, shippingOptions]);
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const getShippingCost = () => {
-    const isUSA = form.country === 'United States';
-    if (isUSA) {
-      if (shippingMethod === 'standard') {
-        return cartTotal >= 500 ? 0 : 15;
-      }
-      return 25; // Express USA
+  const selectedShippingOpt = shippingOptions.find(o => o.id === shippingMethod);
+  const shippingCost = selectedShippingOpt ? Number(selectedShippingOpt.config.rate) : 0;
+  
+  // Coupon Math
+  let discountAmount = 0;
+  let calculatedShipping = shippingCost;
+  
+  if (appliedCoupon) {
+    const discountStr = appliedCoupon.config.discount.toLowerCase();
+    if (discountStr.includes('%')) {
+      const pct = parseFloat(discountStr.replace(/[^0-9.]/g, ''));
+      if (!isNaN(pct)) discountAmount = cartTotal * (pct / 100);
+    } else if (discountStr.includes('free ship')) {
+      calculatedShipping = 0;
     } else {
-      // International
-      return shippingMethod === 'standard' ? 25 : 50;
+      const val = parseFloat(discountStr.replace(/[^0-9.]/g, ''));
+      if (!isNaN(val)) discountAmount = val;
+    }
+  }
+
+  const finalTotal = Math.max(0, cartTotal - discountAmount + calculatedShipping);
+
+  const handleApplyCoupon = () => {
+    setCouponError('');
+    if (!promoCode.trim()) return;
+    const validCoupon = coupons.find(c => c.config.code.toLowerCase() === promoCode.toLowerCase());
+    if (validCoupon) {
+      setAppliedCoupon(validCoupon);
+      setPromoCode('');
+    } else {
+      setCouponError('Invalid or expired promo code.');
     }
   };
 
-  const shippingCost = getShippingCost();
-  const finalTotal = cartTotal + shippingCost;
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -86,10 +140,11 @@ export default function CheckoutPage() {
           <>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', marginBottom: '2rem', lineHeight: '1.7' }}>
               Please send <strong>${finalTotal.toFixed(2)}</strong> using the details below. Include your Order ID in the payment memo.
-              Your order will be processed and shipped once payment is confirmed.
+              <br/><br/>
+              <strong style={{ color: 'var(--primary)' }}>Important:</strong> To complete your order and guarantee dispatch, you must send a screenshot of your successful payment to <strong>sales@wholemeltscarts.us</strong>.
             </p>
             <div style={{ maxWidth: '500px', width: '100%', textAlign: 'left' }}>
-              <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} />
+              <PaymentMethods selectedMethod={paymentMethod} onSelect={() => {}} options={paymentOptions} readonly={true} />
             </div>
           </>
         )}
@@ -142,47 +197,38 @@ export default function CheckoutPage() {
 
               <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '2rem 0 1.5rem' }}>Shipping Method</h2>
               <div style={{ display: 'grid', gap: '1rem' }}>
-                <label className={`glass ${shippingMethod === 'standard' ? 'selected' : ''}`} style={{ 
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', cursor: 'pointer', borderRadius: 'var(--radius-md)',
-                  border: shippingMethod === 'standard' ? '2px solid var(--primary)' : '1px solid var(--glass-border)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Truck size={20} />
-                    <div>
-                      <div style={{ fontWeight: 600 }}>Standard Shipping</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>3-5 Business Days</div>
-                    </div>
+                {shippingOptions
+                  .filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'))
+                  .map(opt => (
+                    <label key={opt.id} className={`glass ${shippingMethod === opt.id ? 'selected' : ''}`} style={{ 
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', cursor: 'pointer', borderRadius: 'var(--radius-md)',
+                      border: shippingMethod === opt.id ? '2px solid var(--primary)' : '1px solid var(--glass-border)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Truck size={20} style={{ color: shippingMethod === opt.id ? 'var(--primary)' : 'inherit' }} />
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{opt.config.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{opt.config.condition}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <span style={{ fontWeight: 700 }}>
+                          {Number(opt.config.rate) === 0 ? 'FREE' : `$${Number(opt.config.rate).toFixed(2)}`}
+                        </span>
+                        <input type="radio" name="shippingMethod" checked={shippingMethod === opt.id} onChange={() => setShippingMethod(opt.id)} />
+                      </div>
+                    </label>
+                  ))
+                }
+                {shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl')).length === 0 && (
+                  <div style={{ padding: '1rem', color: 'var(--text-muted)', fontStyle: 'italic', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)' }}>
+                    No shipping methods available for the selected region.
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ fontWeight: 700 }}>
-                      {form.country === 'United States' ? (cartTotal >= 500 ? 'FREE' : '$15.00') : '$25.00'}
-                    </span>
-                    <input type="radio" name="shippingMethod" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} />
-                  </div>
-                </label>
-
-                <label className={`glass ${shippingMethod === 'express' ? 'selected' : ''}`} style={{ 
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', cursor: 'pointer', borderRadius: 'var(--radius-md)',
-                  border: shippingMethod === 'express' ? '2px solid var(--primary)' : '1px solid var(--glass-border)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Truck size={20} style={{ color: 'var(--accent)' }} />
-                    <div>
-                      <div style={{ fontWeight: 600 }}>Express Shipping</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>1-2 Business Days</div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <span style={{ fontWeight: 700 }}>
-                      {form.country === 'United States' ? '$25.00' : '$50.00'}
-                    </span>
-                    <input type="radio" name="shippingMethod" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} />
-                  </div>
-                </label>
+                )}
               </div>
 
               <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '2rem 0 1.5rem' }}>Payment Method</h2>
-              <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} />
+              <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={paymentOptions} />
 
               <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '2rem' }}>
                 Place Order — ${finalTotal.toFixed(2)}
@@ -195,17 +241,52 @@ export default function CheckoutPage() {
               {cart.map(item => (
                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>{item.name} × {item.qty}</span>
-                  <span>${((item.salePrice || item.price) * item.qty).toFixed(2)}</span>
+                  <span>${(parseFloat(item.price) * item.qty).toFixed(2)}</span>
                 </div>
               ))}
+
+              <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Promo Code" 
+                    value={promoCode} 
+                    onChange={e => setPromoCode(e.target.value)}
+                    className="form-input"
+                    style={{ flex: 1, padding: '0.6rem', background: 'rgba(0,0,0,0.2)' }}
+                  />
+                  <button type="button" className="btn btn-outline" onClick={handleApplyCoupon}>Apply</button>
+                </div>
+                {couponError && <p style={{ color: '#ff4d4f', fontSize: '0.8rem', marginTop: '0.5rem' }}>{couponError}</p>}
+                {appliedCoupon && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(76, 175, 80, 0.1)', border: '1px solid rgba(76, 175, 80, 0.3)', borderRadius: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4caf50', fontSize: '0.85rem' }}>
+                      <strong>{appliedCoupon.config.code}</strong> 
+                      <span>- {appliedCoupon.config.discount}</span>
+                    </div>
+                    <button type="button" style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }} onClick={removeCoupon}>Remove</button>
+                  </div>
+                )}
+              </div>
+
               <div style={{ borderTop: '1px solid var(--glass-border)', marginTop: '1rem', paddingTop: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                   <span>Subtotal</span>
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>
+                {appliedCoupon && discountAmount > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#4caf50' }}>
+                    <span>Discount Deduction</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                   <span>Shipping</span>
-                  <span>{shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}</span>
+                  {appliedCoupon && appliedCoupon.config.discount.toLowerCase().includes('free ship') ? (
+                    <span style={{ color: '#4caf50' }}>Free</span>
+                  ) : (
+                    <span>{calculatedShipping === 0 ? 'Free' : `$${calculatedShipping.toFixed(2)}`}</span>
+                  )}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem' }}>
                   <span>Total</span>

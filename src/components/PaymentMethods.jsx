@@ -1,49 +1,65 @@
-import { DollarSign, Smartphone, CreditCard, Building, Banknote, Bitcoin } from 'lucide-react';
+import { DollarSign, Smartphone, CreditCard, Building, Banknote, Bitcoin, Wallet } from 'lucide-react';
 
-const methods = [
-  { name: 'Zelle', icon: <DollarSign size={20} />, detail: 'Send to: payments@wholemeltextracts.com', note: 'Include your Order ID in the memo.' },
-  { name: 'CashApp', icon: <Smartphone size={20} />, detail: 'Send to: $WholeMeltExtracts', note: 'Include your Order ID in the note.' },
-  { name: 'Venmo', icon: <CreditCard size={20} />, detail: 'Send to: @WholeMeltExtracts', note: 'Set payment to "private". Include Order ID.' },
-  { name: 'Apple Cash', icon: <Banknote size={20} />, detail: 'Send to: payments@wholemeltextracts.com', note: 'Use iMessage to send Apple Cash with your Order ID.' },
-  { name: 'Chime', icon: <Building size={20} />, detail: 'Send to: payments@wholemeltextracts.com', note: 'Use Chime Pay Anyone feature. Include Order ID.' },
-  { name: 'Plisio (Crypto)', icon: <Bitcoin size={20} />, detail: 'Pay with BTC, ETH, LTC, USDT, etc.', note: 'Secure crypto payment gateway. No ID required.' },
-];
+const getIconForPayment = (name) => {
+  const n = name.toLowerCase();
+  if (n.includes('zelle')) return <DollarSign size={20} />;
+  if (n.includes('cash')) return <Smartphone size={20} />;
+  if (n.includes('venmo')) return <CreditCard size={20} />;
+  if (n.includes('crypto') || n.includes('plisio') || n.includes('btc')) return <Bitcoin size={20} />;
+  if (n.includes('chime')) return <Building size={20} />;
+  return <Wallet size={20} />;
+};
 
-export default function PaymentMethods({ selectedMethod, onSelect }) {
+export default function PaymentMethods({ selectedMethod, onSelect, options = [], readonly = false }) {
+  // If readonly, only show the selected method
+  const displayOptions = readonly 
+    ? options.filter(o => o.config.name === selectedMethod)
+    : options;
+
+  if (displayOptions.length === 0) {
+    if (readonly) return <p className="payment-block__detail">No details provided.</p>;
+    return <div style={{ padding: '1rem', color: 'var(--text-muted)', fontStyle: 'italic', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)' }}>No payment methods available.</div>;
+  }
+
   return (
     <div>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.7' }}>
-        Choose your preferred payment method below. After placing your order, send the payment using the details provided.
-      </p>
+      {!readonly && (
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.7' }}>
+          Choose your preferred payment method below. After placing your order, send the payment using the details provided.
+        </p>
+      )}
       <div style={{ display: 'grid', gap: '1rem' }}>
-        {methods.map(m => (
+        {displayOptions.map(m => (
           <div 
-            key={m.name} 
-            className={`payment-block ${selectedMethod === m.name ? 'selected' : ''}`}
-            onClick={() => onSelect(m.name)}
+            key={m.id} 
+            className={`payment-block ${selectedMethod === m.config.name ? 'selected' : ''}`}
+            onClick={() => onSelect(m.config.name)}
             style={{ 
-              cursor: 'pointer', 
-              border: selectedMethod === m.name ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
+              cursor: readonly ? 'default' : 'pointer', 
+              border: selectedMethod === m.config.name ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
               transition: 'all 0.3s ease'
             }}
           >
             <div className="payment-block__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span className="payment-block__icon">{m.icon}</span>
-                {m.name}
+                <span className="payment-block__icon" style={{ color: selectedMethod === m.config.name ? 'var(--primary)' : 'inherit' }}>
+                  {getIconForPayment(m.config.name)}
+                </span>
+                {m.config.name}
               </div>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                checked={selectedMethod === m.name} 
-                onChange={() => onSelect(m.name)}
-                style={{ cursor: 'pointer' }}
-              />
+              {!readonly && (
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  checked={selectedMethod === m.config.name} 
+                  onChange={() => onSelect(m.config.name)}
+                  style={{ cursor: 'pointer' }}
+                />
+              )}
             </div>
-            {selectedMethod === m.name && (
+            {(selectedMethod === m.config.name || readonly) && (
               <div style={{ marginTop: '1rem' }}>
-                <p className="payment-block__detail"><strong>{m.detail}</strong></p>
-                <p className="payment-block__detail" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{m.note}</p>
+                <p className="payment-block__detail" style={{ fontSize: '0.95rem' }}><strong>{m.config.detail}</strong></p>
               </div>
             )}
           </div>
