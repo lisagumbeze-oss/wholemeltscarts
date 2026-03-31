@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"node server.js\"",
+    "backend": "node server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -13,8 +14,12 @@
     "@supabase/supabase-js": "^2.100.1",
     "axios": "^1.14.0",
     "cheerio": "^1.2.0",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "lucide-react": "^0.577.0",
+    "nodemailer": "^8.0.4",
     "pg": "^8.20.0",
     "puppeteer": "^24.40.0",
     "react": "^19.2.4",

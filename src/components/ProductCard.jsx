@@ -17,7 +17,22 @@ export default function ProductCard({ product }) {
             src={product.images?.[0] || product.image}
             alt={product.name}
             loading="lazy"
-            onError={(e) => { e.target.src = 'https://placehold.co/400x400/141414/D4AF37?text=Whole+Melt'; }}
+            onError={(e) => { 
+                const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                const currentSrc = e.target.src;
+                const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
+                const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();
+                
+                const nextIndex = extensions.indexOf(currentExt) + 1;
+                if (nextIndex > 0 && nextIndex < extensions.length) {
+                    e.target.src = base + extensions[nextIndex];
+                } else if (nextIndex === 0) {
+                    // Start the loop if extension wasn't in our list
+                    e.target.src = base + extensions[0];
+                } else {
+                    e.target.src = 'https://placehold.co/400x400/141414/D4AF37?text=Whole+Melt';
+                }
+            }}
           />
         </div>
       </Link>

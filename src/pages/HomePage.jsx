@@ -11,10 +11,25 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchHomeProducts() {
-      const { data } = await supabase.from('products').select('*').limit(15);
-      if (data) {
-        setFeatured(data.slice(0, 8));
-        setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
+      try {
+        const { data, error } = await supabase.from('products').select('*').limit(15);
+        
+        // Use local data as primary if DB is out of sync or empty
+        import('../data/products').then(({ products: localProducts }) => {
+          if (!data || data.length === 0 || !data[0].slug) {
+            setFeatured(localProducts.slice(0, 8));
+            setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
+          } else {
+            setFeatured(data.slice(0, 8));
+            setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
+          }
+        });
+      } catch (err) {
+        // Ultimate fallback to local data
+        import('../data/products').then(({ products: localProducts }) => {
+          setFeatured(localProducts.slice(0, 8));
+          setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
+        });
       }
       setLoading(false);
     }

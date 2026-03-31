@@ -31,7 +31,25 @@ export default function CartPage() {
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
                   <img className="cart-item__img" src={item.images?.[0] || item.image} alt={item.name}
-                    onError={(e) => { e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }} />
+                    onError={(e) => { 
+                        const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                        const currentSrc = e.target.src;
+                        const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
+                        if (currentSrc.lastIndexOf('.') === -1) {
+                          e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM';
+                          return;
+                        }
+                        const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();
+                        
+                        const nextIndex = extensions.indexOf(currentExt) + 1;
+                        if (nextIndex > 0 && nextIndex < extensions.length) {
+                            e.target.src = base + extensions[nextIndex];
+                        } else if (nextIndex === 0) {
+                            e.target.src = base + extensions[0];
+                        } else {
+                            e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM';
+                        }
+                    }} />
                   <div>
                     <Link to={`/product/${item.slug || item.id}`} className="cart-item__name" style={{ color: 'var(--text-primary)' }}>
                       {item.name}

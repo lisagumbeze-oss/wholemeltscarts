@@ -36,22 +36,13 @@ export default function BlogPostPage() {
 
       <section className="section">
         <div className="container" style={{ maxWidth: '800px' }}>
-          <div className="glass" style={{ padding: '3rem', borderRadius: 'var(--radius-lg)', lineHeight: '1.8' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'white', fontWeight: 500 }}>
-              {post.excerpt}
-            </p>
-            <div style={{ color: 'var(--text-secondary)' }}>
-              <p style={{ marginBottom: '1.5rem' }}>
-                At Whole Melt Extracts, we are committed to providing our community with the most up-to-date information regarding our products and the evolving cannabis industry. This post is part of our "Daily Info" series, designed to help you make informed decisions about your wellness journey.
-              </p>
-              <h3 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Quality and Potency</h3>
-              <p style={{ marginBottom: '1.5rem' }}>
-                Our extracts are crafted using state-of-the-art techniques that preserve the full spectrum of cannabinoids and terpenes. Whether you're interested in our V6 Edition disposables or our premium live resin sugar, you can expect a pure and potent experience every time.
-              </p>
-              <p>
-                Stay tuned for more updates, reviews, and insights from our team. If you have any questions about this topic or our products, feel free to reach out via our live chat or contact page.
-              </p>
+          {post.image && (
+            <div style={{ width: '100%', height: '400px', marginBottom: '3rem', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', border: '1px solid var(--glass-border)' }}>
+              <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
+          )}
+          <div className="glass blog-post-content" style={{ padding: '3rem', borderRadius: 'var(--radius-lg)' }}>
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>
         </div>
       </section>

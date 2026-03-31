@@ -18,7 +18,8 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProduct() {
       setLoading(true);
-      const { data } = await supabase.from('products').select('*').eq('slug', slug).single();
+      const { data, error } = await supabase.from('products').select('*').eq('slug', slug).single();
+      
       if (data) {
         // Fallback: merge local reviews if DB has none
         if (!data.reviews || data.reviews.length === 0) {
@@ -26,8 +27,20 @@ export default function ProductPage() {
           if (localMatch?.reviews) data.reviews = localMatch.reviews;
         }
         setProduct(data);
-        const { data: relData } = await supabase.from('products').select('*').eq('category', data.category).neq('id', data.id).limit(4);
+        const { data: relData } = await supabase.from('products').select('*').eq('category', data.category).neq('slug', data.slug).limit(4);
         if (relData) setRelated(relData);
+      } else {
+        // ULTIMATE FALLBACK: Try finding in local data if DB fails (e.g. during schema sync)
+        const localMatch = localProducts.find(lp => lp.slug === slug);
+        if (localMatch) {
+          console.log('Using local fallback for product:', slug);
+          setProduct(localMatch);
+          // Find related in local
+          const relatedLocal = localProducts
+            .filter(lp => lp.category === localMatch.category && lp.slug !== localMatch.slug)
+            .slice(0, 4);
+          setRelated(relatedLocal);
+        }
       }
       setLoading(false);
     }
@@ -74,7 +87,26 @@ export default function ProductPage() {
                 src={product.images?.[0] || product.image}
                 alt={product.name}
                 style={{ width: '100%', borderRadius: 'var(--radius-md)' }}
-                onError={(e) => { e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt'; }}
+                onError={(e) => { 
+                    const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                    const currentSrc = e.target.src;
+                    const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
+                    // Check if currentSrc actually contains a dot for extension
+                    if (currentSrc.lastIndexOf('.') === -1) {
+                      e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt';
+                      return;
+                    }
+                    const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();
+                    
+                    const nextIndex = extensions.indexOf(currentExt) + 1;
+                    if (nextIndex > 0 && nextIndex < extensions.length) {
+                        e.target.src = base + extensions[nextIndex];
+                    } else if (nextIndex === 0) {
+                        e.target.src = base + extensions[0];
+                    } else {
+                        e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt';
+                    }
+                }}
               />
             </div>
 

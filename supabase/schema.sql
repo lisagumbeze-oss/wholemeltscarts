@@ -44,6 +44,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
     total NUMERIC NOT NULL,
     payment_method TEXT NOT NULL,
     account_detail TEXT NOT NULL,
+    items JSONB NOT NULL DEFAULT '[]',
+    shipping_details JSONB NOT NULL DEFAULT '{}',
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

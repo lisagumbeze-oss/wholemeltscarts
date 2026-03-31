@@ -13,6 +13,8 @@ export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [orderId] = useState(() => 'WM-' + Math.random().toString(36).substring(2, 8).toUpperCase());
 
   const [form, setForm] = useState({
@@ -100,13 +102,50 @@ export default function CheckoutPage() {
     setAppliedCoupon(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!paymentMethod) {
       alert("Please select a payment method.");
       return;
     }
-    setSubmitted(true);
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          cart: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.qty
+          })),
+          cartTotal,
+          form,
+          paymentMethod,
+          finalTotal
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        clearCart();
+      } else {
+        throw new Error(result.error || 'Failed to process order.');
+      }
+    } catch (err) {
+      console.error('Checkout Error:', err);
+      setError(err.message);
+      alert(`Checkout Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -230,8 +269,8 @@ export default function CheckoutPage() {
               <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '2rem 0 1.5rem' }}>Payment Method</h2>
               <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={paymentOptions} />
 
-              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '2rem' }}>
-                Place Order — ${finalTotal.toFixed(2)}
+              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '2rem' }} disabled={loading}>
+                {loading ? 'Processing...' : `Place Order — $${finalTotal.toFixed(2)}`}
               </button>
             </form>
 

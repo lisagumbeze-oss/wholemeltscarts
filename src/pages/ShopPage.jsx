@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
+import { products as localProducts } from '../data/products';
 import lifestyleBanner from '../assets/images/lifestyle-disposable.png';
 import { Loader2 } from 'lucide-react';
 
@@ -16,13 +17,39 @@ export default function ShopPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const [prodRes, catRes] = await Promise.all([
-        supabase.from('products').select('*'),
-        supabase.from('categories').select('*')
-      ]);
-      if (prodRes.data) setProducts(prodRes.data);
-      if (catRes.data) setCategories(catRes.data);
-      setLoading(false);
+      setLoading(true);
+      try {
+        const [prodRes, catRes] = await Promise.all([
+          supabase.from('products').select('*'),
+          supabase.from('categories').select('*')
+        ]);
+        
+        let finalProducts = prodRes.data || [];
+        
+        // Fallback: If DB returns error or is missing slugs (cache issue), use local data
+        if (prodRes.error || finalProducts.length === 0 || (finalProducts.length > 0 && !finalProducts[0].slug)) {
+          console.warn('DB Sync pending or schema cache issue. Falling back to local product data.');
+          finalProducts = localProducts;
+        }
+        
+        setProducts(finalProducts);
+        
+        if (catRes.data && catRes.data.length > 0) {
+          setCategories(catRes.data);
+        } else {
+          // Fallback categories if DB fails
+          const uniqueCats = [...new Set(localProducts.map(p => p.category))];
+          setCategories([
+            { id: 'all', name: 'All Products', count: localProducts.length },
+            ...uniqueCats.map(c => ({ id: c, name: c.replace('-', ' '), count: localProducts.filter(lp => lp.category === c).length }))
+          ]);
+        }
+      } catch (err) {
+        console.error('Fetch error, using local fallback:', err);
+        setProducts(localProducts);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
