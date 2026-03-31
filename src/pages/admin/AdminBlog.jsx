@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
-import { blogPosts } from '../../data/products';
+import { blogPosts } from '../../data/blogs';
 
 export default function AdminBlog() {
   // Using the initial posts to seed our local view

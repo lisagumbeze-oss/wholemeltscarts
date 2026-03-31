@@ -18,7 +18,7 @@ export default function ProductCard({ product }) {
             alt={product.name}
             loading="lazy"
             onError={(e) => { 
-                const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
                 const currentSrc = e.target.src;
                 const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
                 const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();

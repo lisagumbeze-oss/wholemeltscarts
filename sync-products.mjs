@@ -35,7 +35,13 @@ async function addSlugColumn() {
     query: `ALTER TABLE products ADD COLUMN IF NOT EXISTS slug TEXT UNIQUE;`
   });
   if (error) {
-    console.log('RPC or direct SQL failed for slug column. It may already exist or needs manual addition.');
+    console.log('RPC failed for slug column. Testing if it already exists...');
+    // Test if the column exists by doing a harmless select
+    const { error: testErr } = await supabase.from('products').select('slug').limit(1);
+    if (testErr) {
+      console.log('slug column not available. Syncing without slugs.');
+      return false;
+    }
   }
   return true;
 }
@@ -212,7 +218,8 @@ async function syncProducts() {
     }
 
     const updatePayload = {
-      images: [localMatch.image]
+      images: [localMatch.image],
+      category: localMatch.category
     };
 
     if (canSlug && localMatch.slug) {

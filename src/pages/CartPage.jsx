@@ -32,7 +32,7 @@ export default function CartPage() {
                 <div key={item.id} className="cart-item">
                   <img className="cart-item__img" src={item.images?.[0] || item.image} alt={item.name}
                     onError={(e) => { 
-                        const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                        const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
                         const currentSrc = e.target.src;
                         const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
                         if (currentSrc.lastIndexOf('.') === -1) {

@@ -88,7 +88,7 @@ export default function ProductPage() {
                 alt={product.name}
                 style={{ width: '100%', borderRadius: 'var(--radius-md)' }}
                 onError={(e) => { 
-                    const extensions = ['.jpg', '.jpeg', '.webp', '.png'];
+                    const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
                     const currentSrc = e.target.src;
                     const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
                     // Check if currentSrc actually contains a dot for extension
