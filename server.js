@@ -10,6 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the 'dist' directory
+app.use(express.static('dist'));
+// Fallback to 'public' for dev or if dist isn't built
+app.use(express.static('public'));
+
 const PORT = process.env.PORT || 3000;
 
 // Initialize Supabase
