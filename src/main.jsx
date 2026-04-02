@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import './index.css';
 
@@ -42,6 +42,7 @@ const router = createBrowserRouter([
       { path: 'contact', element: <ContactPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
+      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
   {
@@ -57,7 +58,12 @@ const router = createBrowserRouter([
       { path: 'orders', element: <AdminOrders /> },
       { path: 'blog', element: <AdminBlog /> },
       { path: 'settings', element: <AdminSettings /> },
+      { path: '*', element: <Navigate to="/admin" replace /> },
     ],
+  },
+  {
+    path: '*',
+    element: <Navigate to="/" replace />,
   },
 ]);
 
