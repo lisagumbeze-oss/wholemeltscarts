@@ -317,3 +317,66 @@ export const getContactConfirmationTemplate = (name) => {
         </div>
     `);
 }
+
+export const getWholesaleInquiryTemplate = (name, email, businessName, location, volume, message) => {
+    return getBaseTemplate(`
+        <h1 style="text-align: center;">Master Hub Inquiry</h1>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span style="background: rgba(212, 175, 55, 0.1); color: #D4AF37; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Wholesale Lead</span>
+        </div>
+
+        <div class="card">
+            <div class="label">Partner Name</div>
+            <div class="value" style="color: #fff;">${name}</div>
+            
+            <div class="label">Business / Alias</div>
+            <div class="value" style="color: #D4AF37;">${businessName}</div>
+            
+            <div class="label">Distribution Region</div>
+            <div class="value" style="color: #fff;">${location}</div>
+            
+            <div class="label">Monthly Volume Commitment</div>
+            <div class="value" style="color: #fff; font-weight: 700;">${volume} Units</div>
+        </div>
+
+        <h3 style="margin-bottom: 15px; color: #D4AF37;">Inquiry Profile</h3>
+        <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); color: #fff; line-height: 1.8; font-size: 16px;">
+            ${message.replace(/\n/g, '<br>')}
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="mailto:${email}" class="btn">Establish Partnership</a>
+        </div>
+    `);
+}
+
+export const getWholesaleConfirmationTemplate = (name) => {
+    return getBaseTemplate(`
+        <h1 style="text-align: center;">Wholesale Portal Active</h1>
+        <p style="font-size: 18px; text-align: center; color: #fff;">Status: <strong>Application Under Review</strong></p>
+        <p style="text-align: center; color: #8A8D9A; max-width: 400px; margin: 0 auto;">Hi ${name}, your distribution inquiry has reached our **Master Logistics Hub**. We are currently reviewing your credentials.</p>
+        
+        <div class="highlight-box" style="text-align: center; border-left: none; border: 1px solid rgba(212, 175, 55, 0.2);">
+            A **Distribution Officer** will reach out via email or Telegram within **4-6 hours** with tiered case pricing.
+        </div>
+        
+        <div class="card">
+            <h3 style="font-size: 14px; color: #D4AF37; margin-bottom: 10px;">Next Steps for Verification:</h3>
+            <ul style="color: #8A8D9A; padding-left: 20px; font-size: 14px; text-align: left;">
+                <li style="margin-bottom: 8px;">Ensure your Telegram alias matches your business application.</li>
+                <li style="margin-bottom: 8px;">Prepare your shipping region coordinates for high-security logistics.</li>
+                <li style="margin-bottom: 8px;">Review our Master Case tiers to decide on your opening inventory.</li>
+            </ul>
+        </div>
+        
+        <p style="text-align: center; font-size: 14px; color: #8A8D9A; margin-top: 30px;">
+            Thank you for choosing **Whole Melt Extracts** as your primary concentrate partner.
+        </p>
+        
+        <div style="margin-top: 50px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;">
+            <p style="font-size: 13px; color: #52526b; margin-bottom: 10px;">Direct Dispatch Support:</p>
+            <a href="https://t.me/wholemeltscartsus" style="color: #D4AF37; text-decoration: none; font-weight: 800; font-size: 16px; letter-spacing: 1px;">@WHOLEMELTSCARTSUS</a>
+        </div>
+    `);
+}
+

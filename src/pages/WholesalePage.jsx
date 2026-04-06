@@ -21,11 +21,29 @@ export default function WholesalePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call for now (Same logic as Contact form)
-    setTimeout(() => {
-      setSubmitted(true);
+    
+    try {
+      const response = await fetch('/api/wholesale', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        throw new Error(result.error || 'Failed to send inquiry.');
+      }
+    } catch (err) {
+      console.error('Wholesale inquiry error:', err);
+      alert('Failed to send inquiry. Please reach out via Telegram: @wholemeltscartsus');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
