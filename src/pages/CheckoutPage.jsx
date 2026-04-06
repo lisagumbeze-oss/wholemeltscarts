@@ -135,9 +135,12 @@ export default function CheckoutPage() {
       const result = await response.json();
 
       if (result.success) {
+        // Log for verification
+        console.log("Order successful. ID:", orderId, "Total:", finalTotal);
+
         setOrderDetails({
           id: orderId,
-          total: finalTotal,
+          total: finalTotal, // This value is now captured in state correctly
           paymentMethod
         });
         setSubmitted(true);

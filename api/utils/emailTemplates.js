@@ -6,34 +6,152 @@ export const getBaseTemplate = (content) => `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whole Melt Extracts</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #0a0a0a; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #121212; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .header { background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%); padding: 40px 20px; text-align: center; border-bottom: 1px solid #D4AF37; }
-        .logo { font-size: 28px; font-weight: 800; color: #D4AF37; text-transform: uppercase; letter-spacing: 4px; margin: 0; }
-        .content { padding: 40px 30px; }
-        .footer { background-color: #0a0a0a; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #1a1a1a; }
-        .btn { display: inline-block; padding: 14px 30px; background-color: #D4AF37; color: #000; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .details-box { background-color: #1a1a1a; border-radius: 8px; padding: 20px; margin: 20px 0; border: 1px solid #333; }
-        h1, h2, h3 { color: #D4AF37; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { text-align: left; border-bottom: 1px solid #333; padding: 12px 10px; color: #D4AF37; font-size: 14px; }
-        td { padding: 12px 10px; border-bottom: 1px solid #1a1a1a; font-size: 14px; }
-        .total-row { font-weight: bold; font-size: 18px; color: #D4AF37; }
-        .label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .value { color: #fff; font-size: 15px; margin-bottom: 12px; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        
+        body { 
+            font-family: 'Outfit', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #E2E8F0; 
+            background-color: #050510; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 40px auto; 
+            background-color: #0c0d18; 
+            border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 24px; 
+            overflow: hidden; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+        }
+        .header { 
+            background: linear-gradient(180deg, #1a1c2e 0%, #0c0d18 100%); 
+            padding: 60px 40px; 
+            text-align: center; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1); 
+        }
+        .logo { 
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; 
+            font-weight: 800; 
+            color: #D4AF37; 
+            text-transform: uppercase; 
+            letter-spacing: 6px; 
+            margin: 0; 
+        }
+        .logo-subtitle {
+            font-size: 10px;
+            color: #8A8D9A;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        .content { 
+            padding: 50px 40px; 
+        }
+        .footer { 
+            background-color: #050510; 
+            padding: 40px 20px; 
+            text-align: center; 
+            font-size: 11px; 
+            color: #52526b; 
+            border-top: 1px solid rgba(212, 175, 55, 0.05); 
+        }
+        .btn { 
+            display: inline-block; 
+            padding: 18px 36px; 
+            background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); 
+            color: #000; 
+            text-decoration: none; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            margin-top: 30px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            box-shadow: 0 10px 15px -3px rgba(212, 175, 55, 0.3);
+        }
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border-radius: 16px; 
+            padding: 30px; 
+            margin: 30px 0; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        h1 { 
+            font-family: 'Playfair Display', serif;
+            color: #D4AF37; 
+            font-size: 36px;
+            margin-top: 0; 
+            margin-bottom: 20px;
+        }
+        h2, h3 { 
+            color: #fff; 
+            margin-top: 0; 
+            font-weight: 600;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 30px 0; 
+        }
+        th { 
+            text-align: left; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 15px 10px; 
+            color: #D4AF37; 
+            font-size: 13px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        td { 
+            padding: 18px 10px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03); 
+            font-size: 15px; 
+        }
+        .total-row { 
+            font-weight: 800; 
+            font-size: 20px; 
+            color: #D4AF37; 
+        }
+        .label { 
+            color: #8A8D9A; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 6px; 
+        }
+        .value { 
+            color: #fff; 
+            font-size: 16px; 
+            margin-bottom: 20px; 
+            font-weight: 500;
+        }
+        .highlight-box {
+            background: rgba(212, 175, 55, 0.05);
+            border-left: 4px solid #D4AF37;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">WHOLE MELT EXTRACTS</div>
+            <div class="logo">WHOLE MELT</div>
+            <div class="logo-subtitle">Premium Extracts & Concentrates</div>
         </div>
         <div class="content">
             ${content}
         </div>
         <div class="footer">
-            &copy; ${new Date().getFullYear()} Whole Melt Extracts. All rights reserved.<br>
-            Official Website: <a href="https://wholemeltscarts.us" style="color: #D4AF37; text-decoration: none;">wholemeltscarts.us</a>
+            &copy; ${new Date().getFullYear()} Whole Melt Extracts. Distributed by Authorized Hubs.<br>
+            Official Online Store & Security Verification: <a href="https://wholemeltscarts.us" style="color: #D4AF37; text-decoration: none; font-weight: 600;">wholemeltscarts.us</a>
+            <p style="margin-top: 20px; color: #313344;">
+                This email was sent to you because you interacted with our official distribution system.
+            </p>
         </div>
     </div>
 </body>
@@ -43,29 +161,34 @@ export const getBaseTemplate = (content) => `
 export const getOrderConfirmationTemplate = (orderId, customerName, items, total, shippingDetails, paymentMethod) => {
     const itemsHtml = items.map(item => `
         <tr>
-            <td>${item.name} x ${item.quantity}</td>
-            <td style="text-align: right;">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+            <td style="color: #fff; font-weight: 500;">${item.name} <span style="color: #8A8D9A; font-weight: normal;">x ${item.quantity}</span></td>
+            <td style="text-align: right; font-family: monospace; color: #fff;">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
     `).join('');
 
     return getBaseTemplate(`
-        <h1>Order Confirmed</h1>
-        <p>Hi ${customerName},</p>
-        <p>Your order has been successfully placed and is now being processed. Thank you for choosing Whole Melt Extracts.</p>
+        <h1 style="text-align: center;">Order Confirmed</h1>
+        <p style="font-size: 18px; text-align: center; color: #fff;">Pleasure doing business with you, <strong>${customerName}</strong>.</p>
+        <p style="text-align: center; color: #8A8D9A;">Your order is secured and we've notified our logistics hub for immediate preparation.</p>
         
-        <div class="details-box">
-            <div class="label">Order ID</div>
-            <div class="value" style="font-weight: bold; color: #D4AF37;">${orderId}</div>
-            
-            <div class="label">Payment Method</div>
-            <div class="value">${paymentMethod}</div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="width: 50%;">
+                    <div class="label">Manifest ID</div>
+                    <div class="value" style="color: #D4AF37; font-weight: 800;">${orderId}</div>
+                </div>
+                <div style="width: 50%;">
+                    <div class="label">Payment Method</div>
+                    <div class="value">${paymentMethod}</div>
+                </div>
+            </div>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th style="text-align: right;">Total</th>
+                    <th>Selected Products</th>
+                    <th style="text-align: right;">Amount</th>
                 </tr>
             </thead>
             <tbody>
@@ -73,93 +196,124 @@ export const getOrderConfirmationTemplate = (orderId, customerName, items, total
             </tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td style="padding-top: 20px;">Grand Total</td>
-                    <td style="padding-top: 20px; text-align: right;">$${parseFloat(total).toFixed(2)}</td>
+                    <td style="padding-top: 30px;">Investment Total</td>
+                    <td style="padding-top: 30px; text-align: right;">$${parseFloat(total).toFixed(2)}</td>
                 </tr>
             </tfoot>
         </table>
 
-        <div class="details-box">
-            <h3>Shipping Details</h3>
-            <p style="margin: 0;">
-                ${shippingDetails.firstName} ${shippingDetails.lastName}<br>
+        <div class="card">
+            <h3 style="color: #D4AF37; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Destination Agent</h3>
+            <p style="margin: 0; font-size: 16px; color: #fff; line-height: 1.8;">
+                <strong>${shippingDetails.firstName} ${shippingDetails.lastName}</strong><br>
                 ${shippingDetails.address}<br>
                 ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}<br>
                 ${shippingDetails.country}
             </p>
         </div>
 
-        <p style="font-size: 13px; color: #888; background: #1a1a1a; padding: 15px; border-radius: 4px; border-left: 3px solid #D4AF37;">
-            <strong>Important:</strong> If you chose a manual payment method (Zelle, CashApp, etc.), please ensure you send a screenshot of your payment confirmation to <strong>sales@wholemeltscarts.us</strong> with your Order ID in the subject.
+        <div class="highlight-box">
+            <strong style="color: #D4AF37; text-transform: uppercase; display: block; margin-bottom: 8px;">Action Required:</strong> 
+            If you selected a manual payment gateway (Zelle, CashApp, etc.), please dispatch a screenshot of your successful transaction to <a href="mailto:sales@wholemeltscarts.us" style="color: #fff; text-decoration: underline;">sales@wholemeltscarts.us</a> along with your <strong>Manifest ID</strong> to avoid dispatch delays.
+        </div>
+        
+        <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #8A8D9A;">
+            Once verified, you will receive tracking coordinates for your shipment.
         </p>
     `);
 }
 
 export const getAdminOrderAlertTemplate = (orderId, customerName, customerEmail, items, total, paymentMethod, shippingDetails) => {
-    const itemsHtml = items.map(item => `<li>${item.name} x ${item.quantity} ($${(parseFloat(item.price) * item.quantity).toFixed(2)})</li>`).join('');
+    const itemsHtml = items.map(item => `
+        <li style="margin-bottom: 15px;">
+            <div style="color: #fff;">${item.name}</div>
+            <div style="font-size: 13px; color: #8A8D9A;">Quantity: ${item.quantity} | Unit Value: $${parseFloat(item.price).toFixed(2)}</div>
+        </li>
+    `).join('');
 
     return getBaseTemplate(`
-        <h1>New Order Received</h1>
-        <div class="details-box">
-            <div class="label">Order ID</div>
+        <h1 style="color: #fff; text-align: center;">New Order Alert</h1>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span style="background: rgba(212, 175, 55, 0.1); color: #D4AF37; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Awaiting Fulfillment</span>
+        </div>
+
+        <div class="card">
+            <div class="label">Manifest ID</div>
             <div class="value" style="color: #D4AF37;">${orderId}</div>
             
-            <div class="label">Customer</div>
+            <div class="label">Customer Identity</div>
             <div class="value">${customerName} (${customerEmail})</div>
             
-            <div class="label">Total Amount</div>
-            <div class="value">$${parseFloat(total).toFixed(2)}</div>
+            <div class="label">Total Secure Transaction Value</div>
+            <div class="value" style="font-size: 24px; color: #D4AF37;">$${parseFloat(total).toFixed(2)}</div>
             
-            <div class="label">Payment Method</div>
+            <div class="label">Proposed Payment</div>
             <div class="value">${paymentMethod}</div>
         </div>
 
-        <h3>Items</h3>
-        <ul style="color: #ccc; padding-left: 20px;">
+        <h3>Inventory Requirements</h3>
+        <ul style="color: #E2E8F0; padding-left: 0; list-style: none;">
             ${itemsHtml}
         </ul>
 
-        <h3>Shipping Info</h3>
-        <p style="color: #ccc;">
-            ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}, ${shippingDetails.country}
-        </p>
+        <div class="card">
+            <h3 style="font-size: 14px; color: #D4AF37;">Logistics Data</h3>
+            <p style="color: #E2E8F0; margin: 0; line-height: 1.8;">
+                ${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zip}<br>
+                ${shippingDetails.country}
+            </p>
+        </div>
 
-        <a href="https://wholemeltscarts.us/admin" class="btn">View in Admin Panel</a>
+        <div style="text-align: center;">
+            <a href="https://wholemeltscarts.us/admin" class="btn">Access Command Center</a>
+        </div>
     `);
 }
 
 export const getContactFormTemplate = (name, email, subject, message) => {
     return getBaseTemplate(`
-        <h1>New Contact Inquiry</h1>
-        <div class="details-box">
-            <div class="label">From</div>
-            <div class="value">${name} (${email})</div>
+        <h1 style="text-align: center;">New Communications Channel</h1>
+        <p style="text-align: center; color: #8A8D9A;">A customer has initiated contact via the official portal.</p>
+
+        <div class="card">
+            <div class="label">From Agent</div>
+            <div class="value" style="color: #fff;">${name}</div>
             
-            <div class="label">Subject</div>
-            <div class="value">${subject || 'General Inquiry'}</div>
+            <div class="label">Contact Endpoint</div>
+            <div class="value" style="color: #D4AF37;">${email}</div>
+            
+            <div class="label">Inquiry Subject</div>
+            <div class="value" style="color: #fff; font-style: italic;">"${subject || 'General Assistance Requested'}"</div>
         </div>
 
-        <h3>Message</h3>
-        <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; color: #ccc;">
+        <h3 style="margin-bottom: 15px; color: #D4AF37;">Transmission Message</h3>
+        <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); color: #fff; line-height: 1.8; font-size: 16px;">
             ${message.replace(/\n/g, '<br>')}
         </div>
 
-        <p style="margin-top: 30px;">
-            <a href="mailto:${email}" class="btn">Reply to Customer</a>
-        </p>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="mailto:${email}" class="btn">Establish Response</a>
+        </div>
     `);
 }
 
 export const getContactConfirmationTemplate = (name) => {
     return getBaseTemplate(`
-        <h1>Message Received</h1>
-        <p>Hi ${name},</p>
-        <p>Thank you for reaching out to Whole Melt Extracts. We have received your message and our support team will get back to you within 1-2 hours during business hours.</p>
+        <h1 style="text-align: center;">Transmission Received</h1>
+        <p style="font-size: 18px; text-align: center; color: #fff;">Status: <strong>Active Support Assigned</strong></p>
+        <p style="text-align: center; color: #8A8D9A; max-width: 400px; margin: 0 auto;">Hi ${name}, your inquiry has reached our support network. A high-priority response is being drafted.</p>
         
-        <p>If this is regarding an existing order, please ensure you have provided your Order ID for faster assistance.</p>
+        <div class="highlight-box" style="text-align: center; border-left: none; border: 1px solid rgba(212, 175, 55, 0.2);">
+            We aim to resolve all communications within <strong>2 daylight hours</strong>.
+        </div>
         
-        <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
-            <p style="font-size: 14px; color: #888;">Live Support is also available on Telegram: <a href="https://t.me/wholemeltscartsus" style="color: #D4AF37; text-decoration: none;">@wholemeltscartsus</a></p>
+        <p style="text-align: center; font-size: 14px; color: #8A8D9A; margin-top: 30px;">
+            If this pertains to a secure order, please ensure your Manifest ID is included in all follow-up transmissions.
+        </p>
+        
+        <div style="margin-top: 50px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;">
+            <p style="font-size: 13px; color: #52526b; margin-bottom: 10px;">Accelerated Support available via Telegram:</p>
+            <a href="https://t.me/wholemeltscartsus" style="color: #D4AF37; text-decoration: none; font-weight: 800; font-size: 16px; letter-spacing: 1px;">@WHOLEMELTSCARTSUS</a>
         </div>
     `);
 }

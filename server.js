@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
+import { getOrderConfirmationTemplate, getAdminOrderAlertTemplate } from './api/utils/emailTemplates.js';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
@@ -25,12 +26,12 @@ const supabase = createClient(
 
 // Email Transporter (SMTP)
 const transporter = nodemailer.createTransport({
-  host: 'server596.iseencloud.net',
+  host: 'server551.iseencloud.net',
   port: 465,
   secure: true, // true for 465, false for other ports
   auth: {
     user: 'sales@wholemeltscarts.us',
-    pass: 'O3H?iU)%pY^WqAP}'
+    pass: 'o28!iZY}POdRJ*iK'
   }
 });
 
@@ -55,72 +56,9 @@ app.post('/api/checkout', async (req, res) => {
 
     if (error) throw error;
 
-    // 2. Prepare Email Content
-    const itemsHtml = cart.map(item => `
-      <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name} x ${item.quantity}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
-      </tr>
-    `).join('');
-
-    const emailHtml = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #D4AF37; text-align: center;">Whole Melt Extracts</h2>
-        <p>Hi ${form.firstName},</p>
-        <p>Thank you for your order! Your Order ID is <strong>${orderId}</strong>.</p>
-        
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <thead>
-            <tr style="background: #f9f9f9;">
-              <th style="padding: 10px; text-align: left;">Item</th>
-              <th style="padding: 10px; text-align: right;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsHtml}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td style="padding: 10px; font-weight: bold;">Total</td>
-              <td style="padding: 10px; font-weight: bold; text-align: right;">$${finalTotal.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
-          <h4 style="margin-top: 0;">Shipping to:</h4>
-          <p style="margin-bottom: 0;">
-            ${form.firstName} ${form.lastName}<br>
-            ${form.address}, ${form.city}, ${form.state} ${form.zip}<br>
-            ${form.country}
-          </p>
-        </div>
-
-        <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-          <strong>Important Instructions:</strong> If you chose a manual payment method (Zelle, CashApp, etc.), please ensure you send the screenshot of your payment to sales@wholemeltscarts.us with your Order ID.
-        </p>
-      </div>
-    `;
-
-    const adminEmailHtml = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #D4AF37;">New Order Received!</h2>
-        <p>Order ID: <strong>${orderId}</strong></p>
-        <p>Customer: ${form.firstName} ${form.lastName} (${form.email})</p>
-        <p>Total: $${finalTotal.toFixed(2)}</p>
-        <p>Payment: ${paymentMethod}</p>
-        
-        <h4>Items Ordered:</h4>
-        <ul>
-          ${cart.map(item => `<li>${item.name} x ${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
-        </ul>
-
-        <h4>Shipping Details:</h4>
-        <p>
-          ${form.address}, ${form.city}, ${form.state} ${form.zip}, ${form.country}
-        </p>
-      </div>
-    `;
+    // 2. Prepare Emails with Premium Templates
+    const customerEmailHtml = getOrderConfirmationTemplate(orderId, form.firstName, cart, finalTotal, form, paymentMethod);
+    const adminEmailHtml = getAdminOrderAlertTemplate(orderId, `${form.firstName} ${form.lastName}`, form.email, cart, finalTotal, paymentMethod, form);
 
     // 3. Send Emails
     // Send to Customer
@@ -128,7 +66,7 @@ app.post('/api/checkout', async (req, res) => {
       from: '"Whole Melt Extracts" <sales@wholemeltscarts.us>',
       to: form.email,
       subject: `Order Confirmation - ${orderId}`,
-      html: emailHtml
+      html: customerEmailHtml
     });
 
     // Send to Admin
