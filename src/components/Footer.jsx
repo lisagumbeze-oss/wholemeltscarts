@@ -34,7 +34,10 @@ export default function Footer() {
             <li><Link to="/faq">FAQs</Link></li>
             <li><Link to="/blog">Daily Info</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/wholesale">Wholesale Portal</Link></li>
+            <li><Link to="/shipping">Shipping Policy</Link></li>
             <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/terms">Terms & Conditions</Link></li>
           </ul>
         </div>
 

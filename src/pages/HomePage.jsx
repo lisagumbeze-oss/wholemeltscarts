@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Zap, Leaf, FlaskConical, Truck, Clock, HeadphonesIcon, Play, Star, Award, Loader2 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import VerificationGuide from '../components/VerificationGuide';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
 
@@ -62,6 +63,7 @@ export default function HomePage() {
           muted 
           loop 
           playsInline 
+          poster="/images/brand/hero-banner.png"
           className="hero-video__bg"
         >
           <source src="/video/video.mp4" type="video/mp4" />
@@ -102,7 +104,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="trust-grid" style={{ marginTop: '4rem' }}>
+          <VerificationGuide />
+
+          <div className="trust-grid" style={{ marginTop: '5rem' }}>
             {[
               { icon: <Shield size={28} />, title: 'Authentic Whole Melts', desc: 'Non-contaminating and residue-free. Signature solvent-free extracts.' },
               { icon: <Zap size={28} />, title: 'Whole Melts Carts', desc: 'Premium quality live resin in a sleek, ready-to-use vaporizer format.' },
@@ -201,9 +205,14 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p style={{ fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.7', color: 'var(--text-secondary)' }}>"{review.text}"</p>
-                <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem' }}>
-                  <div style={{ fontWeight: 600 }}>{review.name}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.loc}</div>
+                <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{review.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.loc}</div>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(212, 175, 55, 0.1)', padding: '0.35rem 0.75rem', borderRadius: '1rem' }}>
+                    <ShieldCheck size={12} /> Verified Buyer
+                  </div>
                 </div>
               </div>
             ))}

@@ -4,10 +4,46 @@ import SEO from '../components/SEO';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        throw new Error(result.error || 'Failed to send message.');
+      }
+    } catch (err) {
+      console.error('Contact error:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,12 +100,13 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <div className="form-group"><label className="form-label">Name *</label><input className="form-input" required /></div>
-                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" type="email" required /></div>
-                  <div className="form-group"><label className="form-label">Subject</label><input className="form-input" /></div>
-                  <div className="form-group"><label className="form-label">Message *</label><textarea className="form-textarea" required placeholder="How can we help?" /></div>
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                    <Send size={16} /> Send Message
+                  {error && <div style={{ color: '#ff4d4f', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+                  <div className="form-group"><label className="form-label">Name *</label><input className="form-input" name="name" value={form.name} onChange={handleChange} required /></div>
+                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} required /></div>
+                  <div className="form-group"><label className="form-label">Subject</label><input className="form-input" name="subject" value={form.subject} onChange={handleChange} /></div>
+                  <div className="form-group"><label className="form-label">Message *</label><textarea className="form-textarea" name="message" value={form.message} onChange={handleChange} required placeholder="How can we help?" /></div>
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+                    {loading ? 'Sending...' : <><Send size={16} /> Send Message</>}
                   </button>
                 </form>
               )}

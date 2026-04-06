@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, ChevronRight, Minus, Plus, Loader2 } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Minus, Plus, Loader2, ShieldCheck, Microscope, Thermometer } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
@@ -219,12 +219,32 @@ export default function ProductPage() {
                   <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem', fontSize: '1.05rem' }}>
                     Experience the pinnacle of purity and potency with our {product.name}. Crafted using our proprietary extraction methods, this premium {product.category.replace('-', ' ')} preserves the full spectrum of cannabinoids and terpenes, delivering an unmatched flavor profile and profound effects.
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)', listStyleType: 'disc', paddingLeft: '2rem', lineHeight: 1.8, fontSize: '1.05rem' }}>
+                  <ul style={{ color: 'var(--text-secondary)', listStyleType: 'disc', paddingLeft: '2rem', lineHeight: 1.8, fontSize: '1.05rem', marginBottom: '2.5rem' }}>
                     <li>100% Organic, carefully sourced premium cannabis</li>
                     <li>Zero additives, cutting agents, or artificial flavors</li>
                     <li>Rigorously lab-tested for pesticides, heavy metals, and residual solvents</li>
                     <li>{product.strain ? `Expertly curated ${product.strain} strain profile` : 'Expertly curated strain profile'}</li>
                   </ul>
+
+                  <h4 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Microscope size={18} className="text-secondary" /> Technical Specifications
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Extraction</div>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>Cold-Filtered Solventless</div>
+                    </div>
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Terpene Profile</div>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>High-Retention Preservation</div>
+                    </div>
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Verification</div>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <ShieldCheck size={14} /> Official Batch
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -241,8 +261,13 @@ export default function ProductPage() {
                     {product.reviews && product.reviews.length > 0 ? (
                       product.reviews.map((rev, index) => (
                         <div key={index}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                            <strong style={{ color: 'var(--text-primary)' }}>{rev.user}</strong>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <div>
+                                <strong style={{ color: 'var(--text-primary)' }}>{rev.user}</strong>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
+                                    <ShieldCheck size={12} /> Verified Buyer
+                                </div>
+                            </div>
                             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                               <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(rev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                               <span style={{ color: 'var(--primary)' }}>{'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}</span>

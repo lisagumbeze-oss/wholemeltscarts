@@ -17,6 +17,11 @@ import BlogPostPage from './pages/BlogPostPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import ShippingPage from './pages/ShippingPage';
+import WholesalePage from './pages/WholesalePage';
+import StrainLibraryPage from './pages/StrainLibraryPage';
+import LabHubPage from './pages/LabHubPage';
 
 // Admin Components
 import AdminLayout from './components/admin/AdminLayout';
@@ -43,6 +48,11 @@ const router = createBrowserRouter([
       { path: 'contact', element: <ContactPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'shipping', element: <ShippingPage /> },
+      { path: 'wholesale', element: <WholesalePage /> },
+      { path: 'strains', element: <StrainLibraryPage /> },
+      { path: 'lab-results', element: <LabHubPage /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },

@@ -21,6 +21,7 @@ export default function CheckoutPage() {
     firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: 'United States', notes: ''
   });
 
+  const [orderDetails, setOrderDetails] = useState(null);
   const [shippingOptions, setShippingOptions] = useState([]);
   const [paymentOptions, setPaymentOptions] = useState([]);
   const [coupons, setCoupons] = useState([]);
@@ -134,6 +135,11 @@ export default function CheckoutPage() {
       const result = await response.json();
 
       if (result.success) {
+        setOrderDetails({
+          id: orderId,
+          total: finalTotal,
+          paymentMethod
+        });
         setSubmitted(true);
         clearCart();
       } else {
@@ -148,17 +154,17 @@ export default function CheckoutPage() {
     }
   };
 
-  if (submitted) {
+  if (submitted && orderDetails) {
     return (
       <div className="container section" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <CheckCircle size={60} style={{ color: 'var(--accent)', marginBottom: '1.5rem' }} />
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '0.75rem' }}>Order Placed!</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '1rem' }}>Your Order ID: <strong style={{ color: 'var(--primary)' }}>{orderId}</strong></p>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '1rem' }}>Your Order ID: <strong style={{ color: 'var(--primary)' }}>{orderDetails.id}</strong></p>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', marginBottom: '1.5rem', lineHeight: '1.7' }}>
-          Payment Method: <strong>{paymentMethod}</strong>
+          Payment Method: <strong>{orderDetails.paymentMethod}</strong>
         </p>
 
-        {paymentMethod === 'Plisio (Crypto)' ? (
+        {orderDetails.paymentMethod === 'Plisio (Crypto)' ? (
           <div className="glass shadow-lg" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', maxWidth: '500px', width: '100%', textAlign: 'center', background: 'var(--bg-elevated)', border: '1px solid var(--primary)' }}>
             <Bitcoin size={48} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
             <h3 style={{ marginBottom: '1rem' }}>Complete Your Crypto Payment</h3>
@@ -166,7 +172,7 @@ export default function CheckoutPage() {
               Click the button below to proceed to our secure Plisio payment gateway. You can pay with BTC, ETH, LTC, USDT, and more.
             </p>
             <a 
-              href={`https://plisio.net/pay?api_key=d7HGgW3rgy1PWJEBHWqDuS1d5Xc2W7HIVuaqxKXZDcM2ZOtGfmGfUJwe0sqVJ46d&order_number=${orderId}&amount=${finalTotal.toFixed(2)}&currency=USD&source_currency=BTC`}
+              href={`https://plisio.net/pay?api_key=d7HGgW3rgy1PWJEBHWqDuS1d5Xc2W7HIVuaqxKXZDcM2ZOtGfmGfUJwe0sqVJ46d&order_number=${orderDetails.id}&amount=${orderDetails.total.toFixed(2)}&currency=USD&source_currency=BTC`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary btn-lg"
@@ -178,16 +184,16 @@ export default function CheckoutPage() {
         ) : (
           <>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', marginBottom: '2rem', lineHeight: '1.7' }}>
-              Please send <strong>${finalTotal.toFixed(2)}</strong> using the details below. Include your Order ID in the payment memo.
+              Please send <strong>${orderDetails.total.toFixed(2)}</strong> using the details below. Include your Order ID in the payment memo.
               <br/><br/>
               <strong style={{ color: 'var(--primary)' }}>Important:</strong> To complete your order and guarantee dispatch, you must send a screenshot of your successful payment to <strong>sales@wholemeltscarts.us</strong>.
             </p>
             <div style={{ maxWidth: '500px', width: '100%', textAlign: 'left' }}>
-              <PaymentMethods selectedMethod={paymentMethod} onSelect={() => {}} options={paymentOptions} readonly={true} />
+              <PaymentMethods selectedMethod={orderDetails.paymentMethod} onSelect={() => {}} options={paymentOptions} readonly={true} />
             </div>
           </>
         )}
-        <Link to="/" className="btn btn-outline" style={{ marginTop: '2rem' }} onClick={() => clearCart()}>Return Home</Link>
+        <Link to="/" className="btn btn-outline" style={{ marginTop: '2rem' }}>Return Home</Link>
       </div>
     );
   }

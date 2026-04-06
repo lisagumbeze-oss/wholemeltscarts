@@ -10,8 +10,9 @@ export default function Navbar() {
   const links = [
     { to: '/', label: 'Home' },
     { to: '/shop', label: 'Shop' },
+    { to: '/strains', label: 'Strains' },
+    { to: '/lab-results', label: 'Lab Hub' },
     { to: '/about', label: 'About Us' },
-    { to: '/blog', label: 'Daily Info' },
     { to: '/faq', label: 'FAQs' },
     { to: '/contact', label: 'Contact' },
   ];
