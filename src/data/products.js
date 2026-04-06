@@ -15564,5 +15564,25 @@ export const faqs = [
   {
     "q": "How long will it take to get my package?",
     "a": "Shipping typically takes 2-3 days, but please be aware that some deliveries may take longer due to unforeseen circumstances."
+  },
+  {
+    "q": "How do I verify my Whole Melt product is authentic?",
+    "a": "Every authentic Whole Melt Extracts product comes with a unique, scannable QR code. You can verify your batch by scanning the code or visiting our official verification portal. Never purchase from unverified third-party vendors."
+  },
+  {
+    "q": "What is the difference between Live Resin and Live Rosin?",
+    "a": "Live Resin is extracted using a state-of-the-art hydrocarbon method that preserves the plant's essential terpenes. Live Rosin is completely solventless, using only heat and pressure to extract the purest possible concentrates. Both are crafted from flash-frozen fresh plant material."
+  },
+  {
+    "q": "What happens if my disposable is clogged?",
+    "a": "Clogging can occasionally occur due to the high viscosity of our pure extracts. If your device is clogged, try warming it in your hands for a few minutes or taking a steady, gentle pull to clear the air path. Store your device upright to prevent future clogs."
+  },
+  {
+    "q": "How should I store my Whole Melt concentrates?",
+    "a": "To preserve the delicate terpene profile and potency, store your extracts in a cool, dark, and dry place. For long-term storage of badders and rosins, a refrigerator specifically for concentrates is recommended to maintain the 'wet' texture and aroma."
+  },
+  {
+    "q": "Are Whole Melt Extracts lab tested?",
+    "a": "Yes, every single batch of Whole Melt Extracts undergoing rigorous third-party lab testing. We test for potency, terpene profiles, and ensure a 100% clean product free from heavy metals, pesticides, and residual solvents."
   }
 ];

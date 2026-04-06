@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Zap, Leaf, FlaskConical, Truck, Clock, HeadphonesIcon, Play, Star, Award, Loader2 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
+import SEO from '../components/SEO';
 
 export default function HomePage() {
   const [featured, setFeatured] = useState([]);
@@ -38,6 +39,22 @@ export default function HomePage() {
 
   return (
     <>
+      <SEO 
+        title="Whole Melt Extracts Official | Premium 2G Disposables"
+        description="Shop authentic Whole Melt Extracts. Discover premium 2G disposables, live resin, carts, and solventless concentrates. Lab-tested, pure, and potent."
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Whole Melt Extracts Official",
+          "url": "https://wholemeltscarts.us",
+          "description": "Premium solventless cannabis concentrates and disposable vapes.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Whole Melt Extracts",
+            "logo": "https://wholemeltscarts.us/images/brand/hero-banner.png"
+          }
+        }}
+      />
       {/* ═══ Video Hero Section ═══ */}
       <section className="hero-video">
         <video 
@@ -54,7 +71,7 @@ export default function HomePage() {
           <div className="animate-reveal">
             <span className="hero-video__tag">Official Store — Lab Tested Purity</span>
             <h1 className="hero-video__title">
-              Whole Melt <span className="text-gradient">Extracts</span> 
+              Whole Melt <span className="text-gradient">Extracts Official</span> 
               <br />Premium Solventless Concentrates
             </h1>
             <p className="hero-video__desc">

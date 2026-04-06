@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { blogPosts } from '../data/blogs';
+import SEO from '../components/SEO';
 
 export default function BlogPostPage() {
   const { slug } = useParams();
@@ -17,6 +18,30 @@ export default function BlogPostPage() {
 
   return (
     <>
+      <SEO 
+        title={`${post.title} | Whole Melt Extracts Official Blog`}
+        description={post.excerpt}
+        canonical={`/blog/${post.slug}`}
+        ogImage={post.image || 'https://wholemeltscarts.us/images/products/authentic-nerds-live-resin.jpeg'}
+        ogType="article"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "image": [post.image || 'https://wholemeltscarts.us/images/products/authentic-nerds-live-resin.jpeg'],
+          "datePublished": post.date,
+          "author": {
+            "@type": "Person",
+            "name": "Team Whole Melt"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Whole Melt Extracts",
+            "logo": "https://wholemeltscarts.us/images/brand/hero-banner.png"
+          },
+          "description": post.excerpt
+        }}
+      />
       <div className="blog-post-page" style={{ position: 'relative' }}>
         {/* Cinematic Hero Section */}
         <div style={{ 
@@ -30,7 +55,7 @@ export default function BlogPostPage() {
           background: '#000'
         }}>
           {post.image ? (
-            <img src={post.image} alt={post.title} style={{ 
+            <img src={post.image} alt={post.title} loading="lazy" style={{ 
               width: '100%', 
               height: '100%', 
               objectFit: 'cover', 
@@ -38,7 +63,7 @@ export default function BlogPostPage() {
               filter: 'brightness(0.7) contrast(1.1)'
             }} />
           ) : (
-             <img src="/images/products/authentic-nerds-live-resin.jpeg" alt="Whole Melts" style={{ 
+             <img src="/images/products/authentic-nerds-live-resin.jpeg" alt="Whole Melts" loading="lazy" style={{ 
               width: '100%', 
               height: '100%', 
               objectFit: 'cover', 

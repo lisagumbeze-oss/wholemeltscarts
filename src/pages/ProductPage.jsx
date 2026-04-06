@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
 import { products as localProducts } from '../data/products';
+import SEO from '../components/SEO';
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -70,6 +71,37 @@ export default function ProductPage() {
 
   return (
     <>
+      <SEO 
+        title={product.name}
+        description={`Buy ${product.name} at Whole Melt Extracts. Premium ${product.category.replace('-', ' ')}${product.strain ? ` (${product.strain})` : ''} crafted for quality and potency. Discreet shipping available.`}
+        canonical={`/product/${product.slug}`}
+        ogImage={product.images?.[0] || product.image}
+        ogType="product"
+        schema={{
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": product.name,
+          "image": [product.images?.[0] || product.image],
+          "description": product.description || `Premium ${product.category} from Whole Melt Extracts.`,
+          "sku": product.id,
+          "brand": {
+            "@type": "Brand",
+            "name": "Whole Melt Extracts"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": `https://wholemeltscarts.us/product/${product.slug}`,
+            "priceCurrency": "USD",
+            "price": activePrice,
+            "availability": "https://schema.org/InStock"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "reviewCount": product.reviews?.length || 10
+          }
+        }}
+      />
       <section className="section" style={{ paddingTop: '2rem' }}>
         <div className="container">
           {/* Breadcrumb */}

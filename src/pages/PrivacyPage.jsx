@@ -1,9 +1,14 @@
-import React from 'react';
 import { Shield, Lock, Eye, Users, Cookie, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function PrivacyPage() {
   return (
     <div className="privacy-page" style={{ paddingTop: '5rem' }}>
+      <SEO 
+        title="Privacy Policy | Legal Information"
+        description="Learn how Whole Melt Extracts handles your personal information, data security, and privacy. Your trust and safety are our top priorities."
+        canonical="/privacy"
+      />
       {/* ═══ Header ═══ */}
       <section className="page-header">
         <div className="container">

@@ -1,16 +1,21 @@
 import { CheckCircle2, Award, History, Heart } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function AboutPage() {
   return (
     <div className="about-page">
+      <SEO 
+        title="About Whole Melt Extracts | Brand Heritage & Purity"
+        description="Learn the history of Whole Melt Extracts. Discover our commitment to solventless purity, elite genetics, and the science of premium cannabis concentrates."
+        canonical="/about"
+      />
       {/* ═══ Page Header ═══ */}
       <section className="page-header">
         <div className="container">
           <span className="section-header__tag animate-reveal">Our Brand Heritage</span>
-          <h1 className="page-header__title animate-reveal">The Art of Pure Extraction</h1>
+          <h1 className="page-header__title animate-reveal">About Whole Melt Extracts</h1>
           <p className="page-header__desc animate-reveal">
-            Founded in 2015, Whole Melt Extracts hit the ground running with a singular goal: 
-            to create cannabis concentrates of the highest quality and potency… the best nature will allow.
+            The pinnacle of solventless extraction and cannabis purity.
           </p>
         </div>
       </section>
@@ -71,9 +76,10 @@ export default function AboutPage() {
         <div className="container">
           <div className="section-header">
             <h2 className="section-header__title">Medical Grade Precision</h2>
-            <p className="section-header__desc">
-              We use state-of-the-art medical grade equipment, along with a proprietary solvent-free blend to transform 
-              prime plant material into high-end products that have quickly earned us an incomparable reputation.
+            <p className="section-header__desc" style={{ maxWidth: '800px', margin: '1.5rem auto' }}>
+              At Whole Melt Extracts, we prioritize purity above all else. We use state-of-the-art medical grade equipment, 
+              combined with a proprietary solvent-free blend to transform prime plant material into high-end products. 
+              Our commitment to excellence has earned us an incomparable reputation among connoisseurs and medical patients alike.
             </p>
           </div>
 
@@ -84,7 +90,8 @@ export default function AboutPage() {
               </div>
               <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>Elite Potency</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Our meticulous extraction process preserves the full spectrum of cannabinoids and terpenes for max impact.
+                Our meticulous extraction process preserves the full spectrum of cannabinoids and terpenes for max impact. 
+                This ensures a multi-layered, nuanced experience that shorter extraction methods simply cannot match.
               </p>
             </div>
             <div className="glass hover-lift" style={{ padding: '2.5rem', textAlign: 'center' }}>
@@ -93,7 +100,8 @@ export default function AboutPage() {
               </div>
               <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>100% Organic</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Crafted from the finest parts of the plant, free from contaminants, residues, or artificial additives.
+                Crafted from the finest parts of the plant, free from contaminants, residues, or artificial additives. 
+                We source only from sustainable farms that adhere to strict organic cultivation standards.
               </p>
             </div>
             <div className="glass hover-lift" style={{ padding: '2.5rem', textAlign: 'center' }}>
@@ -102,7 +110,30 @@ export default function AboutPage() {
               </div>
               <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>Global Trust</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Voted as a favorite store by medical patients and connoisseurs who prioritize safety and legality.
+                Voted as a favorite store by medical patients and connoisseurs who prioritize safety and legality. 
+                Whole Melt Extracts has become a household name in the premium concentrate community.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ Expanded Content: The Science of Solventless ═══ */}
+      <section className="section bg-deep" style={{ borderTop: '1px solid var(--glass-border)' }}>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <div className="animate-reveal">
+            <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)', textAlign: 'center' }}>
+              The <span className="text-gradient">Solventless Revolution</span>
+            </h2>
+            <div style={{ display: 'grid', gap: '2.5rem', color: 'var(--text-secondary)', lineHeight: '2', fontSize: '1.05rem' }}>
+              <p>
+                In the traditional world of cannabis extracts, harsh chemicals like butane or CO2 are often used to separate the desirable compounds from the plant material. At Whole Melt Extracts, we rejected this approach from day one. Instead, we embraced <strong>solventless extraction</strong>—a purely mechanical process that uses only ice, water, heat, and pressure.
+              </p>
+              <p>
+                Our signature "Live Resin" and "Live Rosin" are the products of an intricate deep-freeze method. We flash-freeze our premium crops immediately after harvest to lock in the absolute freshest terpene profile possible. By bypassing the traditional drying and curing phase, we preserve the volatile aromatic compounds that give each strain its unique soul.
+              </p>
+              <p>
+                This isn't just about safety; it's about flavor. When you experience a Whole Melt product, you are tasting the plant exactly as it lived. The subtle notes of berry, pine, or diesel are amplified, providing a clean, smooth, and potent experience that has no equal in the industry. Our commitment to <strong>zero residual solvents</strong> means you can enjoy your favorites with complete peace of mind.
               </p>
             </div>
           </div>
@@ -110,15 +141,16 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ Call to Action ═══ */}
-      <section className="section bg-deep text-center" style={{ borderTop: '1px solid var(--glass-border)' }}>
+      <section className="section text-center" style={{ borderTop: '1px solid var(--glass-border)' }}>
         <div className="container">
           <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', fontFamily: 'var(--font-serif)' }}>Ready to Experience Excellence?</h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-            Join our newsletter to never miss a premium batch drop or exclusive discount.
+            Join our global community of connoisseurs and experience the purest cannabis concentrates available. 
+            From 2G disposables to elite badder batches, excellence is just a click away.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="/shop" className="btn btn-primary btn-lg">Browse Collections</a>
-            <a href="/contact" className="btn btn-outline btn-lg">Contact Support</a>
+            <a href="/faq" className="btn btn-outline btn-lg">View FAQs</a>
           </div>
         </div>
       </section>

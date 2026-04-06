@@ -1,16 +1,22 @@
 import { ArrowRight } from 'lucide-react';
 import { blogPosts } from '../data/blogs';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 export default function BlogPage() {
   return (
     <>
-      <div className="page-header">
+      <SEO 
+        title="Whole Melt Extracts Blog | Authenticity & Lab Results"
+        description="Stay informed with the Whole Melt Extracts daily blog. Learn about product verification, lab test results, and the latest in solventless cannabis technology."
+        canonical="/blog"
+      />
+      <section className="page-header">
         <div className="container">
-          <h1 className="page-header__title">Daily Info</h1>
-          <p className="page-header__desc">News, reviews, and insights from the Whole Melt Extracts team.</p>
+          <h1 className="page-header__title">Whole Melt Extracts Blog</h1>
+          <p className="page-header__desc">Your official source for product verification and cannabis education.</p>
         </div>
-      </div>
+      </section>
 
       <section className="section" style={{ paddingTop: '1rem' }}>
         <div className="container">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Send, Mail, MessageSquare } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -11,6 +12,11 @@ export default function ContactPage() {
 
   return (
     <>
+      <SEO 
+        title="Contact Us | 24/7 Customer Support"
+        description="Have questions about Whole Melt Extracts? Contact our support team 24/7 via email or Telegram for assistance with orders, products, and more."
+        canonical="/contact"
+      />
       <div className="page-header">
         <div className="container">
           <h1 className="page-header__title">Contact Us</h1>

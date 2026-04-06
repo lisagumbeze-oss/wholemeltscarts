@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { faqs } from '../data/products';
+import SEO from '../components/SEO';
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
     <>
+      <SEO 
+        title="Frequently Asked Questions | Help & Info"
+        description="Find answers to common questions about Whole Melt Extracts, shipping, payments, and product authenticity. Everything you need to know in one place."
+        canonical="/faq"
+      />
       <div className="page-header">
         <div className="container">
           <h1 className="page-header__title">Frequently Asked Questions</h1>

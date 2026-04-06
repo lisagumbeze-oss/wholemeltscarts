@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { products as localProducts } from '../data/products';
 import lifestyleBanner from '../assets/images/lifestyle-disposable.png';
 import { Loader2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,9 +70,14 @@ export default function ShopPage() {
 
   return (
     <>
+      <SEO 
+        title={activeCategory !== 'all' ? `Shop ${activeCategory.replace('-', ' ')} | Whole Melt Extracts` : 'Shop Whole Melt Extracts | Official Store for Carts & Disposables'}
+        description="Browse the complete catalog of official Whole Melt Extracts. Shop premium disposables, live resin carts, badder, and solventless concentrates. Fast shipping."
+        canonical="/shop"
+      />
       <div className="page-header" style={{ background: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${lifestyleBanner}) center/cover no-repeat`, padding: '6rem 0' }}>
         <div className="container">
-          <h1 className="page-header__title">Shop</h1>
+          <h1 className="page-header__title">Shop Whole Melt Extracts</h1>
           <p className="page-header__desc">Browse our complete collection of premium extracts, disposables, and carts.</p>
         </div>
       </div>
