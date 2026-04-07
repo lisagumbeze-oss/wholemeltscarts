@@ -32,9 +32,13 @@ export default function ProductPage() {
       
       if (data) {
         // Fallback: merge local reviews if DB has none
+        const localMatch = localProducts.find(lp => lp.name.trim().toLowerCase() === data.name.trim().toLowerCase());
         if (!data.reviews || data.reviews.length === 0) {
-          const localMatch = localProducts.find(lp => lp.name.trim().toLowerCase() === data.name.trim().toLowerCase());
           if (localMatch?.reviews) data.reviews = localMatch.reviews;
+        }
+        // Fallback: merge local variations if missing from DB
+        if (!data.variations || data.variations.length === 0) {
+          if (localMatch?.variations) data.variations = localMatch.variations;
         }
         setProduct(data);
         const { data: relData } = await supabase.from('products').select('*').eq('category', data.category).neq('slug', data.slug).limit(4);
