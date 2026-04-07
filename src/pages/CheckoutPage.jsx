@@ -140,8 +140,9 @@ export default function CheckoutPage() {
 
         setOrderDetails({
           id: orderId,
-          total: finalTotal, // This value is now captured in state correctly
-          paymentMethod
+          total: finalTotal,
+          paymentMethod,
+          invoiceUrl: result.invoiceUrl // Store the URL from backend
         });
         setSubmitted(true);
         clearCart();
@@ -172,17 +173,26 @@ export default function CheckoutPage() {
             <Bitcoin size={48} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
             <h3 style={{ marginBottom: '1rem' }}>Complete Your Crypto Payment</h3>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Click the button below to proceed to our secure Plisio payment gateway. You can pay with BTC, ETH, LTC, USDT, and more.
+              Your crypto invoice has been generated. Click the button below to proceed to our secure Plisio gateway.
             </p>
-            <a 
-              href={`https://plisio.net/pay?api_key=d7HGgW3rgy1PWJEBHWqDuS1d5Xc2W7HIVuaqxKXZDcM2ZOtGfmGfUJwe0sqVJ46d&order_number=${orderDetails.id}&amount=${orderDetails.total.toFixed(2)}&currency=USD&source_currency=BTC`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-lg"
-              style={{ width: '100%' }}
-            >
-              Pay with Plisio <Bitcoin size={18} />
-            </a>
+            {orderDetails.invoiceUrl ? (
+              <a 
+                href={orderDetails.invoiceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%' }}
+              >
+                Pay With Crypto Now <Bitcoin size={18} />
+              </a>
+            ) : (
+              <div className="status-badge pending" style={{ padding: '1rem', width: '100%' }}>
+                Initializing Gateway...
+              </div>
+            )}
+            <p style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              If the redirect window didn't open, please click the button above.
+            </p>
           </div>
         ) : (
           <>
