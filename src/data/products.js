@@ -1350,6 +1350,12 @@ export const products = [
     "salePrice": null,
     "image": "/images/products/blue-nerdz-hash-rosin.jpg",
     "badge": "Wholesale",
+    "variations": [
+      { "name": "OZ", "price": 200 },
+      { "name": "QP", "price": 450 },
+      { "name": "HP", "price": 900 },
+      { "name": "LB", "price": 1500 }
+    ],
     "reviews": [
       {
         "user": "Ryan F.",

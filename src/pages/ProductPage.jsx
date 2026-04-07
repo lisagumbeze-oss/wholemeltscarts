@@ -15,6 +15,15 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [selectedVariation, setSelectedVariation] = useState(null);
+
+  useEffect(() => {
+    if (product?.variations?.length > 0) {
+      setSelectedVariation(product.variations[0]);
+    } else {
+      setSelectedVariation(null);
+    }
+  }, [product]);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -66,8 +75,8 @@ export default function ProductPage() {
     );
   }
 
-  const activePrice = parseFloat(product.price);
-  const hasSale = product.original_price && parseFloat(product.original_price) > activePrice;
+  const activePrice = selectedVariation ? parseFloat(selectedVariation.price) : parseFloat(product.price);
+  const hasSale = !selectedVariation && product.original_price && parseFloat(product.original_price) > activePrice;
 
   return (
     <>
@@ -165,6 +174,21 @@ export default function ProductPage() {
                 Premium quality {product.category.replace('-', ' ')} from Whole Melt Extracts. Made with organic ingredients and clean extraction methods for a high-quality, pure experience. Lab tested for safety and potency.
               </p>
 
+              {product.variations && product.variations.length > 0 && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Select Quantity:</label>
+                  <select 
+                    value={selectedVariation?.name || ''} 
+                    onChange={(e) => setSelectedVariation(product.variations.find(v => v.name === e.target.value))}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid var(--glass-border)', outline: 'none' }}
+                  >
+                    {product.variations.map(v => (
+                       <option key={v.name} value={v.name} style={{ background: '#141414', color: 'white' }}>{v.name} - ${v.price}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Qty + Add to Cart */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
                 <div className="cart-item__qty">
@@ -172,7 +196,12 @@ export default function ProductPage() {
                   <span>{qty}</span>
                   <button onClick={() => setQty(qty + 1)}><Plus size={16} /></button>
                 </div>
-                <button className="btn btn-primary btn-lg" onClick={() => addToCart(product, qty)} style={{ flex: 1 }}>
+                <button className="btn btn-primary btn-lg" onClick={() => {
+                  const productToCart = selectedVariation 
+                    ? { ...product, id: `${product.id}-${selectedVariation.name}`, name: `${product.name} (${selectedVariation.name})`, price: selectedVariation.price, original_price: selectedVariation.price }
+                    : product;
+                  addToCart(productToCart, qty);
+                }} style={{ flex: 1 }}>
                   <ShoppingBag size={18} /> Add to Cart — ${(activePrice * qty).toFixed(2)}
                 </button>
               </div>
