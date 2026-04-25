@@ -22,6 +22,7 @@ import ShippingPage from './pages/ShippingPage';
 import WholesalePage from './pages/WholesalePage';
 import StrainLibraryPage from './pages/StrainLibraryPage';
 import LabHubPage from './pages/LabHubPage';
+import WishlistPage from './pages/WishlistPage';
 
 // Admin Components
 import AdminLayout from './components/admin/AdminLayout';
