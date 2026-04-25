@@ -4,6 +4,31 @@ import { useCart } from '../context/CartContext';
 
 export default function CartPage() {
   const { cart, updateQty, removeFromCart, cartTotal, cartCount } = useCart();
+  const [promoCode, setPromoCode] = useState('');
+  const [isApplying, setIsApplying] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [promoError, setPromoError] = useState('');
+  const [promoSuccess, setPromoSuccess] = useState('');
+
+  const applyPromo = (e) => {
+    e.preventDefault();
+    setIsApplying(true);
+    setPromoError('');
+    setPromoSuccess('');
+    
+    // Simulate API call
+    setTimeout(() => {
+      if (promoCode.toUpperCase() === 'WHOLE20') {
+        setDiscount(cartTotal * 0.2);
+        setPromoSuccess('20% discount applied!');
+      } else {
+        setPromoError('Invalid promo code');
+      }
+      setIsApplying(false);
+    }, 1000);
+  };
+
+  const finalTotal = cartTotal - discount;
 
   if (cart.length === 0) {
     return (
@@ -77,14 +102,46 @@ export default function CartPage() {
                 <span>Subtotal ({cartCount} items)</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
+              
+              {discount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--primary)' }}>
+                  <span>Promo Discount</span>
+                  <span>-${discount.toFixed(2)}</span>
+                </div>
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                 <span>Shipping</span>
                 <span style={{ color: 'var(--accent)' }}>Free</span>
               </div>
 
+              {/* Promo Field */}
+              <form onSubmit={applyPromo} style={{ margin: '1.5rem 0' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input 
+                        type="text" 
+                        placeholder="Enter Promo Code" 
+                        className="form-input" 
+                        value={promoCode}
+                        onChange={e => setPromoCode(e.target.value)}
+                        style={{ padding: '0.5rem', fontSize: '0.85rem' }}
+                    />
+                    <button 
+                        type="submit" 
+                        className="btn btn-secondary" 
+                        style={{ padding: '0 1rem', fontSize: '0.8rem' }}
+                        disabled={isApplying || !promoCode}
+                    >
+                        {isApplying ? '...' : 'Apply'}
+                    </button>
+                </div>
+                {promoError && <p style={{ color: '#ff4d4f', fontSize: '0.75rem', marginTop: '0.5rem' }}>{promoError}</p>}
+                {promoSuccess && <p style={{ color: 'var(--primary)', fontSize: '0.75rem', marginTop: '0.5rem' }}>{promoSuccess}</p>}
+              </form>
+
               <div style={{ borderTop: '1px solid var(--glass-border)', margin: '1rem 0', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.15rem' }}>
                 <span>Total</span>
-                <span style={{ color: 'var(--primary)' }}>${cartTotal.toFixed(2)}</span>
+                <span style={{ color: 'var(--primary)' }}>${finalTotal.toFixed(2)}</span>
               </div>
 
               {cartTotal < 100 && (

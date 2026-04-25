@@ -10,12 +10,54 @@ import SEO from '../components/SEO';
 export default function ProductPage() {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
-  const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [selectedVariation, setSelectedVariation] = useState(null);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [mainImage, setMainImage] = useState('');
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+        
+        let found = data;
+        if (error || !found) {
+            found = localProducts.find(p => p.slug === slug || p.id === slug);
+        }
+        
+        if (found) {
+            setProduct(found);
+            setMainImage(found.images?.[0] || found.image);
+
+            // Track Recently Viewed
+            const viewed = JSON.parse(localStorage.getItem('wm_viewed') || '[]');
+            const updated = [found, ...viewed.filter(p => p.id !== found.id)].slice(0, 5);
+            localStorage.setItem('wm_viewed', JSON.stringify(updated));
+            setRecentlyViewed(updated.filter(p => p.id !== found.id));
+
+            // Set Related Products
+            const related = localProducts
+                .filter(p => p.category === found.category && p.id !== found.id)
+                .slice(0, 4);
+            setRelatedProducts(related);
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [slug]);
 
   useEffect(() => {
     if (product?.variations?.length > 0) {
@@ -24,42 +66,6 @@ export default function ProductPage() {
       setSelectedVariation(null);
     }
   }, [product]);
-
-  useEffect(() => {
-    async function fetchProduct() {
-      setLoading(true);
-      const { data, error } = await supabase.from('products').select('*').eq('slug', slug).single();
-      
-      if (data) {
-        // Fallback: merge local reviews if DB has none
-        const localMatch = localProducts.find(lp => lp.name.trim().toLowerCase() === data.name.trim().toLowerCase());
-        if (!data.reviews || data.reviews.length === 0) {
-          if (localMatch?.reviews) data.reviews = localMatch.reviews;
-        }
-        // Fallback: merge local variations if missing from DB
-        if (!data.variations || data.variations.length === 0) {
-          if (localMatch?.variations) data.variations = localMatch.variations;
-        }
-        setProduct(data);
-        const { data: relData } = await supabase.from('products').select('*').eq('category', data.category).neq('slug', data.slug).limit(4);
-        if (relData) setRelated(relData);
-      } else {
-        // ULTIMATE FALLBACK: Try finding in local data if DB fails (e.g. during schema sync)
-        const localMatch = localProducts.find(lp => lp.slug === slug);
-        if (localMatch) {
-          console.log('Using local fallback for product:', slug);
-          setProduct(localMatch);
-          // Find related in local
-          const relatedLocal = localProducts
-            .filter(lp => lp.category === localMatch.category && lp.slug !== localMatch.slug)
-            .slice(0, 4);
-          setRelated(relatedLocal);
-        }
-      }
-      setLoading(false);
-    }
-    fetchProduct();
-  }, [slug]);
 
   if (loading) {
     return (
@@ -85,9 +91,9 @@ export default function ProductPage() {
   return (
     <>
       <SEO 
-        title={product.name}
-        description={`Buy ${product.name} at Whole Melt Extracts. Premium ${product.category.replace('-', ' ')}${product.strain ? ` (${product.strain})` : ''} crafted for quality and potency. Discreet shipping available.`}
-        canonical={`/product/${product.slug}`}
+        title={`${product.name} - ${product.category}`}
+        description={`Buy premium ${product.name} ${product.category} from Whole Melt Extracts. Lab tested, high potency, and official quality guaranteed.`}
+        canonical={`/product/${product.slug || product.id}`}
         ogImage={product.images?.[0] || product.image}
         ogType="product"
         schema={{
@@ -95,7 +101,7 @@ export default function ProductPage() {
           "@type": "Product",
           "name": product.name,
           "image": [product.images?.[0] || product.image],
-          "description": product.description || `Premium ${product.category} from Whole Melt Extracts.`,
+          "description": product.description || `Premium quality ${product.name} ${product.category} from Whole Melt Extracts.`,
           "sku": product.id,
           "brand": {
             "@type": "Brand",
@@ -126,33 +132,44 @@ export default function ProductPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }}>
-            {/* Image */}
-            <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', padding: '1rem' }}>
-              <img
-                src={product.images?.[0] || product.image}
-                alt={product.name}
-                style={{ width: '100%', borderRadius: 'var(--radius-md)' }}
-                onError={(e) => { 
-                    const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
-                    const currentSrc = e.target.src;
-                    const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
-                    // Check if currentSrc actually contains a dot for extension
-                    if (currentSrc.lastIndexOf('.') === -1) {
-                      e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt';
-                      return;
-                    }
-                    const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();
-                    
-                    const nextIndex = extensions.indexOf(currentExt) + 1;
-                    if (nextIndex > 0 && nextIndex < extensions.length) {
-                        e.target.src = base + extensions[nextIndex];
-                    } else if (nextIndex === 0) {
-                        e.target.src = base + extensions[0];
-                    } else {
-                        e.target.src = 'https://placehold.co/600x600/141414/D4AF37?text=Whole+Melt';
-                    }
-                }}
-              />
+            {/* Image & Gallery */}
+            <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+              <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', padding: '1rem' }}>
+                <div style={{ overflow: 'hidden', borderRadius: 'var(--radius-md)', cursor: 'zoom-in' }}>
+                  <img
+                    src={mainImage}
+                    alt={product.name}
+                    className="hover-zoom"
+                    style={{ width: '100%', transition: 'transform 0.8s var(--ease)' }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  />
+                </div>
+              </div>
+              
+              {/* Thumbnail Gallery */}
+              {product.images && product.images.length > 1 && (
+                <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                  {product.images.map((img, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => setMainImage(img)}
+                      className="glass"
+                      style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        padding: '0.25rem', 
+                        borderRadius: '0.75rem', 
+                        border: mainImage === img ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
+                        overflow: 'hidden',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <img src={img} alt={`${product.name} ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}
@@ -169,14 +186,45 @@ export default function ProductPage() {
                 </span>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>${activePrice.toFixed(2)}</span>
                 {hasSale && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>${parseFloat(product.original_price).toFixed(2)}</span>}
+              </div>
+
+              {/* Stock Urgency */}
+              <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                <div className="animate-glow" style={{ width: '8px', height: '8px', borderRadius: '50%', background: (parseInt(product.id) % 15 + 2) < 8 ? '#ff4d4f' : '#2ecc71' }}></div>
+                <span style={{ color: (parseInt(product.id) % 15 + 2) < 8 ? '#ff4d4f' : '#2ecc71', fontWeight: 600 }}>
+                  {(parseInt(product.id) % 15 + 2) < 8 
+                    ? `Only ${parseInt(product.id) % 15 + 2} units left in stock!` 
+                    : 'In Stock - Ready to Ship'}
+                </span>
               </div>
 
               <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '2rem' }}>
                 Premium quality {product.category.replace('-', ' ')} from Whole Melt Extracts. Made with organic ingredients and clean extraction methods for a high-quality, pure experience. Lab tested for safety and potency.
               </p>
+
+              {/* Volume Discounts */}
+              <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+                  🔥 Bulk Savings Available
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                  <div style={{ textAlign: 'center', padding: '0.5rem', borderRight: '1px solid var(--glass-border)' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>5+ Units</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 10%</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '0.5rem', borderRight: '1px solid var(--glass-border)' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>10+ Units</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 15%</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '0.5rem' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>20+ Units</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 25%</div>
+                  </div>
+                </div>
+              </div>
 
               {product.variations && product.variations.length > 0 && (
                 <div style={{ marginBottom: '1.5rem' }}>
@@ -297,7 +345,7 @@ export default function ProductPage() {
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <div>
                                 <strong style={{ color: 'var(--text-primary)' }}>{rev.user}</strong>
-                                <div style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
+                                <div className="animate-glow" style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem', padding: '0.2rem 0.5rem', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '4px', width: 'fit-content' }}>
                                     <ShieldCheck size={12} /> Verified Buyer
                                 </div>
                             </div>
@@ -331,6 +379,31 @@ export default function ProductPage() {
               )}
             </div>
           </div>
+          {/* Related Products */}
+          {relatedProducts.length > 0 && (
+            <div style={{ marginTop: '5rem' }}>
+              <div className="section-header">
+                <span className="section-header__tag">Recommendations</span>
+                <h2 className="section-header__title">Related <span className="text-gradient">Strains</span></h2>
+              </div>
+              <div className="product-grid">
+                {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Recently Viewed */}
+          {recentlyViewed.length > 0 && (
+            <div style={{ marginTop: '5rem' }}>
+              <div className="section-header">
+                <span className="section-header__tag">Browsing History</span>
+                <h2 className="section-header__title">Recently <span className="text-gradient">Viewed</span></h2>
+              </div>
+              <div className="product-grid">
+                {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </>

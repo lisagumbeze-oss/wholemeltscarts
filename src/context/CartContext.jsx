@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+import { useToast } from './ToastContext';
+
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { addToast } = useToast();
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem('wm_cart');
@@ -14,6 +17,11 @@ export function CartProvider({ children }) {
     localStorage.setItem('wm_cart', JSON.stringify(cart));
   }, [cart]);
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const openDrawer = () => setDrawerOpen(true);
+  const closeDrawer = () => setDrawerOpen(false);
+
   const addToCart = (product, qty = 1) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -24,6 +32,14 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, qty }];
     });
+    
+    addToast(
+      'Added to Cart', 
+      `${product.name} has been added to your basket.`,
+      'success'
+    );
+    
+    openDrawer(); // Automatically open drawer on add
   };
 
   const removeFromCart = (id) => {
@@ -43,7 +59,7 @@ export function CartProvider({ children }) {
   const cartTotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.qty, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQty, clearCart, cartCount, cartTotal }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQty, clearCart, cartCount, cartTotal, drawerOpen, openDrawer, closeDrawer }}>
       {children}
     </CartContext.Provider>
   );

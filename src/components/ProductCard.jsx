@@ -1,17 +1,55 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { ShoppingBag, Heart } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const activePrice = parseFloat(product.price);
   const hasSale = product.original_price && parseFloat(product.original_price) > activePrice;
+  
+  // Pseudo-random stock based on ID
+  const stock = (parseInt(product.id) % 15) + 2; 
+  const isLowStock = stock < 8;
+
+  const isSaved = isInWishlist(product.id);
 
   return (
     <div className="product-card">
       <Link to={`/product/${product.slug || product.id}`}>
         <div className="product-card__image-wrapper">
           {hasSale && <span className="product-card__badge">Sale</span>}
+          {isLowStock && !hasSale && <span className="product-card__badge" style={{ background: 'linear-gradient(135deg, #ff4d4f, #cf1322)', right: '0.75rem', left: 'auto' }}>Low Stock</span>}
+          
+          <button 
+            className="product-card__wishlist-btn"
+            onClick={(e) => {
+                e.preventDefault();
+                toggleWishlist(product);
+            }}
+            style={{ 
+                position: 'absolute', 
+                top: '0.75rem', 
+                right: '0.75rem', 
+                zIndex: 10,
+                background: isSaved ? 'var(--primary)' : 'rgba(0,0,0,0.5)',
+                color: isSaved ? '#000' : '#fff',
+                border: 'none',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(4px)'
+            }}
+          >
+            <Heart size={16} fill={isSaved ? "currentColor" : "none"} />
+          </button>
+
           <img
             className="product-card__image"
             src={product.images?.[0] || product.image}

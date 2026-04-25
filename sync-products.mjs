@@ -46,6 +46,23 @@ async function addSlugColumn() {
   return true;
 }
 
+// ─── Step 1.6: Add variations column if it doesn't exist ───
+async function addVariationsColumn() {
+  console.log('Adding variations column via RPC...');
+  const { error } = await supabase.rpc('exec_sql', {
+    query: `ALTER TABLE products ADD COLUMN IF NOT EXISTS variations jsonb DEFAULT '[]'::jsonb;`
+  });
+  if (error) {
+    console.log('RPC failed for variations column. Testing if it already exists...');
+    const { error: testErr } = await supabase.from('products').select('variations').limit(1);
+    if (testErr) {
+      console.log('variations column not available.');
+      return false;
+    }
+  }
+  return true;
+}
+
 // ─── Step 2: Generate 25 unique reviews per product ───
 const firstNames = ['James','Michael','Sarah','Emily','David','Jessica','Chris','Amanda','Daniel','Ashley','Brandon','Nicole','Tyler','Rachel','Kevin','Lauren','Brian','Megan','Andrew','Melissa','John','Laura','Matthew','Stephanie','Jason','Samantha','Ryan','Jennifer','Justin','Brittany'];
 const lastInitials = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ');
@@ -194,12 +211,16 @@ async function syncProducts() {
   // Try adding columns
   const canReview = await addReviewsColumn();
   const canSlug = await addSlugColumn();
+  const canVariations = await addVariationsColumn();
   
   if (!canReview) {
     console.log('\n⚡ reviews column not available yet.\n');
   }
   if (!canSlug) {
     console.log('\n⚡ slug column not available yet.\n');
+  }
+  if (!canVariations) {
+    console.log('\n⚡ variations column not available yet.\n');
   }
 
   let updated = 0;
@@ -224,6 +245,10 @@ async function syncProducts() {
 
     if (canSlug && localMatch.slug) {
       updatePayload.slug = localMatch.slug;
+    }
+
+    if (canVariations && localMatch.variations) {
+      updatePayload.variations = localMatch.variations;
     }
 
     if (canReview) {

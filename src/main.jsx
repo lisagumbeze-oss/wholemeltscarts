@@ -30,6 +30,11 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminBlog from './pages/admin/AdminBlog';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminCoupons from './pages/admin/AdminCoupons';
+import AdminSupport from './pages/admin/AdminSupport';
+import AdminMarketing from './pages/admin/AdminMarketing';
 import AdminLogin from './pages/admin/AdminLogin';
 
 const router = createBrowserRouter([
@@ -41,6 +46,7 @@ const router = createBrowserRouter([
       { path: 'shop', element: <ShopPage /> },
       { path: 'product/:slug', element: <ProductPage /> },
       { path: 'cart', element: <CartPage /> },
+      { path: 'wishlist', element: <WishlistPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'faq', element: <FAQPage /> },
       { path: 'blog', element: <BlogPage /> },
@@ -67,7 +73,12 @@ const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: 'products', element: <AdminProducts /> },
       { path: 'orders', element: <AdminOrders /> },
+      { path: 'customers', element: <AdminCustomers /> },
+      { path: 'analytics', element: <AdminAnalytics /> },
       { path: 'blog', element: <AdminBlog /> },
+      { path: 'coupons', element: <AdminCoupons /> },
+      { path: 'support', element: <AdminSupport /> },
+      { path: 'marketing', element: <AdminMarketing /> },
       { path: 'settings', element: <AdminSettings /> },
       { path: '*', element: <Navigate to="/admin" replace /> },
     ],
@@ -78,12 +89,19 @@ const router = createBrowserRouter([
   },
 ]);
 
+import { ToastProvider } from './context/ToastContext';
+import { WishlistProvider } from './context/WishlistContext';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HelmetProvider>
-      <CartProvider>
-        <RouterProvider router={router} />
-      </CartProvider>
+      <ToastProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <RouterProvider router={router} />
+          </CartProvider>
+        </WishlistProvider>
+      </ToastProvider>
     </HelmetProvider>
   </StrictMode>,
 );

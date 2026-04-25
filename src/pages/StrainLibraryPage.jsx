@@ -7,11 +7,17 @@ import SEO from '../components/SEO';
 export default function StrainLibraryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
+  const [activeEffect, setActiveEffect] = useState('All');
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === 'All' || p.strain === activeFilter;
-    return matchesSearch && matchesFilter;
+    
+    // Virtual effect filter based on strain type
+    const productEffect = p.strain === 'Indica' ? 'Relaxing' : p.strain === 'Sativa' ? 'Energetic' : 'Creative';
+    const matchesEffect = activeEffect === 'All' || productEffect === activeEffect;
+    
+    return matchesSearch && matchesFilter && matchesEffect;
   });
 
   const stats = {
@@ -78,6 +84,20 @@ export default function StrainLibraryPage() {
                   style={{ padding: '0.75rem 1.5rem' }}
                 >
                   {filter}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', width: '100%', marginTop: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', marginRight: '0.5rem' }}>Desired Effect:</span>
+              {['All', 'Relaxing', 'Energetic', 'Creative'].map(effect => (
+                <button 
+                  key={effect}
+                  onClick={() => setActiveEffect(effect)}
+                  className={`btn btn-sm ${activeEffect === effect ? 'btn-primary' : 'glass'}`}
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {effect}
                 </button>
               ))}
             </div>
