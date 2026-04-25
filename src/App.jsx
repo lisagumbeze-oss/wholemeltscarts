@@ -13,6 +13,7 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const location = useLocation();
   return (
     <>
       <ScrollToTop />
