@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Mail, MessageSquare } from 'lucide-react';
+import { Send, Mail, MessageSquare, MapPin } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function ContactPage() {
@@ -81,6 +81,17 @@ export default function ContactPage() {
                   <strong>Telegram</strong>
                 </div>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>@wholemeltscartsus</p>
+              </div>
+
+              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <MapPin size={18} style={{ color: 'var(--primary)' }} />
+                  <strong>Address</strong>
+                </div>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>
+                  2401 Zephyr Cv{"\n"}
+                  Rocklin, California(CA), 95677
+                </p>
               </div>
 
               <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
