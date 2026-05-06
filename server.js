@@ -16,6 +16,7 @@ import {
   getFeedOrigin,
   buildProductFeedItems,
   buildGoogleMerchantXml,
+  buildGoogleMerchantCsv,
 } from './api/productFeed.js';
 
 dotenv.config();
@@ -35,6 +36,11 @@ app.get('/feed/products.json', (req, res) => {
       title: 'Whole Melt Extracts — Product catalog',
       home_page_url: origin,
       feed_url: `${origin}/feed/products.json`,
+      feeds: {
+        json: `${origin}/feed/products.json`,
+        csv: `${origin}/feed/products.csv`,
+        xml: `${origin}/feed/products.xml`,
+      },
       updated: new Date().toISOString(),
       item_count: items.length,
       items,
@@ -54,6 +60,19 @@ app.get('/feed/products.xml', (req, res) => {
     res.send(xml);
   } catch (err) {
     console.error('Product XML feed error:', err);
+    res.status(500).type('text/plain').send(err.message);
+  }
+});
+
+app.get('/feed/products.csv', (req, res) => {
+  try {
+    const origin = getFeedOrigin(req);
+    const csv = buildGoogleMerchantCsv(localCatalog, origin);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.send('\uFEFF' + csv);
+  } catch (err) {
+    console.error('Product CSV feed error:', err);
     res.status(500).type('text/plain').send(err.message);
   }
 });

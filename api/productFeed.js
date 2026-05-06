@@ -96,3 +96,58 @@ export function buildGoogleMerchantXml(products, origin, channelTitle = 'Whole M
   lines.push(`</rss>`);
   return lines.join('\n');
 }
+
+/** Escape a field for comma-separated CSV (RFC 4180 style). */
+function csvCell(val) {
+  const s = val == null ? '' : String(val);
+  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+/**
+ * Google Merchant–style primary feed CSV (works with many ad/catalog “CSV product feed” UIs).
+ * Column names match common templates: `image link`, `sale price`, etc.
+ */
+export function buildGoogleMerchantCsv(products, origin) {
+  const headers = [
+    'id',
+    'title',
+    'description',
+    'link',
+    'image link',
+    'availability',
+    'price',
+    'sale price',
+    'brand',
+    'condition',
+    'product type',
+  ];
+  const rows = [headers.map(csvCell).join(',')];
+
+  for (const p of products) {
+    if (!p || !p.slug) continue;
+    const imagePath = (Array.isArray(p.images) && p.images[0]) || p.image || '';
+    const img = toAbsoluteUrl(origin, imagePath);
+    const effective = p.salePrice ?? p.price;
+    const priceStr = `${Number(effective)} USD`;
+    const saleStr = p.salePrice != null ? `${Number(p.salePrice)} USD` : '';
+    const desc = `${p.name} — ${p.category || 'Product'}${p.strain ? ` (${p.strain})` : ''}`;
+
+    const line = [
+      String(p.id),
+      p.name,
+      desc,
+      `${origin}/product/${encodeURIComponent(p.slug)}`,
+      img,
+      'in stock',
+      priceStr,
+      saleStr,
+      'Whole Melt Extracts',
+      'new',
+      p.category || '',
+    ].map(csvCell);
+    rows.push(line.join(','));
+  }
+
+  return rows.join('\r\n');
+}
