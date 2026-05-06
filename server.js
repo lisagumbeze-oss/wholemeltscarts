@@ -55,7 +55,8 @@ app.get('/feed/products.xml', (req, res) => {
   try {
     const origin = getFeedOrigin(req);
     const xml = buildGoogleMerchantXml(localCatalog, origin);
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Content-Type', 'text/xml; charset=utf-8');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.send(xml);
   } catch (err) {
@@ -69,6 +70,7 @@ app.get('/feed/products.csv', (req, res) => {
     const origin = getFeedOrigin(req);
     const csv = buildGoogleMerchantCsv(localCatalog, origin);
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="products.csv"');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.send('\uFEFF' + csv);
   } catch (err) {

@@ -1,5 +1,17 @@
 {
   "rewrites": [
+    {
+      "source": "/feed/products.json",
+      "destination": "/api/feed-products?format=json"
+    },
+    {
+      "source": "/feed/products.xml",
+      "destination": "/api/feed-products?format=xml"
+    },
+    {
+      "source": "/feed/products.csv",
+      "destination": "/api/feed-products?format=csv"
+    },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -43,8 +43,8 @@ const router = createBrowserRouter([
   {
     element: <AppRoot />,
     children: [
+      // Pathless layout: `path: '/'` only matched the exact root URL and sent /shop etc. to the splat → home.
       {
-        path: '/',
         element: <App />,
         children: [
           { index: true, element: <HomePage /> },

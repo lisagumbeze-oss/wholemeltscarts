@@ -1,15 +1,34 @@
 /**
  * Build storefront product feeds (JSON + Google Merchant–style RSS).
  * Canonical site URL: PUBLIC_SITE_URL or SITE_URL; else derived from the request.
+ * Works with Express `req` and Vercel serverless `req` (headers only, no `req.get`).
  */
 
-export function getFeedOrigin(req) {
+function header(req, name) {
+  const key = String(name).toLowerCase();
+  if (req && typeof req.get === 'function') {
+    const v = req.get(name);
+    if (v != null && v !== '') return String(v);
+  }
+  const h = (req && req.headers) || {};
+  const v = h[key];
+  return Array.isArray(v) ? String(v[0]) : v != null ? String(v) : '';
+}
+
+export function getFeedOrigin(req = {}) {
   const fromEnv =
     process.env.PUBLIC_SITE_URL || process.env.SITE_URL || process.env.VITE_SITE_URL;
   if (fromEnv) return String(fromEnv).replace(/\/$/, '');
-  const proto = req.get('x-forwarded-proto') || req.protocol || 'http';
-  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000';
-  return `${proto}://${host}`;
+
+  const proto =
+    header(req, 'x-forwarded-proto') ||
+    (req.protocol ? String(req.protocol).replace(/:$/, '') : '') ||
+    'https';
+  const host = header(req, 'x-forwarded-host') || header(req, 'host');
+  if (host) return `${proto}://${host}`.replace(/\/$/, '');
+  if (process.env.VERCEL_URL)
+    return `https://${String(process.env.VERCEL_URL).replace(/\/$/, '')}`;
+  return 'http://localhost:3000';
 }
 
 export function toAbsoluteUrl(origin, path) {
@@ -43,7 +62,7 @@ export function buildProductFeedItems(products, origin) {
     });
 }
 
-function xmlEscape(s) {
+export function xmlEscape(s) {
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
