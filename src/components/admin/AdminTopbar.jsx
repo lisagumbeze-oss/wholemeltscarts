@@ -1,42 +1,50 @@
 import React from 'react';
-import { Search, Bell, User, Command } from 'lucide-react';
+import { Search, Bell, User, Command, Menu } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
-export default function AdminTopbar() {
+export default function AdminTopbar({ onMenuToggle = () => {}, menuOpen }) {
   const location = useLocation();
-  
-  // Simple breadcrumb logic
+
   const pathnames = location.pathname.split('/').filter((x) => x);
   const pageTitle = pathnames[pathnames.length - 1] || 'Dashboard';
 
   return (
     <header className="admin-topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 600, textTransform: 'capitalize', margin: 0 }}>
+      <div className="admin-topbar__primary">
+        <button
+          type="button"
+          className="admin-topbar__menu-btn"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={Boolean(menuOpen)}
+          onClick={onMenuToggle}
+        >
+          <Menu size={22} />
+        </button>
+        <h2 className="admin-topbar__title">
           {pageTitle.replace('-', ' ')}
         </h2>
-        
+
         <div className="admin-topbar__search">
-          <Search size={16} color="var(--text-muted)" />
+          <Search size={16} color="var(--text-muted)" aria-hidden />
           <input type="text" placeholder="Search orders, products..." />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+          <span className="admin-topbar__kbd" aria-hidden>
             <Command size={10} /> K
-          </div>
+          </span>
         </div>
       </div>
 
       <div className="admin-topbar__actions">
         <div className="admin-topbar__icon" style={{ position: 'relative' }}>
           <Bell size={20} />
-          <span style={{ position: 'absolute', top: '-2px', right: '-2px', width: '8px', height: '8px', background: 'var(--primary)', borderRadius: '50%', border: '2px solid #080808' }}></span>
+          <span className="admin-topbar__badge" aria-hidden />
         </div>
-        <div style={{ width: '1px', height: '24px', background: 'var(--glass-border)' }}></div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} className="admin-topbar__icon">
-          <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>Super Admin</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Administrator</div>
+        <div className="admin-topbar__divider" aria-hidden />
+        <div className="admin-topbar__icon admin-topbar__user">
+          <div className="admin-topbar__user-text">
+            <div className="admin-topbar__user-name">Super Admin</div>
+            <div className="admin-topbar__user-role">Administrator</div>
           </div>
-          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-glow)', border: '1px solid var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+          <div className="admin-topbar__avatar">
             <User size={20} />
           </div>
         </div>

@@ -11,12 +11,52 @@ import {
 } from './api/utils/emailTemplates.js';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import { products as localCatalog } from './src/data/products.js';
+import {
+  getFeedOrigin,
+  buildProductFeedItems,
+  buildGoogleMerchantXml,
+} from './api/productFeed.js';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ═══ Product feeds (dynamic; must precede static so /feed/* is never ambiguous) ═══
+app.get('/feed/products.json', (req, res) => {
+  try {
+    const origin = getFeedOrigin(req);
+    const items = buildProductFeedItems(localCatalog, origin);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.json({
+      title: 'Whole Melt Extracts — Product catalog',
+      home_page_url: origin,
+      feed_url: `${origin}/feed/products.json`,
+      updated: new Date().toISOString(),
+      item_count: items.length,
+      items,
+    });
+  } catch (err) {
+    console.error('Product JSON feed error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/feed/products.xml', (req, res) => {
+  try {
+    const origin = getFeedOrigin(req);
+    const xml = buildGoogleMerchantXml(localCatalog, origin);
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.send(xml);
+  } catch (err) {
+    console.error('Product XML feed error:', err);
+    res.status(500).type('text/plain').send(err.message);
+  }
+});
 
 // Serve static files from the 'dist' directory
 app.use(express.static('dist'));

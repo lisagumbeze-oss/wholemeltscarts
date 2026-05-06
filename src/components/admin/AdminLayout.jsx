@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ShoppingBag, Package, FileText, Settings, 
   LogOut, Loader2, Users, Tag, BarChart2, ShieldCheck, Mail, Image,
@@ -50,7 +50,33 @@ const adminNav = [
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 961px)');
+    const onChange = () => {
+      if (mq.matches) setSidebarOpen(false);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const narrow = window.matchMedia('(max-width: 960px)');
+    if (!sidebarOpen || !narrow.matches) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -86,16 +112,17 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-layout">
-      <style>{`
-        #smartsupp-widget-container, 
-        iframe[name^="smartsupp"],
-        [id^="smartsupp"] {
-          display: none !important;
-        }
-      `}</style>
+      {sidebarOpen ? (
+        <button
+          type="button"
+          className="admin-sidebar-backdrop"
+          aria-label="Close menu"
+          onClick={() => setSidebarOpen(false)}
+        />
+      ) : null}
 
       {/* ═══ Sidebar ═══ */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar${sidebarOpen ? ' admin-sidebar--open' : ''}`}>
         <div className="admin-sidebar__logo">
           WHOLE MELT <br /> <span style={{ color: '#fff' }}>ADMIN</span>
         </div>
@@ -111,6 +138,7 @@ export default function AdminLayout() {
                     to={item.href} 
                     end={item.end} 
                     className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                    onClick={() => setSidebarOpen(false)}
                   >
                     <item.icon size={18} />
                     {item.label}
@@ -131,7 +159,10 @@ export default function AdminLayout() {
 
       {/* ═══ Main Content Wrapper ═══ */}
       <div className="admin-main-wrapper">
-        <AdminTopbar />
+        <AdminTopbar
+          menuOpen={sidebarOpen}
+          onMenuToggle={() => setSidebarOpen((open) => !open)}
+        />
         <main className="admin-main">
           <Outlet />
         </main>

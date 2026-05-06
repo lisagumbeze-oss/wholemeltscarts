@@ -34,9 +34,9 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container admin-dashboard">
       {/* ═══ Stats Grid ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="admin-dashboard__stats">
         {stats.map((stat, i) => (
           <div key={i} className="admin-card" style={{ position: 'relative', overflow: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ═══ Quick Actions ═══ */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+      <div className="admin-dashboard__actions">
         <Link to="/admin/products" className="btn btn-outline" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.85rem', background: 'rgba(255,255,255,0.02)' }}>
           <Plus size={16} /> New Product
         </Link>
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="admin-dashboard__chart-row">
         {/* ═══ Revenue Chart ═══ */}
         <div className="admin-card" style={{ padding: '1.5rem 1rem 1rem 0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', paddingLeft: '1rem' }}>
@@ -156,12 +156,13 @@ export default function AdminDashboard() {
 
       {/* ═══ Top Products Table ═══ */}
       <div className="admin-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div className="admin-dashboard__table-head">
           <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: '#fff' }}>Top Performing Products</h2>
           <Link to="/admin/products" style={{ color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             View Catalog <ExternalLink size={12} />
           </Link>
         </div>
+        <div className="admin-table-scroll">
         <table className="admin-table">
           <thead>
             <tr>
@@ -192,6 +193,7 @@ export default function AdminDashboard() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

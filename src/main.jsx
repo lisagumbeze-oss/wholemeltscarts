@@ -37,56 +37,62 @@ import AdminCoupons from './pages/admin/AdminCoupons';
 import AdminSupport from './pages/admin/AdminSupport';
 import AdminMarketing from './pages/admin/AdminMarketing';
 import AdminLogin from './pages/admin/AdminLogin';
+import AppRoot from './components/AppRoot';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App />,
+    element: <AppRoot />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'shop', element: <ShopPage /> },
-      { path: 'product/:slug', element: <ProductPage /> },
-      { path: 'cart', element: <CartPage /> },
-      { path: 'wishlist', element: <WishlistPage /> },
-      { path: 'checkout', element: <CheckoutPage /> },
-      { path: 'faq', element: <FAQPage /> },
-      { path: 'blog', element: <BlogPage /> },
-      { path: 'blog/:slug', element: <BlogPostPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: 'privacy', element: <PrivacyPage /> },
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'shipping', element: <ShippingPage /> },
-      { path: 'wholesale', element: <WholesalePage /> },
-      { path: 'strains', element: <StrainLibraryPage /> },
-      { path: 'lab-results', element: <LabHubPage /> },
-      { path: '*', element: <Navigate to="/" replace /> },
+      {
+        path: '/',
+        element: <App />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'shop', element: <ShopPage /> },
+          { path: 'product/:slug', element: <ProductPage /> },
+          { path: 'cart', element: <CartPage /> },
+          { path: 'wishlist', element: <WishlistPage /> },
+          { path: 'checkout', element: <CheckoutPage /> },
+          { path: 'faq', element: <FAQPage /> },
+          { path: 'blog', element: <BlogPage /> },
+          { path: 'blog/:slug', element: <BlogPostPage /> },
+          { path: 'contact', element: <ContactPage /> },
+          { path: 'about', element: <AboutPage /> },
+          { path: 'privacy', element: <PrivacyPage /> },
+          { path: 'terms', element: <TermsPage /> },
+          { path: 'shipping', element: <ShippingPage /> },
+          { path: 'wholesale', element: <WholesalePage /> },
+          { path: 'strains', element: <StrainLibraryPage /> },
+          { path: 'lab-results', element: <LabHubPage /> },
+          { path: '*', element: <Navigate to="/" replace /> },
+        ],
+      },
+      {
+        path: 'admin/login',
+        element: <AdminLogin />,
+      },
+      {
+        path: 'admin',
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: 'products', element: <AdminProducts /> },
+          { path: 'orders', element: <AdminOrders /> },
+          { path: 'customers', element: <AdminCustomers /> },
+          { path: 'analytics', element: <AdminAnalytics /> },
+          { path: 'blog', element: <AdminBlog /> },
+          { path: 'coupons', element: <AdminCoupons /> },
+          { path: 'support', element: <AdminSupport /> },
+          { path: 'marketing', element: <AdminMarketing /> },
+          { path: 'settings', element: <AdminSettings /> },
+          { path: '*', element: <Navigate to="/admin" replace /> },
+        ],
+      },
+      {
+        path: '*',
+        element: <Navigate to="/" replace />,
+      },
     ],
-  },
-  {
-    path: '/admin/login',
-    element: <AdminLogin />,
-  },
-  {
-    path: '/admin',
-    element: <AdminLayout />,
-    children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: 'products', element: <AdminProducts /> },
-      { path: 'orders', element: <AdminOrders /> },
-      { path: 'customers', element: <AdminCustomers /> },
-      { path: 'analytics', element: <AdminAnalytics /> },
-      { path: 'blog', element: <AdminBlog /> },
-      { path: 'coupons', element: <AdminCoupons /> },
-      { path: 'support', element: <AdminSupport /> },
-      { path: 'marketing', element: <AdminMarketing /> },
-      { path: 'settings', element: <AdminSettings /> },
-      { path: '*', element: <Navigate to="/admin" replace /> },
-    ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
   },
 ]);
 

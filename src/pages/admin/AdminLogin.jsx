@@ -30,14 +30,6 @@ export default function AdminLogin() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-deep)' }}>
-      {/* Hide Smartsupp Live Chat in Admin Sections */}
-      <style>{`
-        #smartsupp-widget-container, 
-        iframe[name^="smartsupp"],
-        [id^="smartsupp"] {
-          display: none !important;
-        }
-      `}</style>
       <div className="glass" style={{ padding: '3rem', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
         <div style={{ color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
           <Lock size={48} />
