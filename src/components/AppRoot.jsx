@@ -4,7 +4,7 @@ import {
   ensureSmartsuppOnStorefront,
   purgeSmartsuppFromAdminUI,
   maybeShowSmartsuppAfterLeavingAdmin,
-  applySmartsuppBrandColorsOnLoad,
+  stopSmartsuppBrandObserver,
 } from '../lib/smartsupp';
 
 export default function AppRoot() {
@@ -22,14 +22,8 @@ export default function AppRoot() {
     ensureSmartsuppOnStorefront();
     maybeShowSmartsuppAfterLeavingAdmin();
 
-    const colorTimer = window.setInterval(() => {
-      applySmartsuppBrandColorsOnLoad();
-    }, 500);
-    const stopColorTimer = window.setTimeout(() => window.clearInterval(colorTimer), 10000);
-
     return () => {
-      window.clearInterval(colorTimer);
-      window.clearTimeout(stopColorTimer);
+      stopSmartsuppBrandObserver();
     };
   }, [pathname]);
 
