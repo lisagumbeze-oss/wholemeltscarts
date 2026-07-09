@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import SocialProof from './components/SocialProof';
 import AbandonedCartReminder from './components/AbandonedCartReminder';
+import BackToTop from './components/BackToTop';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,6 +22,7 @@ export default function App() {
       <CartDrawer />
       <SocialProof />
       <AbandonedCartReminder />
+      <BackToTop />
       <main key={location.pathname} className="animate-reveal" style={{ minHeight: '60vh' }}>
         <Outlet />
       </main>

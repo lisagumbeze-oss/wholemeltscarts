@@ -1,12 +1,21 @@
 /** Smartsupp live chat — only active on storefront routes (not /admin). */
 const KEY = '066c33c30d5a0cddcfb7a8750f96fe6b77709e72';
 const SCRIPT_ATTR = 'data-wme-smartsupp-loader';
+const BRAND_COLOR = '#D4AF37';
+
+function applySmartsuppBrandColors() {
+  if (typeof window.smartsupp !== 'function') return;
+  try {
+    window.smartsupp('color', BRAND_COLOR);
+  } catch (_) {}
+}
 
 export function ensureSmartsuppOnStorefront() {
   if (typeof document === 'undefined') return;
 
   window._smartsupp = window._smartsupp || {};
   window._smartsupp.key = KEY;
+  window._smartsupp.widgetColor = BRAND_COLOR;
 
   const existingLoader = document.querySelector(`script[${SCRIPT_ATTR}]`);
   if (existingLoader) return;
@@ -54,6 +63,11 @@ export function purgeSmartsuppFromAdminUI() {
 export function maybeShowSmartsuppAfterLeavingAdmin() {
   if (typeof window.smartsupp !== 'function') return;
   try {
+    applySmartsuppBrandColors();
     window.smartsupp('chat:show');
   } catch (_) {}
+}
+
+export function applySmartsuppBrandColorsOnLoad() {
+  applySmartsuppBrandColors();
 }
