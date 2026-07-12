@@ -40,7 +40,7 @@ export default function BlogPage() {
                     {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
-                <div className="blog-card-link__body glass-card glow-border" style={{ padding: '2rem', borderTopLeftRadius: 0, borderTopRightRadius: 0, borderTop: 0 }}>
+                <div className="blog-card-link__body glass-card" style={{ padding: '2rem', borderTopLeftRadius: 0, borderTopRightRadius: 0, borderTop: 0 }}>
                   <h2 style={{ fontSize: '1.4rem', marginBottom: '1rem', fontFamily: 'var(--font-serif)' }}>{post.title}</h2>
                   <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.5rem' }}>{post.excerpt}</p>
                   <span className="blog-card-link__cta" style={{ color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

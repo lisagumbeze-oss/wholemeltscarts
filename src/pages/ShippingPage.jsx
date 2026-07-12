@@ -54,7 +54,7 @@ export default function ShippingPage() {
           <div className="about-split animate-reveal" style={{ gap: '4rem', alignItems: 'start' }}>
             
             {/* Transit Block */}
-            <div className="glass-card glow-border" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
+            <div className="glass-card" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }}></div>
               
               <h2 style={{ fontSize: '2rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
