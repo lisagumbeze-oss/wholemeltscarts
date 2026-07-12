@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Award, Globe, Database, ShieldCheck } from 'lucide-react';
+import { Send, Award, Globe, Database, ShieldCheck, CheckCircle2, PackageSearch } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function WholesalePage() {
@@ -47,7 +47,7 @@ export default function WholesalePage() {
   };
 
   return (
-    <>
+    <div className="wholesale-page">
       <SEO 
         title="Wholesale Whole Melt Extracts | Bulk Carts & Master Cases"
         description="Official Whole Melt Extracts B2B Portal. Bulk orders, master cases, and worldwide distribution for verified retailers. Inquire now for wholesale pricing."
@@ -55,100 +55,117 @@ export default function WholesalePage() {
         ogType="website"
       />
       
-      <div className="section" style={{ paddingTop: '5rem' }}>
-        <div className="container">
-          <div className="section-header text-center animate-reveal">
-            <span className="section-header__tag">B2B Distribution</span>
-            <h1 className="section-header__title">Official <span className="text-gradient">Wholesale Portal</span></h1>
-            <p className="section-header__desc" style={{ maxWidth: '800px', margin: '1.5rem auto' }}>
-              Expand your inventory with the purest solventless concentrates in the market. 
-              As the official master distributor, we offer tiered pricing and priority logistics for verified retail partners globally.
-            </p>
-          </div>
+      {/* ═══ Page Header ═══ */}
+      <section className="page-header" style={{ borderBottom: '1px solid var(--glass-border)' }}>
+        <div className="container text-center">
+          <span className="section-header__tag animate-reveal" style={{ color: 'var(--primary)', background: 'rgba(212, 175, 55, 0.1)', borderColor: 'rgba(212, 175, 55, 0.3)' }}>
+            <PackageSearch size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }}/> B2B Distribution
+          </span>
+          <h1 className="page-header__title animate-reveal">Official <span className="text-gradient">Wholesale Portal</span></h1>
+          <p className="page-header__desc animate-reveal" style={{ maxWidth: '800px', margin: '0 auto' }}>
+            Expand your inventory with the purest solventless concentrates in the market. 
+            As the official master distributor, we offer tiered pricing and priority logistics for verified retail partners globally.
+          </p>
+        </div>
+      </section>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr)', gap: '4rem', marginTop: '4rem', alignItems: 'start' }}>
+      <section className="section bg-deep">
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr)', gap: '4rem', alignItems: 'start' }}>
+            
             {/* ═══ Left: Distribution Benefits ═══ */}
             <div className="animate-reveal">
-              <h2 style={{ fontSize: '1.8rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>Why Partner With Us?</h2>
+              <h2 style={{ fontSize: '2rem', marginBottom: '2.5rem', fontFamily: 'var(--font-serif)' }}>Why Partner With Us?</h2>
               
-              <div className="home-proof">
+              <div style={{ display: 'grid', gap: '1.5rem' }}>
                 {[
                   {
-                    icon: <Award size={20} />,
+                    icon: <Award size={24} />,
                     title: 'Master case tier pricing',
                     desc: 'Lowest per-unit pricing at 50+ units. Direct-from-lab with no middleman markup.'
                   },
                   {
-                    icon: <Globe size={20} />,
+                    icon: <Globe size={24} />,
                     title: 'Global stealth logistics',
                     desc: 'Multi-layered stealth packaging for reliable delivery across USA, Canada, and Europe.'
                   },
                   {
-                    icon: <ShieldCheck size={20} />,
+                    icon: <ShieldCheck size={24} />,
                     title: 'Authenticity guarantee',
                     desc: 'Every order is batch-scanned with COA data for all wholesale batches.'
                   },
                   {
-                    icon: <Database size={20} />,
+                    icon: <Database size={24} />,
                     title: 'Inventory priority',
                     desc: 'Early access to limited drops and V6 inventory before retail release.'
                   }
                 ].map((benefit) => (
-                  <div key={benefit.title} className="home-proof__item">
-                    <div className="home-proof__icon">{benefit.icon}</div>
+                  <div key={benefit.title} className="glass-card" style={{ padding: '1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-gradient)', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {benefit.icon}
+                    </div>
                     <div>
-                      <h3 className="home-proof__title">{benefit.title}</h3>
-                      <p className="home-proof__desc">{benefit.desc}</p>
+                      <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{benefit.title}</h3>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{benefit.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <aside className="order-summary">
+            {/* ═══ Right: Inquiry Form ═══ */}
+            <aside className="glass-card animate-reveal" style={{ padding: '2.5rem', position: 'sticky', top: '100px', animationDelay: '0.2s' }}>
+              <div className="glow-border" style={{ position: 'absolute', inset: 0, zIndex: -1, opacity: 0.5, pointerEvents: 'none' }}></div>
+              
               {submitted ? (
                 <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-                  <div className="text-secondary" style={{ marginBottom: '1.5rem' }}><Send size={48} style={{ margin: '0 auto' }} /></div>
-                  <h3 style={{ marginBottom: '1rem' }}>Inquiry Received</h3>
+                  <div style={{ marginBottom: '1.5rem' }}><CheckCircle2 size={56} style={{ margin: '0 auto', color: 'var(--primary)' }} /></div>
+                  <h3 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>Inquiry Received</h3>
                   <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>
                     Your wholesale application has been sent to our master agents. A distribution officer will contact you via email or Telegram within 4-6 hours.
                   </p>
                 </div>
               ) : (
                 <>
-                  <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', textAlign: 'center' }}>Bulk Inquiry Form</h3>
+                  <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Send size={20} color="var(--primary)" /> Bulk Inquiry Form
+                  </h3>
                   <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                      <label className="form-label">Full Name</label>
-                      <input type="text" name="name" className="form-input" value={form.name} onChange={handleChange} required />
+                    <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                      <label className="form-label" style={{ marginBottom: '0.5rem' }}>Full Name</label>
+                      <input type="text" name="name" className="form-input" style={{ background: 'rgba(0,0,0,0.5)' }} value={form.name} onChange={handleChange} required />
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Business Email</label>
-                      <input type="email" name="email" className="form-input" value={form.email} onChange={handleChange} required />
+                    <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                      <label className="form-label" style={{ marginBottom: '0.5rem' }}>Business Email</label>
+                      <input type="email" name="email" className="form-input" style={{ background: 'rgba(0,0,0,0.5)' }} value={form.email} onChange={handleChange} required />
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Business/Telegram Name</label>
-                      <input type="text" name="business_name" className="form-input" value={form.business_name} onChange={handleChange} placeholder="e.g. Elite Melts CA" required />
+                    <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                      <label className="form-label" style={{ marginBottom: '0.5rem' }}>Business/Telegram Name</label>
+                      <input type="text" name="business_name" className="form-input" style={{ background: 'rgba(0,0,0,0.5)' }} value={form.business_name} onChange={handleChange} placeholder="e.g. Elite Melts CA" required />
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Regional Location</label>
-                      <input type="text" name="location" className="form-input" value={form.location} onChange={handleChange} placeholder="e.g. Los Angeles, CA" required />
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ marginBottom: '0.5rem' }}>Location</label>
+                        <input type="text" name="location" className="form-input" style={{ background: 'rgba(0,0,0,0.5)' }} value={form.location} onChange={handleChange} placeholder="Los Angeles, CA" required />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ marginBottom: '0.5rem' }}>Est. Volume</label>
+                        <select name="estimated_volume" className="form-input" style={{ background: 'rgba(0,0,0,0.5)' }} value={form.estimated_volume} onChange={handleChange}>
+                          <option value="50-100">50 - 100 units</option>
+                          <option value="100-500">100 - 500 units</option>
+                          <option value="500-2000">500 - 2k units</option>
+                          <option value="2000+">2,000+ units</option>
+                        </select>
+                      </div>
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Estimated Monthly Volume</label>
-                      <select name="estimated_volume" className="form-input" value={form.estimated_volume} onChange={handleChange}>
-                        <option value="50-100">50 - 100 units (Sample Case)</option>
-                        <option value="100-500">100 - 500 units (Case Stack)</option>
-                        <option value="500-2000">500 - 2,000 units (Master Pack)</option>
-                        <option value="2000+">2,000+ units (Master Distributor)</option>
-                      </select>
+                    
+                    <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                      <label className="form-label" style={{ marginBottom: '0.5rem' }}>Primary Inquiry Details</label>
+                      <textarea name="message" className="form-textarea" style={{ background: 'rgba(0,0,0,0.5)', minHeight: '120px' }} value={form.message} onChange={handleChange} placeholder="Tell us about your distribution needs..." required></textarea>
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Primary Inquiry Details</label>
-                      <textarea name="message" className="form-textarea" value={form.message} onChange={handleChange} placeholder="Tell us about your distribution needs..." required></textarea>
-                    </div>
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
-                      {loading ? 'Processing...' : 'Submit Wholesale Application'}
+                    <button type="submit" className="btn btn-primary glow-border" style={{ width: '100%', padding: '1rem', fontSize: '1rem' }} disabled={loading}>
+                      {loading ? 'Submitting...' : 'Submit Inquiry'}
                     </button>
                     <p style={{ marginTop: '1.5rem', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                       By submitting this form, you verify that you are a distributor looking for master case inventory.

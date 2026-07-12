@@ -1,4 +1,4 @@
-import { Microscope, ShieldCheck, CheckCircle2, FlaskConical, Award, FileText, AlertCircle } from 'lucide-react';
+import { Microscope, ShieldCheck, CheckCircle2, FlaskConical, Award, FileText, AlertCircle, Search } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function LabHubPage() {
@@ -20,93 +20,149 @@ export default function LabHubPage() {
   ];
 
   return (
-    <>
+    <div className="lab-hub-page">
       <SEO 
         title="Official Lab Reports & COA Hub | Whole Melt Extracts"
         description="Verify your Whole Melt Extracts batch. Access real-time lab reports, COAs, and purity tests. Solventless concentrates with 100% transparency and safety."
         canonical="/lab-results"
       />
 
-      <div className="section" style={{ paddingTop: '5rem' }}>
-        <div className="container content-page">
-          <div className="section-header section-header--center animate-reveal">
-            <span className="section-header__tag">Transparency</span>
-            <h1 className="section-header__title">Lab hub & COAs</h1>
-            <p className="section-header__desc">
-              Full-panel third-party testing on every batch that leaves our facility.
-            </p>
-          </div>
+      {/* ═══ Page Header ═══ */}
+      <section className="page-header" style={{ borderBottom: '1px solid var(--glass-border)' }}>
+        <div className="container text-center">
+          <span className="section-header__tag animate-reveal" style={{ color: '#3D9B6E', background: 'rgba(61, 155, 110, 0.1)', borderColor: 'rgba(61, 155, 110, 0.3)' }}>
+            <ShieldCheck size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }}/> Transparency
+          </span>
+          <h1 className="page-header__title animate-reveal">Lab Hub & COAs</h1>
+          <p className="page-header__desc animate-reveal" style={{ maxWidth: '600px', margin: '0 auto' }}>
+            Full-panel third-party testing on every batch that leaves our facility. 100% solventless purity guaranteed.
+          </p>
+        </div>
+      </section>
 
-          <div className="about-split animate-reveal" style={{ marginBottom: '3rem' }}>
-            <div className="about-block">
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.72rem', fontWeight: 700, color: '#3D9B6E', marginBottom: '1rem' }}>
+      <div className="section bg-deep">
+        <div className="container content-page">
+
+          {/* ═══ Verification Dashboard ═══ */}
+          <div className="about-split" style={{ marginBottom: '4rem', alignItems: 'start', gap: '3rem' }}>
+            
+            {/* Left: Batch Info */}
+            <div className="glass-card animate-reveal" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }}></div>
+              
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, color: '#3D9B6E', marginBottom: '1.5rem', padding: '0.4rem 0.8rem', background: 'rgba(61, 155, 110, 0.1)', borderRadius: '2rem' }}>
                 <CheckCircle2 size={14} /> Latest batch verified
-              </span>
-              <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>Batch {currentBatch.batchId}</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
+              </div>
+              
+              <h2 style={{ fontSize: '2rem', marginBottom: '2rem', fontFamily: 'var(--font-sans)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                Batch <span style={{ color: 'var(--primary)' }}>{currentBatch.batchId}</span>
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2.5rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Release date</div>
-                  <div style={{ fontWeight: 600 }}>{currentBatch.date}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>Release date</div>
+                  <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{currentBatch.date}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Certified lab</div>
-                  <div style={{ fontWeight: 600 }}>{currentBatch.lab}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>Certified lab</div>
+                  <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{currentBatch.lab}</div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total cannabinoids</div>
-                  <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{currentBatch.thc}%</div>
+                <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>Total cannabinoids</div>
+                  <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.5rem', display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+                    {currentBatch.thc}<span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>%</span>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Purity score</div>
-                  <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{currentBatch.purity}%</div>
+                <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>Purity score</div>
+                  <div style={{ fontWeight: 700, color: '#3D9B6E', fontSize: '1.5rem', display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+                    {currentBatch.purity}<span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>%</span>
+                  </div>
                 </div>
               </div>
-              <button type="button" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileText size={18} /> Download PDF report
+              
+              <button type="button" className="btn btn-outline glow-border" style={{ width: '100%' }}>
+                <FileText size={18} /> Download Full PDF Report
               </button>
             </div>
 
-            <div className="about-block" style={{ border: '1px dashed var(--glass-border)', padding: '2rem', borderRadius: 'var(--radius-md)' }}>
-              <div style={{ color: 'var(--primary)', marginBottom: '1rem' }}><Microscope size={40} /></div>
-              <h3 style={{ marginBottom: '0.5rem' }}>Verify your batch</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>Found on the back of official packaging.</p>
-              <input type="text" placeholder="WM-XXXX-XXXX" className="form-input" style={{ marginBottom: '0.75rem', textAlign: 'center', letterSpacing: '0.08em' }} />
-              <button type="button" className="btn btn-outline" style={{ width: '100%' }}>Verify batch</button>
+            {/* Right: Verification Input */}
+            <div className="glass-card animate-reveal" style={{ padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', animationDelay: '0.2s' }}>
+              <div style={{ color: 'var(--primary)', marginBottom: '1.5rem', display: 'inline-flex', padding: '1.25rem', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '50%', border: '1px solid rgba(212, 175, 55, 0.1)' }}>
+                <Microscope size={48} />
+              </div>
+              <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', fontFamily: 'var(--font-serif)' }}>Verify Your Batch</h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>
+                Check the authenticity and test results of your specific product. Your batch number is located on the back of official Whole Melt Extracts packaging.
+              </p>
+              
+              <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input 
+                  type="text" 
+                  placeholder="e.g. WM-2025-V6-9932" 
+                  className="form-input" 
+                  style={{ 
+                    paddingLeft: '3rem', 
+                    height: '56px', 
+                    fontSize: '1rem', 
+                    textAlign: 'left', 
+                    letterSpacing: '0.05em',
+                    background: 'rgba(0,0,0,0.6)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)'
+                  }} 
+                />
+              </div>
+              <button type="button" className="btn btn-primary glow-border" style={{ width: '100%', height: '56px', fontSize: '1rem' }}>
+                Lookup Results
+              </button>
             </div>
           </div>
 
-          <div className="animate-reveal info-panel">
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FlaskConical size={20} /> Full panel results
-            </h3>
-            <div className="home-proof">
-              {tests.map((test) => (
-                <div key={test.name} className="home-proof__item">
-                  <div className="home-proof__icon"><CheckCircle2 size={18} /></div>
+          {/* ═══ Test Grid ═══ */}
+          <div className="animate-reveal info-panel" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h3 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', display: 'inline-flex', alignItems: 'center', gap: '0.75rem' }}>
+                <FlaskConical size={28} color="var(--primary)" /> Full Panel Results
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>Breakdown of the stringent testing performed on every gram.</p>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+              {tests.map((test, index) => (
+                <div key={test.name} className="glass-card" style={{ padding: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(61, 155, 110, 0.1)', color: '#3D9B6E', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <CheckCircle2 size={20} />
+                  </div>
                   <div>
-                    <h4 className="home-proof__title">{test.name} — {test.value}</h4>
-                    <p className="home-proof__desc">{test.desc}</p>
+                    <h4 style={{ fontSize: '1.1rem', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      {test.name}
+                      <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem', color: 'var(--text-muted)' }}>{test.value}</span>
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{test.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="service-strip animate-reveal" style={{ marginTop: '3rem' }}>
+          {/* ═══ Service Strip ═══ */}
+          <div className="service-strip animate-reveal" style={{ marginTop: '5rem', background: 'rgba(13,13,13,0.4)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)' }}>
             {[
-              { icon: <ShieldCheck size={22} />, title: '3rd party verified', desc: 'ISO/IEC 17025 accredited facilities.' },
-              { icon: <Award size={22} />, title: 'Quality control', desc: 'Internal inspection before lab submission.' },
-              { icon: <AlertCircle size={22} />, title: 'Transparency first', desc: 'Every batch run is published.' },
+              { icon: <ShieldCheck size={28} />, title: '3rd Party Verified', desc: 'ISO/IEC 17025 accredited facilities.' },
+              { icon: <Award size={28} />, title: 'Quality Control', desc: 'Internal inspection before lab submission.' },
+              { icon: <AlertCircle size={28} />, title: 'Transparency First', desc: 'Every batch run is published.' },
             ].map((badge) => (
-              <div key={badge.title} className="service-strip__item">
-                <div className="service-strip__icon">{badge.icon}</div>
-                <h4 className="service-strip__title">{badge.title}</h4>
-                <p className="service-strip__desc">{badge.desc}</p>
+              <div key={badge.title} className="service-strip__item" style={{ padding: '2rem 1rem' }}>
+                <div className="service-strip__icon" style={{ color: 'var(--primary)', marginBottom: '1rem' }}>{badge.icon}</div>
+                <h4 className="service-strip__title" style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{badge.title}</h4>
+                <p className="service-strip__desc" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{badge.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
