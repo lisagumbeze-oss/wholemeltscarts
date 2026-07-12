@@ -36,6 +36,7 @@ export default function Navbar() {
     { to: '/strains', label: 'Strains' },
     { to: '/lab-results', label: 'Lab Hub' },
     { to: '/about', label: 'About' },
+    { to: '/blog', label: 'Blog' },
     { to: '/faq', label: 'FAQs' },
     { to: '/contact', label: 'Contact' },
   ];
