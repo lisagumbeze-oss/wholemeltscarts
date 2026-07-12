@@ -118,18 +118,20 @@ img { max-width: 100%; display: block; }
 h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 1.2; }
 
 /* — Scroll-triggered reveal system — */
-.scroll-reveal {
+.scroll-reveal,
+.animate-reveal {
   opacity: 0;
   transform: translateY(32px);
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
-.scroll-reveal.is-visible {
+.scroll-reveal.is-visible,
+.animate-reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
-.scroll-reveal[data-delay="1"] { transition-delay: 0.1s; }
-.scroll-reveal[data-delay="2"] { transition-delay: 0.2s; }
-.scroll-reveal[data-delay="3"] { transition-delay: 0.3s; }
+.scroll-reveal[data-delay="1"], .animate-reveal[data-delay="1"] { transition-delay: 0.1s; }
+.scroll-reveal[data-delay="2"], .animate-reveal[data-delay="2"] { transition-delay: 0.2s; }
+.scroll-reveal[data-delay="3"], .animate-reveal[data-delay="3"] { transition-delay: 0.3s; }
 
 /* — Gold shimmer sweep on hover — */
 .gold-shimmer {
@@ -1192,7 +1194,6 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
   50% { box-shadow: 0 0 18px var(--primary-glow), 0 0 35px rgba(212, 175, 55, 0.1); }
 }
 
-.animate-reveal { animation: fadeInUp 0.8s var(--ease) both; }
 .animate-fade { animation: fadeIn 1s var(--ease) both; }
 .animate-scale { animation: scaleIn 0.6s var(--ease-bounce) both; }
 .animate-glow { animation: glowPulse 4s ease-in-out infinite; }
@@ -2302,17 +2303,7 @@ body.admin-route iframe[src*="smartsuppchat"] {
 .admin-nav-link.active {
   color: var(--primary);
   background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.1);
-}
 
-.animate-reveal {
-  animation: reveal 0.4s ease-out forwards;
-}
-
-@keyframes reveal {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 /* ═══ Form Elements ═══ */
 .admin-label {
@@ -3000,18 +2991,15 @@ body.admin-route iframe[src*="smartsuppchat"] {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 20px var(--primary-glow), 0 8px 32px rgba(0, 0, 0, 0.45);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s var(--ease), visibility 0.3s var(--ease);
-}
-.ai-concierge-fab.open {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: scale(0.8);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .ai-concierge-fab__icon {
   font-size: 1.5rem;
   color: #050505;
   transition: transform 0.3s var(--ease);
+}
+.ai-concierge-fab.open .ai-concierge-fab__icon {
+  transform: rotate(90deg);
 }
 
 .ai-concierge-window {

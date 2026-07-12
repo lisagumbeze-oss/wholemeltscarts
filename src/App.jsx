@@ -8,6 +8,7 @@ import AbandonedCartReminder from './components/AbandonedCartReminder';
 import BackToTop from './components/BackToTop';
 import AIConcierge from './components/AIConcierge';
 import BottomNav from './components/BottomNav';
+import GlobalScrollObserver from './components/GlobalScrollObserver';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      <GlobalScrollObserver />
       <Navbar />
       <CartDrawer />
       <SocialProof />
