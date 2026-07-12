@@ -1478,6 +1478,16 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
   gap: 1.5rem;
   max-width: 400px;
 }
+.abandoned-cart-reminder__content { display: flex; align-items: center; gap: 0.75rem; }
+.abandoned-cart-reminder__icon { position: relative; }
+.abandoned-cart-reminder__icon .icon-bag { color: var(--primary); }
+.abandoned-cart-reminder__badge {
+  position: absolute; top: -5px; right: -5px; background: var(--accent); color: #000;
+  font-size: 0.65rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.abandoned-cart-reminder__title { font-size: 0.85rem; font-weight: 700; }
+.abandoned-cart-reminder__subtitle { font-size: 0.75rem; color: var(--text-secondary); }
 
 /* ═══ Social Proof Popup ═══ */
 .social-proof-popup {
@@ -3256,15 +3266,23 @@ body.admin-route iframe[src*="smartsuppchat"] {
   .abandoned-cart-reminder {
     bottom: calc(88px + env(safe-area-inset-bottom)) !important;
     left: 1rem !important;
-    transform: scale(0.85);
-    transform-origin: bottom left;
     max-width: calc(100vw - 2rem) !important;
+    padding: 0.75rem 1rem !important;
+    gap: 0.75rem !important;
   }
+  .abandoned-cart-reminder__title { font-size: 0.75rem !important; }
+  .abandoned-cart-reminder__subtitle { font-size: 0.65rem !important; }
+  .abandoned-cart-reminder__icon .icon-bag { width: 20px; height: 20px; }
+  .abandoned-cart-reminder .btn { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
   
   .social-proof-popup {
-    bottom: calc(170px + env(safe-area-inset-bottom)) !important;
+    bottom: calc(160px + env(safe-area-inset-bottom)) !important;
     left: 1rem !important;
-    transform: scale(0.85);
-    transform-origin: bottom left;
+    padding: 0.5rem 0.75rem !important;
+    gap: 0.75rem !important;
+    max-width: calc(100vw - 2rem) !important;
   }
+  .social-proof-popup__img { width: 40px !important; height: 40px !important; }
+  .social-proof-popup__text { font-size: 0.65rem !important; }
+  .social-proof-popup__time { font-size: 0.55rem !important; margin-top: 0.15rem !important; }
 }

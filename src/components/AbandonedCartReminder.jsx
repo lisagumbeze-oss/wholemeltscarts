@@ -12,16 +12,16 @@ export default function AbandonedCartReminder() {
 
   return (
     <div className="abandoned-cart-reminder animate-reveal">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{ position: 'relative' }}>
-          <ShoppingBag size={24} style={{ color: 'var(--primary)' }} />
-          <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--accent)', color: '#000', fontSize: '0.65rem', fontWeight: 700, width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="abandoned-cart-reminder__content">
+        <div className="abandoned-cart-reminder__icon">
+          <ShoppingBag size={24} className="icon-bag" />
+          <span className="abandoned-cart-reminder__badge">
             {cart.length}
           </span>
         </div>
-        <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>Finish Your Order</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Items are still in your basket</div>
+        <div className="abandoned-cart-reminder__text-area">
+          <div className="abandoned-cart-reminder__title">Finish Your Order</div>
+          <div className="abandoned-cart-reminder__subtitle">Items are still in your basket</div>
         </div>
       </div>
       
