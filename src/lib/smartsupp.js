@@ -42,6 +42,7 @@ export function ensureSmartsuppOnStorefront() {
 
   window._smartsupp = window._smartsupp || {};
   window._smartsupp.key = KEY;
+  window._smartsupp.color = '#D4AF37';
 
   const existingLoader = document.querySelector(`script[${SCRIPT_ATTR}]`);
   if (existingLoader) {
