@@ -2303,8 +2303,8 @@ body.admin-route iframe[src*="smartsuppchat"] {
 .admin-nav-link.active {
   color: var(--primary);
   background: rgba(212, 175, 55, 0.08);
-
-
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
 /* ═══ Form Elements ═══ */
 .admin-label {
   display: block;
