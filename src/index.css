@@ -285,6 +285,7 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px var(--primary-glow);
+  color: #000;
 }
 .btn-primary:hover::after {
   left: 150%;
