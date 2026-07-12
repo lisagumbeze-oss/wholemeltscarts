@@ -16,7 +16,7 @@ export default function AbandonedCartReminder() {
       style={{
         position: 'fixed',
         bottom: '2rem',
-        right: '2rem',
+        left: '2rem',
         zIndex: 850,
         background: 'var(--bg-surface)',
         border: '1px solid var(--primary)',
