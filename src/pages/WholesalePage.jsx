@@ -176,7 +176,7 @@ export default function WholesalePage() {
             </aside>
           </div>
         </div>
-      </div>
-    </>
+      </section>
+    </div>
   );
 }
