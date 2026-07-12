@@ -12,6 +12,7 @@ import {
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { products as localCatalog } from './src/data/products.js';
+import handleAiConcierge from './api/ai-concierge.js';
 import {
   getFeedOrigin,
   buildProductFeedItems,
@@ -137,6 +138,9 @@ app.post('/api/contact', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+// ═══ AI Concierge ═══
+app.post('/api/chat', handleAiConcierge);
 
 const PORT = process.env.PORT || 3000;
 

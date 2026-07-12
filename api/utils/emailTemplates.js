@@ -6,13 +6,13 @@ export const getBaseTemplate = (content) => `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whole Melt Extracts</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
         
         body { 
-            font-family: 'Outfit', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            font-family: 'Manrope', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
             line-height: 1.6; 
-            color: #E2E8F0; 
-            background-color: #050510; 
+            color: #F3F0E8; 
+            background-color: #050505; 
             margin: 0; 
             padding: 0; 
         }
@@ -26,7 +26,7 @@ export const getBaseTemplate = (content) => `
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
         }
         .header { 
-            background: linear-gradient(180deg, #1a1c2e 0%, #0c0d18 100%); 
+            background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%); 
             padding: 60px 40px; 
             text-align: center; 
             border-bottom: 1px solid rgba(212, 175, 55, 0.1); 
@@ -51,11 +51,11 @@ export const getBaseTemplate = (content) => `
             padding: 50px 40px; 
         }
         .footer { 
-            background-color: #050510; 
+            background-color: #050505; 
             padding: 40px 20px; 
             text-align: center; 
             font-size: 11px; 
-            color: #52526b; 
+            color: #6F6B63; 
             border-top: 1px solid rgba(212, 175, 55, 0.05); 
         }
         .btn { 
@@ -149,7 +149,7 @@ export const getBaseTemplate = (content) => `
         <div class="footer">
             &copy; ${new Date().getFullYear()} Whole Melt Extracts. Distributed by Authorized Hubs.<br>
             Official Online Store & Security Verification: <a href="https://wholemeltscarts.us" style="color: #D4AF37; text-decoration: none; font-weight: 600;">wholemeltscarts.us</a>
-            <p style="margin-top: 20px; color: #313344;">
+            <p style="margin-top: 20px; color: #6F6B63;">
                 This email was sent to you because you interacted with our official distribution system.
             </p>
         </div>

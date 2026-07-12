@@ -1,10 +1,92 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, ShieldCheck, Zap, Leaf, FlaskConical, Truck, Clock, HeadphonesIcon, Play, Star, Award, Loader2 } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Leaf, Award, Truck, Clock, HeadphonesIcon, Star, Loader2, ShieldCheck } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import VerificationGuide from '../components/VerificationGuide';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
+
+/* ─── Golden Smoke Particles ─── */
+function GoldenSmoke() {
+  return (
+    <div className="golden-smoke">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="golden-smoke__particle" />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Scroll Reveal Hook (IntersectionObserver) ─── */
+function useScrollReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('is-visible');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+}
+
+/* ─── Animated Counter ─── */
+function AnimatedStat({ end, suffix = '', label }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const duration = 1800;
+          const startTime = performance.now();
+          const step = (now) => {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(eased * end));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [end]);
+
+  return (
+    <div ref={ref} className="home-stat">
+      <div className="home-stat__number">
+        {count.toLocaleString()}{suffix}
+      </div>
+      <div className="home-stat__label">{label}</div>
+    </div>
+  );
+}
+
+/* ─── Scroll-Reveal Wrapper ─── */
+function RevealSection({ children, className = '', delay = 0 }) {
+  const ref = useScrollReveal();
+  return (
+    <div ref={ref} className={`scroll-reveal ${className}`} data-delay={delay}>
+      {children}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [featured, setFeatured] = useState([]);
@@ -14,9 +96,8 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchHomeProducts() {
       try {
-        const { data, error } = await supabase.from('products').select('*').limit(15);
-        
-        // Use local data as primary if DB is out of sync or empty
+        const { data } = await supabase.from('products').select('*').limit(15);
+
         import('../data/products').then(({ products: localProducts }) => {
           if (!data || data.length === 0 || !data[0].slug) {
             setFeatured(localProducts.slice(0, 8));
@@ -26,8 +107,7 @@ export default function HomePage() {
             setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
           }
         });
-      } catch (err) {
-        // Ultimate fallback to local data
+      } catch {
         import('../data/products').then(({ products: localProducts }) => {
           setFeatured(localProducts.slice(0, 8));
           setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
@@ -40,7 +120,7 @@ export default function HomePage() {
 
   return (
     <>
-      <SEO 
+      <SEO
         title="Whole Melt Extracts Official | Premium 2G Disposables"
         description="Shop authentic Whole Melt Extracts. Discover premium 2G disposables, live resin, carts, and solventless concentrates. Lab-tested, pure, and potent."
         schema={{
@@ -56,181 +136,187 @@ export default function HomePage() {
           }
         }}
       />
-      {/* ═══ Video Hero Section ═══ */}
+
       <section className="hero-video">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           poster="/images/brand/hero-banner.png"
           className="hero-video__bg"
         >
           <source src="/video/video.mp4" type="video/mp4" />
         </video>
         <div className="hero-video__overlay"></div>
+        <GoldenSmoke />
         <div className="container hero-video__content">
-          <div className="animate-reveal">
-            <span className="hero-video__tag">Official Store — Lab Tested Purity</span>
-            <h1 className="hero-video__title">
-              Whole Melt <span className="text-gradient">Extracts Official</span> 
-              <br />Premium Solventless Concentrates
-            </h1>
-            <p className="hero-video__desc">
-              Pure, potent & full of flavor. Discover premium Whole Melt Extracts for a truly elevated cannabis experience. Connoisseur-approved and lab-verified.
-            </p>
-            <div className="hero-video__actions">
-              <Link to="/shop" className="btn btn-primary btn-lg">
-                Shop Now <ArrowRight size={18} />
-              </Link>
-              <Link to="/about" className="btn btn-outline btn-lg">
-                Our Story
-              </Link>
-            </div>
+          <h1 className="hero-video__brand">
+            <span className="text-gradient">Whole Melt</span>
+            <span>Extracts</span>
+          </h1>
+          <p className="hero-video__desc">
+            Solventless concentrates and disposables — pure, potent, and lab-verified.
+          </p>
+          <div className="hero-video__actions">
+            <Link to="/shop" className="btn btn-primary btn-lg gold-shimmer">
+              Shop Now <ArrowRight size={18} />
+            </Link>
+            <Link to="/about" className="btn btn-outline btn-lg">
+              Our Story
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ═══ The Pinnacle Section ═══ */}
-      <section className="section bg-deep">
-        <div className="container text-center">
-          <div className="section-header animate-reveal">
-            <h2 className="section-header__title">The Pinnacle of Solvent-Free Cannabis Concentrates</h2>
-            <p className="section-header__desc" style={{ maxWidth: '800px', margin: '0 auto' }}>
-              Welcome to Whole Melt Extracts, the official destination for premium, solvent-free cannabis concentrates. 
-              We are dedicated to delivering an unparalleled experience derived from the finest parts of the plant. 
-              Our products are crafted through a meticulous extraction process that preserves the full spectrum 
-              of cannabinoids and terpenes, resulting in a rich, flavorful, and potent concentrate.
-            </p>
-          </div>
-
-          <VerificationGuide />
-
-          <div className="trust-grid" style={{ marginTop: '5rem' }}>
-            {[
-              { icon: <Shield size={28} />, title: 'Authentic Whole Melts', desc: 'Non-contaminating and residue-free. Signature solvent-free extracts.' },
-              { icon: <Zap size={28} />, title: 'Whole Melts Carts', desc: 'Premium quality live resin in a sleek, ready-to-use vaporizer format.' },
-              { icon: <Leaf size={28} />, title: 'Live Resin', desc: 'Fresh-frozen cannabis to preserve the delicate terpene profile.' },
-              { icon: <Award size={28} />, title: 'Full Spectrum', desc: 'Rich, flavorful, and potent concentrates for connoisseurs.' },
-            ].map((badge, i) => (
-              <div key={i} className="trust-badge glass animate-reveal" style={{ animationDelay: `${i * 0.15}s` }}>
-                <div className="trust-badge__icon">{badge.icon}</div>
-                <h3 className="trust-badge__title">{badge.title}</h3>
-                <p className="trust-badge__desc">{badge.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ Your Journey Starts Here Section ═══ */}
       <section className="section">
         <div className="container">
-          <div className="journey-card animate-reveal">
-            <div className="journey-card__glow"></div>
-            <div className="section-header text-center" style={{ marginBottom: '2.5rem' }}>
-              <h2 className="section-header__title">Your Journey Starts Here</h2>
-              <p className="section-header__desc" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                Navigating the world of premium cannabis can be complex. Let Whole Melts be your guide. 
-                Explore our detailed product pages to learn about the unique properties of each extract, 
-                find usage tips, and discover which Whole Melts carts or concentrates align with your desired experience.
-              </p>
+          <RevealSection>
+            <div className="home-story">
+              <div className="home-story__copy">
+                <div className="section-header">
+                  <span className="section-header__tag">Craft</span>
+                  <h2 className="section-header__title">The pinnacle of solvent-free concentrates</h2>
+                </div>
+                <p>
+                  Whole Melt Extracts is the official destination for premium, solvent-free cannabis concentrates.
+                  Each batch is crafted to preserve full-spectrum cannabinoids and terpenes — rich flavor, clean potency,
+                  connoisseur-grade results.
+                </p>
+                <div style={{ marginTop: '1.75rem' }}>
+                  <Link to="/lab-results" className="btn btn-outline">
+                    View Lab Hub <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+              <div className="home-proof">
+                {[
+                  { icon: <Shield size={22} />, title: 'Authentic Whole Melts', desc: 'Residue-free signature solventless extracts.' },
+                  { icon: <Zap size={22} />, title: 'Whole Melts Carts', desc: 'Live resin in ready-to-use vaporizer format.' },
+                  { icon: <Leaf size={22} />, title: 'Live Resin', desc: 'Fresh-frozen flower for intact terpene profiles.' },
+                  { icon: <Award size={22} />, title: 'Full Spectrum', desc: 'Flavor-forward concentrates for discerning users.' },
+                ].map((item) => (
+                  <div key={item.title} className="home-proof__item">
+                    <div className="home-proof__icon">{item.icon}</div>
+                    <div>
+                      <h3 className="home-proof__title">{item.title}</h3>
+                      <p className="home-proof__desc">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-center">
-              <Link to="/shop" className="btn btn-primary btn-lg" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Browse Our Premium Collections
-              </Link>
+          </RevealSection>
+
+          {/* Animated Stats */}
+          <RevealSection>
+            <div className="home-stats-bar" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginTop: '3rem', paddingTop: '2.5rem', borderTop: '1px solid var(--glass-border)' }}>
+              <AnimatedStat end={500} suffix="+" label="Strains Available" />
+              <AnimatedStat end={12000} suffix="+" label="Orders Shipped" />
+              <AnimatedStat end={99} suffix="%" label="Purity Tested" />
+              <AnimatedStat end={48} label="States Served" />
             </div>
+          </RevealSection>
+
+          <div style={{ marginTop: '4rem' }}>
+            <RevealSection>
+              <VerificationGuide />
+            </RevealSection>
           </div>
         </div>
       </section>
 
-      {/* ═══ Featured Products ═══ */}
       <section className="section bg-deep">
         <div className="container">
-          <div className="section-header animate-reveal">
-            <span className="section-header__tag">Elite Selection</span>
-            <h2 className="section-header__title">Whole Melt Extracts Official</h2>
-            <p className="section-header__desc">Curated selection of our most popular products.</p>
-          </div>
+          <RevealSection>
+            <div className="section-header">
+              <span className="section-header__tag">Elite Selection</span>
+              <h2 className="section-header__title">Featured extracts</h2>
+              <p className="section-header__desc">Curated picks from our most requested disposables, carts, and concentrates.</p>
+            </div>
+          </RevealSection>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-              <Loader2 className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} size={32} />
-              <p>Loading Elite Selection...</p>
+              <Loader2 style={{ animation: 'spin 1.5s linear infinite' }} size={32} />
+              <p>Loading selection…</p>
             </div>
           ) : (
-            <div className="product-grid animate-reveal" style={{ animationDelay: '0.2s' }}>
+            <div className="product-grid">
               {featured.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           )}
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <div style={{ marginTop: '2.5rem' }}>
             <Link to="/shop" className="btn btn-outline">View All Products <ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>
 
-      {/* ═══ Reviews Section ═══ */}
       <section className="section">
         <div className="container">
-          <div className="section-header text-center">
-            <h2 className="section-header__title">What our customers have to say</h2>
-            <p className="section-header__desc">Verified testimonials from the Whole Melt community.</p>
-          </div>
+          <RevealSection>
+            <div className="section-header section-header--center">
+              <span className="section-header__tag">Community</span>
+              <h2 className="section-header__title">What customers say</h2>
+              <p className="section-header__desc">Verified notes from the Whole Melt community.</p>
+            </div>
+          </RevealSection>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginTop: '4rem' }}>
-            {[
-              {
-                name: "Sierra M.",
-                loc: "Portland, OR",
-                text: "The Blue Dream cartridge is my new secret weapon. It’s incredibly discreet with almost no scent, but don’t let that fool you—the effects are strong and fast-acting. Perfect for daytime use. The hardware is great too; no clogging issues like I’ve had with other brands. Wholemelts has earned a loyal customer.",
-                rating: 5
-              },
-              {
-                name: "David L.",
-                loc: "Toronto, ON",
-                text: "First time trying Whole Melts, and I’m impressed. I got the Gelato 41 badder. The consistency is perfect, and the vapor is unbelievably smooth—no throat burn. The effects are powerfully relaxing but very clear-headed. The quality is undeniable.",
-                rating: 4
-              },
-              {
-                name: "Michael T.",
-                loc: "Los Angeles, CA",
-                text: "I’ve tried countless brands, but Whole Melts carts are on another level. The flavor from the Super Lemon Haze cart was so vibrant and authentic—no weird chemical aftertaste at all. The high was clean, energetic, and exactly what I was hoping for. This is what 'live resin' is supposed to be.",
-                rating: 5
-              }
-            ].map((review, i) => (
-              <div key={i} className="glass" style={{ padding: '2.5rem', position: 'relative' }}>
-                <div style={{ display: 'flex', gap: '0.25rem', color: 'var(--primary)', marginBottom: '1.5rem' }}>
-                  {[...Array(5)].map((_, starIdx) => (
-                    <Star key={starIdx} size={16} fill={starIdx < review.rating ? "var(--primary)" : "transparent"} />
-                  ))}
-                </div>
-                <p style={{ fontStyle: 'italic', marginBottom: '2rem', lineHeight: '1.7', color: 'var(--text-secondary)' }}>"{review.text}"</p>
-                <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>{review.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.loc}</div>
+          <RevealSection>
+            <div className="review-rail">
+              {[
+                {
+                  name: 'Sierra M.',
+                  loc: 'Portland, OR',
+                  text: 'The Blue Dream cartridge is discreet with almost no scent — strong, fast-acting effects and hardware that doesn\'t clog.',
+                  rating: 5
+                },
+                {
+                  name: 'David L.',
+                  loc: 'Toronto, ON',
+                  text: 'Gelato 41 badder consistency is perfect. Smooth vapor, no throat burn, powerfully relaxing yet clear-headed.',
+                  rating: 4
+                },
+                {
+                  name: 'Michael T.',
+                  loc: 'Los Angeles, CA',
+                  text: 'Super Lemon Haze tasted vibrant and authentic — clean energetic high. This is what live resin is supposed to be.',
+                  rating: 5
+                }
+              ].map((review) => (
+                <article key={review.name} className="review-item">
+                  <div className="review-item__stars">
+                    {[...Array(5)].map((_, starIdx) => (
+                      <Star key={starIdx} size={14} fill={starIdx < review.rating ? 'var(--primary)' : 'transparent'} />
+                    ))}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(212, 175, 55, 0.1)', padding: '0.35rem 0.75rem', borderRadius: '1rem' }}>
-                    <ShieldCheck size={12} /> Verified Buyer
+                  <p className="review-item__text">"{review.text}"</p>
+                  <div className="review-item__meta">
+                    <div>
+                      <div className="review-item__name">{review.name}</div>
+                      <div className="review-item__loc">{review.loc}</div>
+                    </div>
+                    <div className="review-item__badge">
+                      <ShieldCheck size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                      Verified
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center" style={{ marginTop: '3rem' }}>
-            <Link to="/contact" className="btn btn-outline">Leave a Review</Link>
-          </div>
+                </article>
+              ))}
+            </div>
+          </RevealSection>
         </div>
       </section>
 
-      {/* ═══ Sale Section ═══ */}
       {!loading && onSale.length > 0 && (
         <section className="section bg-deep">
           <div className="container">
-            <div className="section-header">
-              <span className="section-header__tag">Limited Time</span>
-              <h2 className="section-header__title">On Sale Now</h2>
-            </div>
+            <RevealSection>
+              <div className="section-header">
+                <span className="section-header__tag">Limited Time</span>
+                <h2 className="section-header__title">On sale now</h2>
+                <p className="section-header__desc">Selected drops at a reduced price while stock lasts.</p>
+              </div>
+            </RevealSection>
             <div className="product-grid">
               {onSale.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
@@ -238,26 +324,26 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ═══ Final Trust Badges ═══ */}
-      <section className="section bg-deep text-center" style={{ borderTop: '1px solid var(--glass-border)' }}>
+      <section className="section">
         <div className="container">
-          <div className="trust-grid">
-            {[
-              { icon: <Zap size={24} />, title: 'Swift Payment', desc: 'Transactions confirmed within minutes.' },
-              { icon: <Truck size={24} />, title: 'Reliable Delivery', desc: 'Quick, secure, and discreet packaging.' },
-              { icon: <HeadphonesIcon size={24} />, title: '24/7 Support', desc: 'Dedicated customer service at sales@wholemeltscarts.us' },
-              { icon: <Clock size={24} />, title: 'Fast Processing', desc: 'Orders processed same day for rapid shipping.' },
-            ].map((b, i) => (
-              <div key={i} style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--primary)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>{b.icon}</div>
-                <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>{b.title}</h4>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.desc}</p>
-              </div>
-            ))}
-          </div>
+          <RevealSection>
+            <div className="service-strip">
+              {[
+                { icon: <Zap size={22} />, title: 'Swift Payment', desc: 'Transactions confirmed within minutes.' },
+                { icon: <Truck size={22} />, title: 'Reliable Delivery', desc: 'Secure, discreet packaging.' },
+                { icon: <HeadphonesIcon size={22} />, title: 'Dedicated Support', desc: 'sales@wholemeltscarts.us' },
+                { icon: <Clock size={22} />, title: 'Fast Processing', desc: 'Same-day order processing when possible.' },
+              ].map((b) => (
+                <div key={b.title} className="service-strip__item">
+                  <div className="service-strip__icon">{b.icon}</div>
+                  <h4 className="service-strip__title">{b.title}</h4>
+                  <p className="service-strip__desc">{b.desc}</p>
+                </div>
+              ))}
+            </div>
+          </RevealSection>
         </div>
       </section>
     </>
   );
 }
-

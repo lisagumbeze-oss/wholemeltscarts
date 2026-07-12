@@ -22,32 +22,29 @@ export default function AboutPage() {
 
       {/* ═══ Mission & History ═══ */}
       <section className="section bg-deep">
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <div className="animate-reveal">
-              <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
-                  <History size={36} />
-                </div>
-                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.8rem' }}>Our History</h2>
-                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', marginBottom: '1.5rem' }}>
-                  In a young industry, our team has more than 100 years of combined experience in cannabis development. 
-                  We have evolved from a small collective of extraction enthusiasts into a global standard for solvent-free purity.
-                </p>
-                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8' }}>
-                  We operate the sole, legal Official Whole Melt Extracts online store, serving as the trusted provincial wholesaler for private retail stores and a direct-to-connoisseur platform worldwide.
-                </p>
-              </div>
+        <div className="container about-split">
+          <div className="about-block animate-reveal">
+            <div style={{ color: 'var(--primary)', marginBottom: '1.25rem' }}>
+              <History size={32} />
             </div>
-            <div className="animate-reveal" style={{ animationDelay: '0.2s' }}>
-              <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>
-                We Are Your <span className="text-gradient">Favorite Store</span>
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', lineHeight: '2', marginBottom: '2rem', fontSize: '1.1rem' }}>
-                At Whole Melt, we invitation to experience a level of quality and purity that transcends expectations, 
-                setting a new standard in the cannabis industry. Our specialized focus is on crafting premium-grade 
-                extracts that redefine what it means to be "top-shelf."
-              </p>
+            <h2 style={{ marginBottom: '1.25rem', fontSize: '1.75rem' }}>Our history</h2>
+            <p>
+              In a young industry, our team has more than 100 years of combined experience in cannabis development.
+              We have evolved from a small collective of extraction enthusiasts into a global standard for solvent-free purity.
+            </p>
+            <p>
+              We operate the sole, legal Official Whole Melt Extracts online store, serving as the trusted provincial wholesaler for private retail stores and a direct-to-connoisseur platform worldwide.
+            </p>
+          </div>
+          <div className="animate-reveal" style={{ animationDelay: '0.15s' }}>
+            <h2 style={{ fontSize: '2.25rem', marginBottom: '1.5rem', fontFamily: 'var(--font-serif)' }}>
+              We are your <span className="text-gradient">favorite store</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.85, marginBottom: '1.5rem', fontSize: '1.05rem' }}>
+              At Whole Melt, we invite you to experience a level of quality and purity that transcends expectations,
+              setting a new standard in the cannabis industry. Our specialized focus is on crafting premium-grade
+              extracts that redefine what it means to be top-shelf.
+            </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', color: 'var(--text-primary)' }}>
                   <CheckCircle2 size={18} color="var(--primary)" />
@@ -66,7 +63,6 @@ export default function AboutPage() {
                   <span style={{ fontSize: '0.9rem' }}>Discreet Worldwide Shipping</span>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </section>
@@ -83,36 +79,27 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginTop: '4rem' }}>
-            <div className="glass hover-lift" style={{ padding: '2.5rem', textAlign: 'center' }}>
-              <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
-                <Award size={40} style={{ margin: '0 auto' }} />
+          <div className="home-proof" style={{ marginTop: '3rem' }}>
+            <div className="home-proof__item">
+              <div className="home-proof__icon"><Award size={22} /></div>
+              <div>
+                <h3 className="home-proof__title">Elite potency</h3>
+                <p className="home-proof__desc">Full-spectrum cannabinoids and terpenes preserved for max impact.</p>
               </div>
-              <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>Elite Potency</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Our meticulous extraction process preserves the full spectrum of cannabinoids and terpenes for max impact. 
-                This ensures a multi-layered, nuanced experience that shorter extraction methods simply cannot match.
-              </p>
             </div>
-            <div className="glass hover-lift" style={{ padding: '2.5rem', textAlign: 'center' }}>
-              <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
-                <Heart size={40} style={{ margin: '0 auto' }} />
+            <div className="home-proof__item">
+              <div className="home-proof__icon"><Heart size={22} /></div>
+              <div>
+                <h3 className="home-proof__title">100% organic</h3>
+                <p className="home-proof__desc">Sourced from sustainable farms with strict cultivation standards.</p>
               </div>
-              <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>100% Organic</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Crafted from the finest parts of the plant, free from contaminants, residues, or artificial additives. 
-                We source only from sustainable farms that adhere to strict organic cultivation standards.
-              </p>
             </div>
-            <div className="glass hover-lift" style={{ padding: '2.5rem', textAlign: 'center' }}>
-              <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
-                <CheckCircle2 size={40} style={{ margin: '0 auto' }} />
+            <div className="home-proof__item">
+              <div className="home-proof__icon"><CheckCircle2 size={22} /></div>
+              <div>
+                <h3 className="home-proof__title">Global trust</h3>
+                <p className="home-proof__desc">Trusted by connoisseurs who prioritize safety and authenticity.</p>
               </div>
-              <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-sans)', fontSize: '1.1rem' }}>Global Trust</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Voted as a favorite store by medical patients and connoisseurs who prioritize safety and legality. 
-                Whole Melt Extracts has become a household name in the premium concentrate community.
-              </p>
             </div>
           </div>
         </div>

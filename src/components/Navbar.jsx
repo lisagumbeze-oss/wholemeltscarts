@@ -1,10 +1,8 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useState } from 'react';
-
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const { cartCount, openDrawer } = useCart();
@@ -12,7 +10,15 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -20,6 +26,7 @@ export default function Navbar() {
       navigate(`/shop?q=${encodeURIComponent(searchQuery)}`);
       setSearchOpen(false);
       setSearchQuery('');
+      setMobileOpen(false);
     }
   };
 
@@ -28,16 +35,17 @@ export default function Navbar() {
     { to: '/shop', label: 'Shop' },
     { to: '/strains', label: 'Strains' },
     { to: '/lab-results', label: 'Lab Hub' },
-    { to: '/about', label: 'About Us' },
+    { to: '/about', label: 'About' },
     { to: '/faq', label: 'FAQs' },
     { to: '/contact', label: 'Contact' },
   ];
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="navbar__inner">
         <Link to="/" className="navbar__logo">
-          <span>WHOLE MELT EXTRACTS</span>
+          <span className="navbar__logo-mark">Whole Melt</span>
+          <span className="navbar__logo-sub">Extracts Official</span>
         </Link>
 
         {!searchOpen ? (
@@ -51,18 +59,23 @@ export default function Navbar() {
             ))}
           </ul>
         ) : (
-          <form onSubmit={handleSearch} style={{ flex: 1, margin: '0 2rem', maxWidth: '600px' }}>
+          <form onSubmit={handleSearch} className="navbar__search-form">
             <div style={{ position: 'relative' }}>
-              <input 
+              <input
                 autoFocus
-                type="text" 
-                placeholder="Search premium extracts..." 
+                type="text"
+                placeholder="Search extracts, carts, strains…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="form-input"
                 style={{ paddingRight: '3rem', background: 'rgba(255,255,255,0.03)' }}
               />
-              <button type="button" onClick={() => setSearchOpen(false)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                aria-label="Close search"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -71,36 +84,32 @@ export default function Navbar() {
 
         <div className="navbar__actions">
           {!searchOpen && (
-            <button className="navbar__cart-btn" onClick={() => setSearchOpen(true)}>
-              <Search size={22} />
+            <button className="navbar__cart-btn" onClick={() => setSearchOpen(true)} aria-label="Search">
+              <Search size={20} />
             </button>
           )}
-          <Link to="/wishlist" className="navbar__cart-btn">
-            <Heart size={22} fill={wishlist.length > 0 ? "var(--primary)" : "none"} style={{ color: wishlist.length > 0 ? "var(--primary)" : "inherit" }} />
-            {wishlist.length > 0 && <span className="navbar__cart-count" style={{ background: 'var(--text-primary)', color: '#000' }}>{wishlist.length}</span>}
+          <Link to="/wishlist" className="navbar__cart-btn" aria-label="Wishlist">
+            <Heart size={20} fill={wishlist.length > 0 ? 'var(--primary)' : 'none'} style={{ color: wishlist.length > 0 ? 'var(--primary)' : 'inherit' }} />
+            {wishlist.length > 0 && <span className="navbar__cart-count">{wishlist.length}</span>}
           </Link>
-          <button className="navbar__cart-btn" onClick={openDrawer}>
-            <ShoppingCart size={22} />
+          <button className="navbar__cart-btn" onClick={openDrawer} aria-label="Cart">
+            <ShoppingCart size={20} />
             {cartCount > 0 && <span className="navbar__cart-count">{cartCount}</span>}
           </button>
-          <button className="navbar__mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          <button className="navbar__mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div style={{
-          padding: '1rem clamp(1rem, 4vw, 3rem)',
-          borderTop: '1px solid var(--glass-border)',
-          background: 'rgba(5,5,5,0.95)',
-        }}>
+        <div className="navbar__mobile-panel">
           {links.map(link => (
             <NavLink
               key={link.to}
               to={link.to}
               onClick={() => setMobileOpen(false)}
-              style={{ display: 'block', padding: '0.75rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}
+              className={({ isActive }) => isActive ? 'active' : ''}
             >
               {link.label}
             </NavLink>

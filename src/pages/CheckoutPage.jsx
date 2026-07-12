@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import PaymentMethods from '../components/PaymentMethods';
-import { CheckCircle, Truck, Bitcoin } from 'lucide-react';
+import { CheckCircle, Truck, Bitcoin, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -213,8 +213,8 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="container section" style={{ textAlign: 'center', minHeight: '50vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1rem' }}>Nothing to Checkout</h1>
+      <div className="container empty-state">
+        <h1>Nothing to checkout</h1>
         <Link to="/shop" className="btn btn-primary">Shop Now</Link>
       </div>
     );
@@ -222,140 +222,134 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <div className="page-header" style={{ paddingBottom: '1rem' }}>
-        <div className="container"><h1 className="page-header__title">Checkout</h1></div>
+      <div className="page-header page-header--left" style={{ paddingBottom: '1rem' }}>
+        <div className="container">
+          <h1 className="page-header__title">Checkout</h1>
+          <p className="page-header__desc">Secure payment and discreet fulfillment.</p>
+        </div>
       </div>
 
       <section className="section" style={{ paddingTop: '1rem' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '3rem', alignItems: 'start' }}>
-            {/* Form */}
+          <div className="funnel-layout">
             <form onSubmit={handleSubmit}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1.5rem' }}>Shipping Details</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group"><label className="form-label">First Name *</label><input className="form-input" name="firstName" value={form.firstName} onChange={handleChange} required /></div>
-                <div className="form-group"><label className="form-label">Last Name *</label><input className="form-input" name="lastName" value={form.lastName} onChange={handleChange} required /></div>
-              </div>
-              <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} required /></div>
-              <div className="form-group"><label className="form-label">Phone</label><input className="form-input" name="phone" value={form.phone} onChange={handleChange} /></div>
-              
-              <div className="form-group">
-                <label className="form-label">Country *</label>
-                <select className="form-input" name="country" value={form.country} onChange={handleChange} required>
-                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+              <div className="checkout-section">
+                <h2 className="checkout-section__title">Shipping details</h2>
+                <div className="checkout-grid-2">
+                  <div className="form-group"><label className="form-label">First Name *</label><input className="form-input" name="firstName" value={form.firstName} onChange={handleChange} required /></div>
+                  <div className="form-group"><label className="form-label">Last Name *</label><input className="form-input" name="lastName" value={form.lastName} onChange={handleChange} required /></div>
+                </div>
+                <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} required /></div>
+                <div className="form-group"><label className="form-label">Phone</label><input className="form-input" name="phone" value={form.phone} onChange={handleChange} /></div>
+                <div className="form-group">
+                  <label className="form-label">Country *</label>
+                  <select className="form-input" name="country" value={form.country} onChange={handleChange} required>
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="form-group"><label className="form-label">Address *</label><input className="form-input" name="address" value={form.address} onChange={handleChange} required /></div>
+                <div className="checkout-grid-2" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                  <div className="form-group"><label className="form-label">City *</label><input className="form-input" name="city" value={form.city} onChange={handleChange} required /></div>
+                  <div className="form-group"><label className="form-label">State *</label><input className="form-input" name="state" value={form.state} onChange={handleChange} required /></div>
+                  <div className="form-group"><label className="form-label">Zip *</label><input className="form-input" name="zip" value={form.zip} onChange={handleChange} required /></div>
+                </div>
               </div>
 
-              <div className="form-group"><label className="form-label">Address *</label><input className="form-input" name="address" value={form.address} onChange={handleChange} required /></div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                <div className="form-group"><label className="form-label">City *</label><input className="form-input" name="city" value={form.city} onChange={handleChange} required /></div>
-                <div className="form-group"><label className="form-label">State *</label><input className="form-input" name="state" value={form.state} onChange={handleChange} required /></div>
-                <div className="form-group"><label className="form-label">Zip *</label><input className="form-input" name="zip" value={form.zip} onChange={handleChange} required /></div>
-              </div>
-
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '2rem 0 1.5rem' }}>Shipping Method</h2>
-              <div style={{ display: 'grid', gap: '1rem' }}>
-                {shippingOptions
-                  .filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'))
-                  .map(opt => (
-                    <label key={opt.id} className={`glass ${shippingMethod === opt.id ? 'selected' : ''}`} style={{ 
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', cursor: 'pointer', borderRadius: 'var(--radius-md)',
-                      border: shippingMethod === opt.id ? '2px solid var(--primary)' : '1px solid var(--glass-border)'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Truck size={20} style={{ color: shippingMethod === opt.id ? 'var(--primary)' : 'inherit' }} />
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{opt.config.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{opt.config.condition}</div>
+              <div className="checkout-section">
+                <h2 className="checkout-section__title">Shipping method</h2>
+                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                  {shippingOptions
+                    .filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'))
+                    .map(opt => (
+                      <label
+                        key={opt.id}
+                        className={`shipping-option${shippingMethod === opt.id ? ' is-selected' : ''}`}
+                      >
+                        <div className="shipping-option__main">
+                          <Truck size={18} />
+                          <div>
+                            <div className="shipping-option__name">{opt.config.name}</div>
+                            <div className="shipping-option__meta">{opt.config.condition}</div>
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <span style={{ fontWeight: 700 }}>
-                          {Number(opt.config.rate) === 0 ? 'FREE' : `$${Number(opt.config.rate).toFixed(2)}`}
-                        </span>
-                        <input type="radio" name="shippingMethod" checked={shippingMethod === opt.id} onChange={() => setShippingMethod(opt.id)} />
-                      </div>
-                    </label>
-                  ))
-                }
-                {shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl')).length === 0 && (
-                  <div style={{ padding: '1rem', color: 'var(--text-muted)', fontStyle: 'italic', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)' }}>
-                    No shipping methods available for the selected region.
-                  </div>
-                )}
+                        <div className="shipping-option__price">
+                          {Number(opt.config.rate) === 0 ? 'Free' : `$${Number(opt.config.rate).toFixed(2)}`}
+                          <input type="radio" name="shippingMethod" checked={shippingMethod === opt.id} onChange={() => setShippingMethod(opt.id)} />
+                        </div>
+                      </label>
+                    ))}
+                  {shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl')).length === 0 && (
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No shipping methods available for the selected region.</p>
+                  )}
+                </div>
               </div>
 
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '2rem 0 1.5rem' }}>Payment Method</h2>
-              <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={paymentOptions} />
+              <div className="checkout-section">
+                <h2 className="checkout-section__title">Payment method</h2>
+                <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={paymentOptions} />
+                <div className="checkout-assurance">
+                  <ShieldCheck size={18} />
+                  <span>Orders are processed after payment confirmation. Include your order ID in payment memos.</span>
+                </div>
+              </div>
 
-              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '2rem' }} disabled={loading}>
-                {loading ? 'Processing...' : `Place Order — $${finalTotal.toFixed(2)}`}
+              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={loading}>
+                {loading ? 'Processing…' : `Place Order — $${finalTotal.toFixed(2)}`}
               </button>
             </form>
 
-            {/* Summary */}
-            <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', position: 'sticky', top: '90px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Your Order</h3>
+            <aside className="order-summary">
+              <h3 className="order-summary__title">Your order</h3>
               {cart.map(item => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>{item.name} × {item.qty}</span>
+                <div key={item.id} className="order-summary__row">
+                  <span>{item.name} × {item.qty}</span>
                   <span>${(parseFloat(item.price) * item.qty).toFixed(2)}</span>
                 </div>
               ))}
 
-              <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+              <div style={{ marginTop: '1.25rem', marginBottom: '1.25rem' }}>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input 
-                    type="text" 
-                    placeholder="Promo Code" 
-                    value={promoCode} 
+                  <input
+                    type="text"
+                    placeholder="Promo code"
+                    value={promoCode}
                     onChange={e => setPromoCode(e.target.value)}
                     className="form-input"
-                    style={{ flex: 1, padding: '0.6rem', background: 'rgba(0,0,0,0.2)' }}
+                    style={{ flex: 1 }}
                   />
-                  <button type="button" className="btn btn-outline" onClick={handleApplyCoupon}>Apply</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={handleApplyCoupon}>Apply</button>
                 </div>
-                {couponError && <p style={{ color: '#ff4d4f', fontSize: '0.8rem', marginTop: '0.5rem' }}>{couponError}</p>}
+                {couponError && <p style={{ color: '#e07070', fontSize: '0.8rem', marginTop: '0.5rem' }}>{couponError}</p>}
                 {appliedCoupon && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(76, 175, 80, 0.1)', border: '1px solid rgba(76, 175, 80, 0.3)', borderRadius: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4caf50', fontSize: '0.85rem' }}>
-                      <strong>{appliedCoupon.config.code}</strong> 
-                      <span>- {appliedCoupon.config.discount}</span>
-                    </div>
-                    <button type="button" style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }} onClick={removeCoupon}>Remove</button>
+                  <div className="order-summary__row order-summary__row--accent" style={{ marginTop: '0.75rem' }}>
+                    <span>{appliedCoupon.config.code}</span>
+                    <button type="button" className="shop-clear" onClick={removeCoupon}>Remove</button>
                   </div>
                 )}
               </div>
 
-              <div style={{ borderTop: '1px solid var(--glass-border)', marginTop: '1rem', paddingTop: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  <span>Subtotal</span>
-                  <span>${cartTotal.toFixed(2)}</span>
-                </div>
-                {appliedCoupon && discountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#4caf50' }}>
-                    <span>Discount Deduction</span>
-                    <span>-${discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  <span>Shipping</span>
-                  {appliedCoupon && appliedCoupon.config.discount.toLowerCase().includes('free ship') ? (
-                    <span style={{ color: '#4caf50' }}>Free</span>
-                  ) : (
-                    <span>{calculatedShipping === 0 ? 'Free' : `$${calculatedShipping.toFixed(2)}`}</span>
-                  )}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem' }}>
-                  <span>Total</span>
-                  <span style={{ color: 'var(--primary)' }}>${finalTotal.toFixed(2)}</span>
-                </div>
+              <div className="order-summary__row">
+                <span>Subtotal</span>
+                <span>${cartTotal.toFixed(2)}</span>
               </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1rem', lineHeight: '1.6' }}>
-                Your order ID: <strong>{orderId}</strong><br />
-                Orders are processed after payment confirmation.
+              {appliedCoupon && discountAmount > 0 && (
+                <div className="order-summary__row order-summary__row--accent">
+                  <span>Discount</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="order-summary__row">
+                <span>Shipping</span>
+                <span>{calculatedShipping === 0 ? 'Free' : `$${calculatedShipping.toFixed(2)}`}</span>
+              </div>
+              <div className="order-summary__row order-summary__row--total">
+                <span>Total</span>
+                <span style={{ color: 'var(--primary)' }}>${finalTotal.toFixed(2)}</span>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1rem', lineHeight: 1.6 }}>
+                Order ID: <strong>{orderId}</strong>
               </p>
-            </div>
+            </aside>
           </div>
         </div>
       </section>

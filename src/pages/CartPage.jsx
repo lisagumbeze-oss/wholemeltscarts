@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -15,12 +16,11 @@ export default function CartPage() {
     setIsApplying(true);
     setPromoError('');
     setPromoSuccess('');
-    
-    // Simulate API call
+
     setTimeout(() => {
       if (promoCode.toUpperCase() === 'WHOLE20') {
         setDiscount(cartTotal * 0.2);
-        setPromoSuccess('20% discount applied!');
+        setPromoSuccess('20% discount applied.');
       } else {
         setPromoError('Invalid promo code');
       }
@@ -32,9 +32,9 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="container section" style={{ textAlign: 'center', minHeight: '50vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1rem' }}>Your Cart is Empty</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Add some premium products to get started.</p>
+      <div className="container empty-state">
+        <h1>Your cart is empty</h1>
+        <p>Add premium extracts to get started.</p>
         <Link to="/shop" className="btn btn-primary">Shop Now <ArrowRight size={16} /></Link>
       </div>
     );
@@ -42,127 +42,100 @@ export default function CartPage() {
 
   return (
     <>
-      <div className="page-header" style={{ paddingBottom: '1rem' }}>
+      <div className="page-header page-header--left" style={{ paddingBottom: '1rem' }}>
         <div className="container">
-          <h1 className="page-header__title">Your Cart ({cartCount})</h1>
+          <h1 className="page-header__title">Cart ({cartCount})</h1>
+          <p className="page-header__desc">Review your selection before checkout.</p>
         </div>
       </div>
 
       <section className="section" style={{ paddingTop: '1rem' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '3rem', alignItems: 'start' }}>
-            {/* Cart Items */}
+          <div className="funnel-layout">
             <div>
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
-                  <img className="cart-item__img" src={item.images?.[0] || item.image} alt={item.name}
-                    onError={(e) => { 
-                        const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
-                        const currentSrc = e.target.src;
-                        const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
-                        if (currentSrc.lastIndexOf('.') === -1) {
-                          e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM';
-                          return;
-                        }
-                        const currentExt = currentSrc.substring(currentSrc.lastIndexOf('.')).toLowerCase();
-                        
-                        const nextIndex = extensions.indexOf(currentExt) + 1;
-                        if (nextIndex > 0 && nextIndex < extensions.length) {
-                            e.target.src = base + extensions[nextIndex];
-                        } else if (nextIndex === 0) {
-                            e.target.src = base + extensions[0];
-                        } else {
-                            e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM';
-                        }
-                    }} />
+                  <img
+                    className="cart-item__img"
+                    src={item.images?.[0] || item.image}
+                    alt={item.name}
+                    onError={(e) => { e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }}
+                  />
                   <div>
                     <Link to={`/product/${item.slug || item.id}`} className="cart-item__name" style={{ color: 'var(--text-primary)' }}>
                       {item.name}
                     </Link>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{item.category?.replace('-', ' ')}</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                      {item.category?.replace('-', ' ')}
+                    </p>
                   </div>
                   <div className="cart-item__qty">
-                    <button onClick={() => updateQty(item.id, item.qty - 1)}><Minus size={14} /></button>
+                    <button type="button" onClick={() => updateQty(item.id, item.qty - 1)}><Minus size={14} /></button>
                     <span>{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, item.qty + 1)}><Plus size={14} /></button>
+                    <button type="button" onClick={() => updateQty(item.id, item.qty + 1)}><Plus size={14} /></button>
                   </div>
                   <span className="cart-item__price">${(parseFloat(item.price) * item.qty).toFixed(2)}</span>
-                  <button className="cart-item__remove" onClick={() => removeFromCart(item.id)}>
+                  <button type="button" className="cart-item__remove" onClick={() => removeFromCart(item.id)}>
                     <Trash2 size={18} />
                   </button>
                 </div>
               ))}
             </div>
 
-            {/* Summary */}
-            <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', position: 'sticky', top: '90px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Order Summary</h3>
+            <aside className="order-summary">
+              <h3 className="order-summary__title">Order summary</h3>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              <div className="order-summary__row">
                 <span>Subtotal ({cartCount} items)</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
-              
+
               {discount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--primary)' }}>
-                  <span>Promo Discount</span>
+                <div className="order-summary__row order-summary__row--accent">
+                  <span>Promo discount</span>
                   <span>-${discount.toFixed(2)}</span>
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              <div className="order-summary__row">
                 <span>Shipping</span>
-                <span style={{ color: 'var(--accent)' }}>Free</span>
+                <span style={{ color: 'var(--accent)' }}>Calculated at checkout</span>
               </div>
 
-              {/* Promo Field */}
-              <form onSubmit={applyPromo} style={{ margin: '1.5rem 0' }}>
+              <form onSubmit={applyPromo} style={{ margin: '1.25rem 0' }}>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Enter Promo Code" 
-                        className="form-input" 
-                        value={promoCode}
-                        onChange={e => setPromoCode(e.target.value)}
-                        style={{ padding: '0.5rem', fontSize: '0.85rem' }}
-                    />
-                    <button 
-                        type="submit" 
-                        className="btn btn-secondary" 
-                        style={{ padding: '0 1rem', fontSize: '0.8rem' }}
-                        disabled={isApplying || !promoCode}
-                    >
-                        {isApplying ? '...' : 'Apply'}
-                    </button>
+                  <input
+                    type="text"
+                    placeholder="Promo code"
+                    className="form-input"
+                    value={promoCode}
+                    onChange={e => setPromoCode(e.target.value)}
+                    style={{ fontSize: '0.85rem' }}
+                  />
+                  <button type="submit" className="btn btn-outline btn-sm" disabled={isApplying || !promoCode}>
+                    {isApplying ? '…' : 'Apply'}
+                  </button>
                 </div>
-                {promoError && <p style={{ color: '#ff4d4f', fontSize: '0.75rem', marginTop: '0.5rem' }}>{promoError}</p>}
+                {promoError && <p style={{ color: '#e07070', fontSize: '0.75rem', marginTop: '0.5rem' }}>{promoError}</p>}
                 {promoSuccess && <p style={{ color: 'var(--primary)', fontSize: '0.75rem', marginTop: '0.5rem' }}>{promoSuccess}</p>}
               </form>
 
-              <div style={{ borderTop: '1px solid var(--glass-border)', margin: '1rem 0', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.15rem' }}>
+              <div className="order-summary__row order-summary__row--total">
                 <span>Total</span>
                 <span style={{ color: 'var(--primary)' }}>${finalTotal.toFixed(2)}</span>
               </div>
 
               {cartTotal < 100 && (
-                <div style={{ 
-                  background: 'rgba(212, 175, 55, 0.1)', 
-                  border: '1px solid var(--accent)', 
-                  padding: '1rem', 
-                  borderRadius: 'var(--radius-md)', 
-                  marginBottom: '1rem',
-                  fontSize: '0.85rem',
-                  color: 'var(--accent)'
-                }}>
-                  Minimum order amount is $100. Please add ${(100 - cartTotal).toFixed(2)} more to continue.
-                </div>
+                <p className="min-order-notice">
+                  Minimum order is $100. Add ${(100 - cartTotal).toFixed(2)} more to checkout.
+                </p>
               )}
 
-              <Link 
-                to={cartTotal >= 100 ? "/checkout" : "#"} 
-                className={`btn btn-primary ${cartTotal < 100 ? 'disabled' : ''}`} 
-                style={{ 
-                  width: '100%', 
+              <Link
+                to={cartTotal >= 100 ? '/checkout' : '#'}
+                className="btn btn-primary"
+                style={{
+                  width: '100%',
                   marginTop: '1rem',
                   opacity: cartTotal < 100 ? 0.5 : 1,
                   cursor: cartTotal < 100 ? 'not-allowed' : 'pointer'
@@ -170,7 +143,7 @@ export default function CartPage() {
                 onClick={(e) => {
                   if (cartTotal < 100) {
                     e.preventDefault();
-                    alert("Minimum order amount is $100. Please add more items to your cart.");
+                    alert('Minimum order amount is $100. Please add more items to your cart.');
                   }
                 }}
               >
@@ -179,7 +152,7 @@ export default function CartPage() {
               <Link to="/shop" className="btn btn-outline" style={{ width: '100%', marginTop: '0.75rem' }}>
                 Continue Shopping
               </Link>
-            </div>
+            </aside>
           </div>
         </div>
       </section>

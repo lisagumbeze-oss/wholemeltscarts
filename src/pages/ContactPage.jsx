@@ -61,67 +61,52 @@ export default function ContactPage() {
       </div>
 
       <section className="section" style={{ paddingTop: '2rem' }}>
-        <div className="container" style={{ maxWidth: '900px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
-            {/* Contact Info */}
-            <div>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Get in Touch</h2>
+        <div className="container contact-grid">
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Get in touch</h2>
 
-              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  <Mail size={18} style={{ color: 'var(--primary)' }} />
-                  <strong>Email</strong>
-                </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>sales@wholemeltscarts.us</p>
-              </div>
-
-              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  <MessageSquare size={18} style={{ color: 'var(--primary)' }} />
-                  <strong>Telegram</strong>
-                </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>@wholemeltscartsus</p>
-              </div>
-
-              <div className="glass" style={{ padding: '1.5rem', marginBottom: '1rem', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  <MapPin size={18} style={{ color: 'var(--primary)' }} />
-                  <strong>Address</strong>
-                </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>
-                  2401 Zephyr Cv{"\n"}
-                  Rocklin, California(CA), 95677
-                </p>
-              </div>
-
-              <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
-                  Our support team is available 24/7. We typically respond within 1-2 hours during business hours. For urgent order inquiries, please include your Order ID.
-                </p>
-              </div>
+            <div className="contact-card">
+              <div className="contact-card__label"><Mail size={18} /> Email</div>
+              <p>sales@wholemeltscarts.us</p>
             </div>
 
-            {/* Form */}
-            <div>
-              {submitted ? (
-                <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-lg)' }}>
-                  <Send size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
-                  <h3 style={{ marginBottom: '0.5rem' }}>Message Sent!</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>We'll get back to you as soon as possible.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit}>
-                  {error && <div style={{ color: '#ff4d4f', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
-                  <div className="form-group"><label className="form-label">Name *</label><input className="form-input" name="name" value={form.name} onChange={handleChange} required /></div>
-                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} required /></div>
-                  <div className="form-group"><label className="form-label">Subject</label><input className="form-input" name="subject" value={form.subject} onChange={handleChange} /></div>
-                  <div className="form-group"><label className="form-label">Message *</label><textarea className="form-textarea" name="message" value={form.message} onChange={handleChange} required placeholder="How can we help?" /></div>
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading ? 'Sending...' : <><Send size={16} /> Send Message</>}
-                  </button>
-                </form>
-              )}
+            <div className="contact-card">
+              <div className="contact-card__label"><MessageSquare size={18} /> Telegram</div>
+              <p>@wholemeltscartsus</p>
             </div>
+
+            <div className="contact-card">
+              <div className="contact-card__label"><MapPin size={18} /> Address</div>
+              <p style={{ whiteSpace: 'pre-line' }}>
+                2401 Zephyr Cv{'\n'}
+                Rocklin, California (CA), 95677
+              </p>
+            </div>
+
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.7, marginTop: '1rem' }}>
+              Our support team is available 24/7. Include your order ID for faster order inquiries.
+            </p>
+          </div>
+
+          <div>
+            {submitted ? (
+              <div className="empty-state" style={{ minHeight: 'auto', padding: '3rem 1rem' }}>
+                <Send size={36} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
+                <h3 style={{ marginBottom: '0.5rem' }}>Message sent</h3>
+                <p>We'll get back to you as soon as possible.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                {error && <div style={{ color: '#e07070', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+                <div className="form-group"><label className="form-label">Name *</label><input className="form-input" name="name" value={form.name} onChange={handleChange} required /></div>
+                <div className="form-group"><label className="form-label">Email *</label><input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} required /></div>
+                <div className="form-group"><label className="form-label">Subject</label><input className="form-input" name="subject" value={form.subject} onChange={handleChange} /></div>
+                <div className="form-group"><label className="form-label">Message *</label><textarea className="form-textarea" name="message" value={form.message} onChange={handleChange} required placeholder="How can we help?" /></div>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+                  {loading ? 'Sending…' : <><Send size={16} /> Send Message</>}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>

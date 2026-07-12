@@ -10,11 +10,12 @@ export default function TermsPage() {
         canonical="/terms"
       />
       <div className="section" style={{ paddingTop: '5rem' }}>
-        <div className="container" style={{ maxWidth: '900px' }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>
-            Terms and <span className="text-gradient">Conditions</span>
-          </h1>
-          <div className="glass" style={{ padding: '3rem', borderRadius: '2rem', color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '1rem' }}>
+        <div className="container content-page">
+          <div className="page-header page-header--left" style={{ padding: '0 0 2rem' }}>
+            <span className="section-header__tag">Legal</span>
+            <h1 className="page-header__title">Terms & conditions</h1>
+          </div>
+          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '1rem' }}>
             <p style={{ marginBottom: '1.5rem' }}><strong>Last Updated: October 2025</strong></p>
             
             <h2 style={{ color: 'var(--text-primary)', marginTop: '2.5rem', marginBottom: '1rem', fontSize: '1.4rem' }}>1. Introduction & Acceptance</h2>

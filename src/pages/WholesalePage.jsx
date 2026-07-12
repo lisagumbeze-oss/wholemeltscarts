@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Truck, ShieldCheck, Mail, Send, Award, Globe, Database } from 'lucide-react';
+import { useState } from 'react';
+import { Send, Award, Globe, Database, ShieldCheck } from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function WholesalePage() {
@@ -71,44 +71,41 @@ export default function WholesalePage() {
             <div className="animate-reveal">
               <h2 style={{ fontSize: '1.8rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>Why Partner With Us?</h2>
               
-              <div style={{ display: 'grid', gap: '2rem' }}>
+              <div className="home-proof">
                 {[
                   {
-                    icon: <Award className="text-secondary" />,
-                    title: "Master Case Tier Pricing",
-                    desc: "Unlock absolute lowest prices per unit when ordering in bulk (50+ units). Direct-from-lab pricing with no middleman markup."
+                    icon: <Award size={20} />,
+                    title: 'Master case tier pricing',
+                    desc: 'Lowest per-unit pricing at 50+ units. Direct-from-lab with no middleman markup.'
                   },
                   {
-                    icon: <Globe className="text-secondary" />,
-                    title: "Global Stealth Logistics",
-                    desc: "Our dedicated B2B logistics team uses multi-layered stealth packaging to ensure 99.9% delivery success across the USA, Canada, and Europe."
+                    icon: <Globe size={20} />,
+                    title: 'Global stealth logistics',
+                    desc: 'Multi-layered stealth packaging for reliable delivery across USA, Canada, and Europe.'
                   },
                   {
-                    icon: <ShieldCheck className="text-secondary" />,
-                    title: "Authenticity Guarantee",
-                    desc: "Every order is batch-scanned and verified before departure. We provide unique COA (Certificate of Analysis) data for all wholesale batches."
+                    icon: <ShieldCheck size={20} />,
+                    title: 'Authenticity guarantee',
+                    desc: 'Every order is batch-scanned with COA data for all wholesale batches.'
                   },
                   {
-                    icon: <Database className="text-secondary" />,
-                    title: "Inventory Priority",
-                    desc: "Wholesale partners get early access to limited edition drops, Fusion collaborations, and V6 inventory before they hit the retail market."
+                    icon: <Database size={20} />,
+                    title: 'Inventory priority',
+                    desc: 'Early access to limited drops and V6 inventory before retail release.'
                   }
-                ].map((benefit, i) => (
-                  <div key={i} className="glass hover-lift" style={{ padding: '1.5rem', display: 'flex', gap: '1.5rem', borderRadius: '1.25rem' }}>
-                    <div style={{ padding: '0.75rem', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '0.75rem', height: 'fit-content' }}>
-                      {benefit.icon}
-                    </div>
+                ].map((benefit) => (
+                  <div key={benefit.title} className="home-proof__item">
+                    <div className="home-proof__icon">{benefit.icon}</div>
                     <div>
-                      <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{benefit.title}</h3>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>{benefit.desc}</p>
+                      <h3 className="home-proof__title">{benefit.title}</h3>
+                      <p className="home-proof__desc">{benefit.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* ═══ Right: Inquiry Form ═══ */}
-            <div className="glass sticky-top animate-reveal" style={{ padding: '2.5rem', borderRadius: '2rem', top: '2rem' }}>
+            <aside className="order-summary">
               {submitted ? (
                 <div style={{ textAlign: 'center', padding: '3rem 0' }}>
                   <div className="text-secondary" style={{ marginBottom: '1.5rem' }}><Send size={48} style={{ margin: '0 auto' }} /></div>
@@ -159,7 +156,7 @@ export default function WholesalePage() {
                   </form>
                 </>
               )}
-            </div>
+            </aside>
           </div>
         </div>
       </div>

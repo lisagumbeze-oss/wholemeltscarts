@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, ChevronRight, Minus, Plus, Loader2, ShieldCheck, Microscope, Thermometer } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Minus, Plus, Loader2, ShieldCheck, Microscope } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
@@ -87,6 +87,8 @@ export default function ProductPage() {
 
   const activePrice = selectedVariation ? parseFloat(selectedVariation.price) : parseFloat(product.price);
   const hasSale = !selectedVariation && product.original_price && parseFloat(product.original_price) > activePrice;
+  const stockCount = (parseInt(product.id) % 15) + 2;
+  const isLowStock = stockCount < 8;
 
   return (
     <>
@@ -131,253 +133,177 @@ export default function ProductPage() {
             <span style={{ color: 'var(--text-primary)' }}>{product.name}</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }}>
-            {/* Image & Gallery */}
-            <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
-              <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', padding: '1rem' }}>
-                <div style={{ overflow: 'hidden', borderRadius: 'var(--radius-md)', cursor: 'zoom-in' }}>
-                  <img
-                    src={mainImage}
-                    alt={product.name}
-                    className="hover-zoom"
-                    style={{ width: '100%', transition: 'transform 0.8s var(--ease)' }}
-                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
-                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                  />
-                </div>
+          <div className="pdp">
+            <div className="pdp__gallery">
+              <div className="pdp__stage">
+                <img src={mainImage} alt={product.name} />
               </div>
-              
-              {/* Thumbnail Gallery */}
+
               {product.images && product.images.length > 1 && (
-                <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                <div className="pdp__thumbs">
                   {product.images.map((img, idx) => (
-                    <button 
+                    <button
                       key={idx}
+                      type="button"
+                      className={`pdp__thumb${mainImage === img ? ' is-active' : ''}`}
                       onClick={() => setMainImage(img)}
-                      className="glass"
-                      style={{ 
-                        width: '80px', 
-                        height: '80px', 
-                        padding: '0.25rem', 
-                        borderRadius: '0.75rem', 
-                        border: mainImage === img ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
-                        overflow: 'hidden',
-                        cursor: 'pointer'
-                      }}
                     >
-                      <img src={img} alt={`${product.name} ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                      <img src={img} alt={`${product.name} ${idx + 1}`} />
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Info */}
             <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                {product.category.replace('-', ' ')}
-              </span>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
-                {product.name}
-              </h1>
-              {product.strain && (
-                <span style={{ display: 'inline-block', padding: '0.25rem 0.75rem', border: '1px solid var(--glass-border)', borderRadius: '20px', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                  {product.strain}
-                </span>
-              )}
+              <span className="pdp__category">{product.category.replace('-', ' ')}</span>
+              <h1 className="pdp__title">{product.name}</h1>
+              {product.strain && <span className="pdp__strain">{product.strain}</span>}
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>${activePrice.toFixed(2)}</span>
-                {hasSale && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>${parseFloat(product.original_price).toFixed(2)}</span>}
+              <div className="pdp__price">
+                <span className="pdp__price-now">${activePrice.toFixed(2)}</span>
+                {hasSale && (
+                  <span className="pdp__price-was">${parseFloat(product.original_price).toFixed(2)}</span>
+                )}
               </div>
 
-              {/* Stock Urgency */}
-              <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                <div className="animate-glow" style={{ width: '8px', height: '8px', borderRadius: '50%', background: (parseInt(product.id) % 15 + 2) < 8 ? '#ff4d4f' : '#2ecc71' }}></div>
-                <span style={{ color: (parseInt(product.id) % 15 + 2) < 8 ? '#ff4d4f' : '#2ecc71', fontWeight: 600 }}>
-                  {(parseInt(product.id) % 15 + 2) < 8 
-                    ? `Only ${parseInt(product.id) % 15 + 2} units left in stock!` 
-                    : 'In Stock - Ready to Ship'}
-                </span>
+              <div className={`pdp__stock${isLowStock ? ' pdp__stock--low' : ''}`}>
+                <span className="pdp__stock-dot" />
+                {isLowStock ? `Only ${stockCount} units left` : 'In stock — ready to ship'}
               </div>
 
-              <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '2rem' }}>
-                Premium quality {product.category.replace('-', ' ')} from Whole Melt Extracts. Made with organic ingredients and clean extraction methods for a high-quality, pure experience. Lab tested for safety and potency.
+              <p className="pdp__desc">
+                Premium {product.category.replace('-', ' ')} from Whole Melt Extracts. Clean extraction,
+                full-spectrum flavor, and lab-tested potency.
               </p>
 
-              {/* Volume Discounts */}
-              <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-                  🔥 Bulk Savings Available
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
-                  <div style={{ textAlign: 'center', padding: '0.5rem', borderRight: '1px solid var(--glass-border)' }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>5+ Units</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 10%</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: '0.5rem', borderRight: '1px solid var(--glass-border)' }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>10+ Units</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 15%</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: '0.5rem' }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>20+ Units</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>Save 25%</div>
-                  </div>
+              <div className="pdp__bulk">
+                <div className="pdp__bulk-label">Bulk savings</div>
+                <div className="pdp__bulk-grid">
+                  <div><strong>5+ units</strong><span>Save 10%</span></div>
+                  <div><strong>10+ units</strong><span>Save 15%</span></div>
+                  <div><strong>20+ units</strong><span>Save 25%</span></div>
                 </div>
               </div>
 
               {product.variations && product.variations.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Select Quantity:</label>
-                  <select 
-                    value={selectedVariation?.name || ''} 
+                <div className="form-group">
+                  <label className="form-label">Select quantity</label>
+                  <select
+                    className="form-select"
+                    value={selectedVariation?.name || ''}
                     onChange={(e) => setSelectedVariation(product.variations.find(v => v.name === e.target.value))}
-                    style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid var(--glass-border)', outline: 'none' }}
                   >
                     {product.variations.map(v => (
-                       <option key={v.name} value={v.name} style={{ background: '#141414', color: 'white' }}>{v.name} - ${v.price}</option>
+                      <option key={v.name} value={v.name}>{v.name} — ${v.price}</option>
                     ))}
                   </select>
                 </div>
               )}
 
-              {/* Qty + Add to Cart */}
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
+              <div className="pdp__buy">
                 <div className="cart-item__qty">
-                  <button onClick={() => setQty(Math.max(1, qty - 1))}><Minus size={16} /></button>
+                  <button type="button" onClick={() => setQty(Math.max(1, qty - 1))}><Minus size={16} /></button>
                   <span>{qty}</span>
-                  <button onClick={() => setQty(qty + 1)}><Plus size={16} /></button>
+                  <button type="button" onClick={() => setQty(qty + 1)}><Plus size={16} /></button>
                 </div>
-                <button className="btn btn-primary btn-lg" onClick={() => {
-                  const productToCart = selectedVariation 
-                    ? { ...product, id: `${product.id}-${selectedVariation.name}`, name: `${product.name} (${selectedVariation.name})`, price: selectedVariation.price, original_price: selectedVariation.price }
-                    : product;
-                  addToCart(productToCart, qty);
-                }} style={{ flex: 1 }}>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    const productToCart = selectedVariation
+                      ? { ...product, id: `${product.id}-${selectedVariation.name}`, name: `${product.name} (${selectedVariation.name})`, price: selectedVariation.price, original_price: selectedVariation.price }
+                      : product;
+                    addToCart(productToCart, qty);
+                  }}
+                >
                   <ShoppingBag size={18} /> Add to Cart — ${(activePrice * qty).toFixed(2)}
                 </button>
               </div>
 
-              {/* Trust */}
-              <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  <div>✓ Lab Tested & Certified</div>
-                  <div>✓ Organic Ingredients</div>
-                  <div>✓ 2-3 Day Shipping</div>
-                  <div>✓ Discreet Packaging</div>
-                </div>
+              <div className="pdp__trust">
+                <div>Lab tested & certified</div>
+                <div>Organic ingredients</div>
+                <div>2–3 day shipping</div>
+                <div>Discreet packaging</div>
               </div>
             </div>
           </div>
-          
-          {/* Tabs Section */}
-          <div style={{ marginTop: '5rem' }}>
-            <div style={{ display: 'flex', gap: '3rem', borderBottom: '1px solid var(--glass-border)', marginBottom: '3rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
-              <button 
-                onClick={() => setActiveTab('description')}
-                style={{ background: 'none', border: 'none', borderBottom: activeTab === 'description' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'description' ? 'var(--primary)' : 'var(--text-secondary)', padding: '0.75rem 0', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
-              >
-                Product Description
-              </button>
-              <button 
-                onClick={() => setActiveTab('reviews')}
-                style={{ background: 'none', border: 'none', borderBottom: activeTab === 'reviews' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'reviews' ? 'var(--primary)' : 'var(--text-secondary)', padding: '0.75rem 0', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
-              >
-                Reviews
-              </button>
-              <button 
-                onClick={() => setActiveTab('related')}
-                style={{ background: 'none', border: 'none', borderBottom: activeTab === 'related' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'related' ? 'var(--primary)' : 'var(--text-secondary)', padding: '0.75rem 0', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
-              >
-                You May Also Like
-              </button>
-            </div>
 
-            <div className="tab-content" style={{ minHeight: '300px' }}>
-              {activeTab === 'description' && (
-                <div className="glass animate-reveal" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)' }}>
-                  <h3 style={{ marginBottom: '1.5rem', color: 'var(--primary)', fontSize: '1.4rem' }}>About {product.name}</h3>
-                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem', fontSize: '1.05rem' }}>
-                    Experience the pinnacle of purity and potency with our {product.name}. Crafted using our proprietary extraction methods, this premium {product.category.replace('-', ' ')} preserves the full spectrum of cannabinoids and terpenes, delivering an unmatched flavor profile and profound effects.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)', listStyleType: 'disc', paddingLeft: '2rem', lineHeight: 1.8, fontSize: '1.05rem', marginBottom: '2.5rem' }}>
-                    <li>100% Organic, carefully sourced premium cannabis</li>
-                    <li>Zero additives, cutting agents, or artificial flavors</li>
-                    <li>Rigorously lab-tested for pesticides, heavy metals, and residual solvents</li>
-                    <li>{product.strain ? `Expertly curated ${product.strain} strain profile` : 'Expertly curated strain profile'}</li>
-                  </ul>
+          <div className="pdp-tabs">
+            <button type="button" className={activeTab === 'description' ? 'is-active' : ''} onClick={() => setActiveTab('description')}>
+              Description
+            </button>
+            <button type="button" className={activeTab === 'reviews' ? 'is-active' : ''} onClick={() => setActiveTab('reviews')}>
+              Reviews
+            </button>
+            <button type="button" className={activeTab === 'related' ? 'is-active' : ''} onClick={() => setActiveTab('related')}>
+              Related
+            </button>
+          </div>
 
-                  <h4 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Microscope size={18} className="text-secondary" /> Technical Specifications
-                  </h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Extraction</div>
-                      <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>Cold-Filtered Solventless</div>
-                    </div>
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Terpene Profile</div>
-                      <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>High-Retention Preservation</div>
-                    </div>
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem' }}>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Verification</div>
-                      <div style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <ShieldCheck size={14} /> Official Batch
+          <div className="pdp-panel">
+            {activeTab === 'description' && (
+              <div className="animate-reveal">
+                <h3>About {product.name}</h3>
+                <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+                  Experience the pinnacle of purity and potency with our {product.name}. Crafted using proprietary
+                  extraction methods, this premium {product.category.replace('-', ' ')} preserves full-spectrum
+                  cannabinoids and terpenes.
+                </p>
+                <ul style={{ color: 'var(--text-secondary)', paddingLeft: '1.25rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+                  <li>100% organic, carefully sourced premium cannabis</li>
+                  <li>Zero additives, cutting agents, or artificial flavors</li>
+                  <li>Rigorously lab-tested for pesticides, heavy metals, and residual solvents</li>
+                  <li>{product.strain ? `Expertly curated ${product.strain} strain profile` : 'Expertly curated strain profile'}</li>
+                </ul>
+                <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Microscope size={18} /> Technical specifications
+                </h4>
+                <div className="pdp__bulk-grid" style={{ textAlign: 'left' }}>
+                  <div><strong>Extraction</strong><span>Cold-filtered solventless</span></div>
+                  <div><strong>Terpene profile</strong><span>High-retention preservation</span></div>
+                  <div><strong>Verification</strong><span><ShieldCheck size={12} style={{ display: 'inline', verticalAlign: 'middle' }} /> Official batch</span></div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="animate-reveal">
+                <h3>Customer reviews</h3>
+                <p style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
+                  ★★★★★ 5.0/5 <span style={{ color: 'var(--text-muted)' }}>({product.reviews?.length || 0} reviews)</span>
+                </p>
+                {product.reviews && product.reviews.length > 0 ? (
+                  product.reviews.map((rev, index) => (
+                    <div key={index} style={{ marginBottom: '1.75rem', paddingBottom: '1.75rem', borderBottom: '1px solid var(--glass-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                        <strong>{rev.user}</strong>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                          {new Date(rev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
                       </div>
+                      <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.6 }}>"{rev.comment}"</p>
                     </div>
-                  </div>
-                </div>
-              )}
+                  ))
+                ) : (
+                  <p style={{ color: 'var(--text-muted)' }}>No reviews yet for this product.</p>
+                )}
+              </div>
+            )}
 
-              {activeTab === 'reviews' && (
-                <div className="glass animate-reveal" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
-                     <h3 style={{ color: 'var(--text-primary)', fontSize: '1.4rem' }}>Customer Reviews</h3>
-                     <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
-                       {'★'.repeat(5)} 5.0/5 <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 'normal' }}>({product.reviews?.length || 0} Reviews)</span>
-                     </span>
+            {activeTab === 'related' && (
+              <div className="animate-reveal">
+                {relatedProducts.length > 0 ? (
+                  <div className="product-grid">
+                    {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
                   </div>
-                  
-                  <div style={{ display: 'grid', gap: '2rem' }}>
-                    {product.reviews && product.reviews.length > 0 ? (
-                      product.reviews.map((rev, index) => (
-                        <div key={index}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <div>
-                                <strong style={{ color: 'var(--text-primary)' }}>{rev.user}</strong>
-                                <div className="animate-glow" style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem', padding: '0.2rem 0.5rem', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '4px', width: 'fit-content' }}>
-                                    <ShieldCheck size={12} /> Verified Buyer
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(rev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                              <span style={{ color: 'var(--primary)' }}>{'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}</span>
-                            </div>
-                          </div>
-                          <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.6 }}>"{rev.comment}"</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p style={{ color: 'var(--text-muted)' }}>No reviews yet for this product.</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'related' && (
-                <div className="animate-reveal">
-                  {related.length > 0 ? (
-                    <div className="product-grid" style={{ paddingTop: '1rem' }}>
-                      {related.map(p => <ProductCard key={p.id} product={p} />)}
-                    </div>
-                  ) : (
-                    <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-lg)' }}>
-                      <p style={{ color: 'var(--text-muted)' }}>No related products found at this time.</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                ) : (
+                  <p style={{ color: 'var(--text-muted)' }}>No related products found.</p>
+                )}
+              </div>
+            )}
           </div>
           {/* Related Products */}
           {relatedProducts.length > 0 && (

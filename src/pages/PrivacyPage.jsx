@@ -23,9 +23,7 @@ export default function PrivacyPage() {
 
       {/* ═══ Content ═══ */}
       <section className="section bg-deep">
-        <div className="container">
-          <div className="glass" style={{ padding: '3rem', borderRadius: 'var(--radius-lg)' }}>
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div className="container content-page">
               
               <div style={{ marginBottom: '3rem' }}>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem', color: 'var(--primary)' }}>
@@ -117,9 +115,6 @@ export default function PrivacyPage() {
                   We aim to respond to all formal privacy inquiries within 48 business hours.
                 </p>
               </div>
-
-            </div>
-          </div>
         </div>
       </section>
     </div>

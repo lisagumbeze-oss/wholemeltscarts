@@ -5,13 +5,14 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer__inner">
         <div>
-          <div className="footer__brand">WHOLE MELT EXTRACTS</div>
+          <div className="footer__brand">Whole Melt Extracts</div>
           <p className="footer__desc">
-            Premium cannabis concentrates crafted for connoisseurs. Pure, potent, and lab-tested for your peace of mind. Order whole melts disposables, live resin, and more from the official store.
+            Premium solventless concentrates for connoisseurs — lab-tested disposables,
+            live resin, and carts from the official store.
           </p>
-          <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            📧 sales@wholemeltscarts.us<br />
-            💬 Telegram: @wholemeltscartsus
+          <p className="footer__contact">
+            sales@wholemeltscarts.us<br />
+            Telegram: @wholemeltscartsus
           </p>
         </div>
 
@@ -30,25 +31,25 @@ export default function Footer() {
         <div>
           <h4 className="footer__heading">Info</h4>
           <ul className="footer__links">
-            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/about">About</Link></li>
             <li><Link to="/faq">FAQs</Link></li>
-            <li><Link to="/blog">Daily Info</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
-            <li><Link to="/wholesale">Wholesale Portal</Link></li>
-            <li><Link to="/shipping">Shipping Policy</Link></li>
-            <li><Link to="/privacy">Privacy Policy</Link></li>
-            <li><Link to="/terms">Terms & Conditions</Link></li>
+            <li><Link to="/blog">Journal</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/wholesale">Wholesale</Link></li>
+            <li><Link to="/shipping">Shipping</Link></li>
+            <li><Link to="/privacy">Privacy</Link></li>
+            <li><Link to="/terms">Terms</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="footer__heading">Payment</h4>
           <ul className="footer__links">
-            <li><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Zelle</span></li>
-            <li><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>CashApp</span></li>
-            <li><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Venmo</span></li>
-            <li><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Apple Cash</span></li>
-            <li><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Chime</span></li>
+            <li><span>Zelle</span></li>
+            <li><span>CashApp</span></li>
+            <li><span>Venmo</span></li>
+            <li><span>Apple Cash</span></li>
+            <li><span>Chime</span></li>
           </ul>
         </div>
       </div>

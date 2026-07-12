@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Filter, Info, ArrowUpRight, Zap, Target, Leaf } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Info, Zap, Target, Leaf } from 'lucide-react';
 import { products } from '../data/products';
-import { Link } from 'react-router-dom';
+import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
 
 export default function StrainLibraryPage() {
@@ -47,17 +47,17 @@ export default function StrainLibraryPage() {
           </div>
 
           {/* ═══ Stats Bar ═══ */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '3rem' }} className="animate-reveal">
+          <div className="service-strip animate-reveal" style={{ marginBottom: '2.5rem' }}>
             {[
-              { label: 'Total Flavors', value: stats.total, icon: <Zap size={20} /> },
-              { label: 'Heavy Indica', value: stats.indica, icon: <Leaf size={20} className="text-secondary" /> },
-              { label: 'Pure Sativa', value: stats.sativa, icon: <Target size={20} className="text-secondary" /> },
-              { label: 'Balanced Hybrids', value: stats.hybrid, icon: <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid var(--secondary)' }} /> }
-            ].map((stat, i) => (
-              <div key={i} className="glass" style={{ padding: '1.5rem', borderRadius: '1rem', textAlign: 'center' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem', opacity: 0.7 }}>{stat.icon}</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</div>
+              { label: 'Total flavors', value: stats.total, icon: <Zap size={18} /> },
+              { label: 'Indica', value: stats.indica, icon: <Leaf size={18} /> },
+              { label: 'Sativa', value: stats.sativa, icon: <Target size={18} /> },
+              { label: 'Hybrid', value: stats.hybrid, icon: <Info size={18} /> },
+            ].map((stat) => (
+              <div key={stat.label} className="service-strip__item">
+                <div className="service-strip__icon">{stat.icon}</div>
+                <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>{stat.value}</div>
+                <div className="service-strip__desc">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -75,27 +75,27 @@ export default function StrainLibraryPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className="shop-cats">
               {['All', 'Indica', 'Sativa', 'Hybrid'].map(filter => (
-                <button 
+                <button
                   key={filter}
+                  type="button"
                   onClick={() => setActiveFilter(filter)}
-                  className={`btn ${activeFilter === filter ? 'btn-secondary' : 'glass'}`}
-                  style={{ padding: '0.75rem 1.5rem' }}
+                  className={`shop-cat${activeFilter === filter ? ' is-active' : ''}`}
                 >
                   {filter}
                 </button>
               ))}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', width: '100%', marginTop: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', marginRight: '0.5rem' }}>Desired Effect:</span>
+            <div className="shop-cats" style={{ marginTop: '0.75rem' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', alignSelf: 'center', marginRight: '0.25rem' }}>Effect:</span>
               {['All', 'Relaxing', 'Energetic', 'Creative'].map(effect => (
-                <button 
+                <button
                   key={effect}
+                  type="button"
                   onClick={() => setActiveEffect(effect)}
-                  className={`btn btn-sm ${activeEffect === effect ? 'btn-primary' : 'glass'}`}
-                  style={{ whiteSpace: 'nowrap' }}
+                  className={`shop-cat${activeEffect === effect ? ' is-active' : ''}`}
                 >
                   {effect}
                 </button>
@@ -103,49 +103,17 @@ export default function StrainLibraryPage() {
             </div>
           </div>
 
-          {/* ═══ Strain Grid ═══ */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
-            {filteredProducts.map((p, i) => (
-              <div key={p.id} className="glass card-hover animate-reveal" style={{ borderRadius: '1.5rem', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
-                <div style={{ height: '240px', position: 'relative', background: 'rgba(255,255,255,0.03)' }}>
-                  <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
-                  <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
-                    <span style={{ 
-                      padding: '0.4rem 0.8rem', 
-                      background: 'rgba(0,0,0,0.6)', 
-                      backdropFilter: 'blur(10px)', 
-                      borderRadius: '2rem', 
-                      fontSize: '0.7rem', 
-                      fontWeight: 600,
-                      color: p.strain === 'Indica' ? '#8e44ad' : p.strain === 'Sativa' ? '#f1c40f' : '#2ecc71',
-                      border: '1px solid rgba(255,255,255,0.1)'
-                    }}>
-                      {p.strain.toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-                <div style={{ padding: '1.75rem' }}>
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{p.name}</h3>
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '0.4rem' }}>Extracted 2025</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '0.4rem' }}>{p.category}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--secondary)' }}>${p.price}</div>
-                    <Link to={`/product/${p.slug || p.id}`} className="btn glass" style={{ padding: '0.6rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                      Profile Details <ArrowUpRight size={14} />
-                    </Link>
-                  </div>
-                </div>
-              </div>
+          <div className="product-grid">
+            {filteredProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
 
           {filteredProducts.length === 0 && (
-            <div className="text-center" style={{ padding: '5rem 0', opacity: 0.5 }}>
-              <Info size={48} style={{ margin: '0 auto 1.5rem' }} />
+            <div className="empty-state" style={{ minHeight: '30vh' }}>
+              <Info size={40} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
               <h3>No strains matching "{searchTerm}"</h3>
-              <p>Try searching for a different terpene profile or category.</p>
+              <p>Try a different terpene profile or category.</p>
             </div>
           )}
         </div>
