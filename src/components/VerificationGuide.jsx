@@ -45,7 +45,18 @@ export default function VerificationGuide() {
         ))}
       </div>
 
-      <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)', textAlign: 'center' }}>
+      <div className="animate-reveal" style={{ marginTop: '4rem', textAlign: 'center' }}>
+         <p style={{ color: 'var(--primary)', fontWeight: 700, marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.85rem' }}>
+            Example: Authentic Holographic Seal
+         </p>
+         <img 
+             src="/images/aurora-verification.jpg" 
+             alt="Aurora Reserve Holographic Verification Sticker" 
+             style={{ width: '100%', maxWidth: '500px', borderRadius: '1rem', border: '1px solid var(--glass-border)', boxShadow: '0 20px 40px rgba(0,0,0,0.6)', margin: '0 auto' }}
+         />
+      </div>
+
+      <div style={{ marginTop: '4rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.5rem', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '1rem', color: 'var(--primary)', fontSize: '0.85rem', fontWeight: 600 }}>
           <AlertCircle size={18} />
           Note: Authentic Whole Melts are NEVER sold through unverified third-party telegram channels.

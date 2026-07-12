@@ -105,6 +105,34 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ═══ Retail Flagship Photos ═══ */}
+      <section className="section bg-deep" style={{ borderTop: '1px solid var(--glass-border)' }}>
+        <div className="container">
+          <div className="section-header section-header--center">
+            <h2 className="section-header__title animate-reveal">Our Flagship Store</h2>
+            <p className="section-header__desc animate-reveal">
+              Experience the pinnacle of cannabis luxury in person at our state-of-the-art dispensary.
+            </p>
+          </div>
+          <div className="about-split" style={{ marginTop: '3rem', alignItems: 'center' }}>
+            <div className="animate-reveal">
+              <img 
+                src="/images/storefront-exterior.jpg" 
+                alt="Whole Melt Extracts Flagship Exterior" 
+                style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', border: '1px solid var(--glass-border)' }}
+              />
+            </div>
+            <div className="animate-reveal" style={{ animationDelay: '0.2s' }}>
+              <img 
+                src="/images/storefront-interior.jpg" 
+                alt="Whole Melt Extracts Flagship Interior" 
+                style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', border: '1px solid var(--glass-border)' }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ═══ Expanded Content: The Science of Solventless ═══ */}
       <section className="section bg-deep" style={{ borderTop: '1px solid var(--glass-border)' }}>
         <div className="container" style={{ maxWidth: '900px' }}>
