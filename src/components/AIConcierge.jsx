@@ -31,50 +31,19 @@ export default function AIConcierge() {
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages }),
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder('utf-8');
+      // Mock response for frontend demonstration
+      await new Promise(resolve => setTimeout(resolve, 600));
+      const mockResponse = "Hello! I'm your Whole Melts AI Concierge. Since I'm currently in demo mode, I can't look up specific inventory right now. Feel free to explore our product catalog, or chat with our live human agents using the chat icon in the bottom right!";
       
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6);
-            if (dataStr === '[DONE]') break;
-            
-            try {
-              const data = JSON.parse(dataStr);
-              if (data.text) {
-                setMessages((prev) => {
-                  const updated = [...prev];
-                  updated[updated.length - 1].content += data.text;
-                  return updated;
-                });
-              } else if (data.error) {
-                console.error('API Error:', data.error);
-                setMessages((prev) => {
-                  const updated = [...prev];
-                  updated[updated.length - 1].content += '\n\n*(Error: Connection interrupted)*';
-                  return updated;
-                });
-              }
-            } catch (err) {
-              console.error('Error parsing SSE json', err);
-            }
-          }
-        }
+      const words = mockResponse.split(' ');
+      
+      for (let i = 0; i < words.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 40));
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].content += (i === 0 ? '' : ' ') + words[i];
+          return updated;
+        });
       }
     } catch (error) {
       console.error('Chat error:', error);
