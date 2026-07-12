@@ -56,6 +56,8 @@ export default function BlogPostPage() {
         }}>
           {post.image ? (
             <img src={post.image} alt={post.title} loading="lazy" style={{ 
+              position: 'absolute',
+              inset: 0,
               width: '100%', 
               height: '100%', 
               objectFit: 'cover', 
@@ -64,6 +66,8 @@ export default function BlogPostPage() {
             }} />
           ) : (
              <img src="/images/products/authentic-nerds-live-resin.jpeg" alt="Whole Melts" loading="lazy" style={{ 
+              position: 'absolute',
+              inset: 0,
               width: '100%', 
               height: '100%', 
               objectFit: 'cover', 
