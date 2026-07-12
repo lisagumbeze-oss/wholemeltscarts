@@ -7,6 +7,7 @@ import SocialProof from './components/SocialProof';
 import AbandonedCartReminder from './components/AbandonedCartReminder';
 import BackToTop from './components/BackToTop';
 import AIConcierge from './components/AIConcierge';
+import BottomNav from './components/BottomNav';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -28,6 +29,7 @@ export default function App() {
         <Outlet />
       </main>
       <Footer />
+      <BottomNav />
     </>
   );
 }

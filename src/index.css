@@ -3153,3 +3153,81 @@ body.admin-route iframe[src*="smartsuppchat"] {
     border: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Bottom Navigation (Mobile E-commerce)
+   ═══════════════════════════════════════════════════════ */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+  z-index: 900;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.65rem 0;
+  color: var(--text-secondary);
+  transition: color 0.3s var(--ease);
+}
+
+.bottom-nav__item.active {
+  color: var(--primary);
+}
+
+.bottom-nav__icon-wrapper {
+  position: relative;
+  margin-bottom: 0.2rem;
+}
+
+.bottom-nav__badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background: var(--primary);
+  color: #050505;
+  font-size: 0.6rem;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.bottom-nav__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+  }
+  
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+  
+  .back-to-top {
+    bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .ai-concierge-toggle {
+    bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}
