@@ -3241,19 +3241,27 @@ body.admin-route iframe[src*="smartsuppchat"] {
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
   
-  .back-to-top {
-    bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-  .ai-concierge-toggle {
-    bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-  .abandoned-cart-reminder {
-    bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-  .social-proof-popup {
-    bottom: calc(150px + env(safe-area-inset-bottom));
-  }
+  .ai-concierge-toggle,
   #smartsupp-widget-container {
-    bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+  
+  .back-to-top {
+    bottom: calc(156px + env(safe-area-inset-bottom)) !important;
+  }
+  
+  .abandoned-cart-reminder {
+    bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    left: 1rem !important;
+    transform: scale(0.85);
+    transform-origin: bottom left;
+    max-width: calc(100vw - 2rem) !important;
+  }
+  
+  .social-proof-popup {
+    bottom: calc(170px + env(safe-area-inset-bottom)) !important;
+    left: 1rem !important;
+    transform: scale(0.85);
+    transform-origin: bottom left;
   }
 }

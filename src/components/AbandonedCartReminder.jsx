@@ -11,24 +11,7 @@ export default function AbandonedCartReminder() {
   if (cart.length === 0 || isCheckoutOrCart) return null;
 
   return (
-    <div 
-      className="animate-reveal"
-      style={{
-        position: 'fixed',
-        bottom: '2rem',
-        left: '2rem',
-        zIndex: 850,
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--primary)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '1rem 1.5rem',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.6), 0 0 20px var(--primary-glow)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1.5rem',
-        maxWidth: '400px'
-      }}
-    >
+    <div className="abandoned-cart-reminder animate-reveal">
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <div style={{ position: 'relative' }}>
           <ShoppingBag size={24} style={{ color: 'var(--primary)' }} />
