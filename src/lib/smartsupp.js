@@ -43,6 +43,10 @@ export function ensureSmartsuppOnStorefront() {
   window._smartsupp = window._smartsupp || {};
   window._smartsupp.key = KEY;
   window._smartsupp.color = '#D4AF37';
+  
+  // Natively tell Smartsupp API to elevate the widget on mobile so it clears the bottom nav (64px + 24px)
+  const isMobile = window.innerWidth <= 768;
+  window._smartsupp.offsetY = isMobile ? 88 : 20;
 
   const existingLoader = document.querySelector(`script[${SCRIPT_ATTR}]`);
   if (existingLoader) {
