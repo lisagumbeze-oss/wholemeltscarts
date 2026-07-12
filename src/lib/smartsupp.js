@@ -77,9 +77,7 @@ export function startSmartsuppBrandObserver() {
   brandObserver = new MutationObserver(paint);
   brandObserver.observe(document.documentElement, {
     childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['style', 'class'],
+    subtree: true
   });
 
   window.setTimeout(paint, 500);
