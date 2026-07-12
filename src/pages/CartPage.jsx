@@ -59,7 +59,10 @@ export default function CartPage() {
                     className="cart-item__img"
                     src={item.images?.[0] || item.image}
                     alt={item.name}
-                    onError={(e) => { e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM';
+                    }}
                   />
                   <div>
                     <Link to={`/product/${item.slug || item.id}`} className="cart-item__name" style={{ color: 'var(--text-primary)' }}>

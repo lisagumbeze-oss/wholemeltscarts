@@ -39,6 +39,7 @@ export default function ProductCard({ product }) {
             alt={product.name}
             loading="lazy"
             onError={(e) => {
+              if (e.target.dataset.errorHandled) return;
               const extensions = ['.webp', '.png', '.jpg', '.jpeg'];
               const currentSrc = e.target.src;
               const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
@@ -49,6 +50,7 @@ export default function ProductCard({ product }) {
               } else if (nextIndex === 0) {
                 e.target.src = base + extensions[0];
               } else {
+                e.target.dataset.errorHandled = 'true';
                 e.target.src = 'https://placehold.co/400x400/141414/D4AF37?text=Whole+Melt';
               }
             }}

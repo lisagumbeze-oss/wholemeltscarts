@@ -219,7 +219,10 @@ export default function AdminBlog() {
                         src={post.image || 'https://images.unsplash.com/photo-1512314889357-e157c22f938d?auto=format&fit=crop&w=100&q=80'} 
                         alt="" 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1512314889357-e157c22f938d?auto=format&fit=crop&w=100&q=80'}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://images.unsplash.com/photo-1512314889357-e157c22f938d?auto=format&fit=crop&w=100&q=80';
+                        }}
                        />
                     </div>
                     <div style={{ minWidth: 0 }}>
