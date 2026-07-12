@@ -94,28 +94,36 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchHomeProducts() {
       try {
         const { data } = await supabase.from('products').select('*').limit(15);
 
-        import('../data/products').then(({ products: localProducts }) => {
-          if (!data || data.length === 0 || !data[0].slug) {
-            setFeatured(localProducts.slice(0, 8));
-            setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
-          } else {
-            setFeatured(data.slice(0, 8));
-            setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
-          }
-        });
-      } catch {
-        import('../data/products').then(({ products: localProducts }) => {
+        if (cancelled) return;
+
+        const { products: localProducts } = await import('../data/products');
+
+        if (cancelled) return;
+
+        if (!data || data.length === 0 || !data[0].slug) {
           setFeatured(localProducts.slice(0, 8));
           setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
-        });
+        } else {
+          setFeatured(data.slice(0, 8));
+          setOnSale(data.filter(p => p.original_price && parseFloat(p.original_price) > parseFloat(p.price)).slice(0, 4));
+        }
+      } catch {
+        if (cancelled) return;
+        const { products: localProducts } = await import('../data/products');
+        if (cancelled) return;
+        setFeatured(localProducts.slice(0, 8));
+        setOnSale(localProducts.filter(p => p.salePrice).slice(0, 4));
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
     }
     fetchHomeProducts();
+    return () => { cancelled = true; };
   }, []);
 
   return (

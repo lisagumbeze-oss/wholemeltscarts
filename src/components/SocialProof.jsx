@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { products } from '../data/products';
 
 const CITIES = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Miami', 'Atlanta', 'Denver', 'Seattle'];
@@ -7,39 +7,36 @@ const NAMES = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Riley', 'Skyler', 'Charlie'
 export default function SocialProof() {
   const [purchase, setPurchase] = useState(null);
   const [exiting, setExiting] = useState(false);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    const showNewPurchase = () => {
+    let cancelled = false;
+
+    const showNext = () => {
+      if (cancelled) return;
       const randomProduct = products[Math.floor(Math.random() * products.length)];
       const randomCity = CITIES[Math.floor(Math.random() * CITIES.length)];
       const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
       const randomTime = Math.floor(Math.random() * 55) + 5;
 
-      setPurchase({
-        product: randomProduct,
-        city: randomCity,
-        name: randomName,
-        time: randomTime
-      });
+      setPurchase({ product: randomProduct, city: randomCity, name: randomName, time: randomTime });
       setExiting(false);
 
       // Hide after 6 seconds
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
+        if (cancelled) return;
         setExiting(true);
+        // Schedule next popup 15-25s after hiding
+        timerRef.current = setTimeout(showNext, Math.random() * 10000 + 15000);
       }, 6000);
     };
 
     // Initial delay before first popup
-    const timer = setTimeout(showNewPurchase, 8000);
-
-    // Repeat every 20-30 seconds
-    const interval = setInterval(() => {
-      showNewPurchase();
-    }, Math.random() * (30000 - 20000) + 20000);
+    timerRef.current = setTimeout(showNext, 10000);
 
     return () => {
-      clearTimeout(timer);
-      clearInterval(interval);
+      cancelled = true;
+      clearTimeout(timerRef.current);
     };
   }, []);
 
@@ -50,7 +47,8 @@ export default function SocialProof() {
       <img 
         src={purchase.product.images?.[0] || purchase.product.image} 
         alt={purchase.product.name} 
-        className="social-proof-popup__img" 
+        className="social-proof-popup__img"
+        onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
       />
       <div className="social-proof-popup__content">
         <div className="social-proof-popup__text">

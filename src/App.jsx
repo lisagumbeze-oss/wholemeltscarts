@@ -15,7 +15,6 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const location = useLocation();
   return (
     <>
       <ScrollToTop />
@@ -25,7 +24,7 @@ export default function App() {
       <AbandonedCartReminder />
       <BackToTop />
       <AIConcierge />
-      <main key={location.pathname} className="animate-reveal" style={{ minHeight: '60vh' }}>
+      <main style={{ minHeight: '60vh' }}>
         <Outlet />
       </main>
       <Footer />

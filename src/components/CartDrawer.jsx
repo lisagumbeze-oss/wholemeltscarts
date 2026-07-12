@@ -35,7 +35,7 @@ export default function CartDrawer() {
             <div className="cart-drawer__items">
               {cart.map(item => (
                 <div key={item.id} className="cart-drawer__item">
-                  <img src={item.images?.[0] || item.image} alt={item.name} />
+                  <img src={item.images?.[0] || item.image} alt={item.name} onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }} />
                   <div className="cart-drawer__item-body">
                     <div className="cart-drawer__item-name">{item.name}</div>
                     <div className="cart-drawer__item-price">${parseFloat(item.price).toFixed(2)}</div>
@@ -63,7 +63,7 @@ export default function CartDrawer() {
                 .slice(0, 2)
                 .map(p => (
                   <div key={p.id} className="cart-drawer__upsell-item">
-                    <img src={p.images?.[0] || p.image} alt={p.name} />
+                    <img src={p.images?.[0] || p.image} alt={p.name} onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/80x80/141414/D4AF37?text=WM'; }} />
                     <div className="cart-drawer__upsell-info">
                       <div>{p.name}</div>
                       <span>${parseFloat(p.price).toFixed(2)}</span>

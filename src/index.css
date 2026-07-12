@@ -183,8 +183,8 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
   height: 6px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(212, 175, 55, 0.6), transparent 70%);
-  filter: blur(3px);
   animation: smokeRise 4s ease-out infinite, smokeDrift 6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 .golden-smoke__particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 3.5s, 5s; width: 8px; height: 8px; }
 .golden-smoke__particle:nth-child(2) { left: 25%; animation-delay: 0.8s; animation-duration: 4.2s, 7s; }
@@ -688,10 +688,11 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
   transform: translate(-50%, -50%) scale(1.02);
   z-index: 1;
   animation: heroKenBurns 28s ease-in-out infinite alternate;
+  will-change: transform;
 }
 @keyframes heroKenBurns {
-  from { transform: translate(-50%, -50%) scale(1.02); filter: brightness(0.95); }
-  to { transform: translate(-48%, -52%) scale(1.1); filter: brightness(1.05); }
+  from { transform: translate(-50%, -50%) scale(1.02); }
+  to { transform: translate(-48%, -52%) scale(1.1); }
 }
 .hero-video__overlay {
   position: absolute;
@@ -987,8 +988,7 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
 }
 @media (hover: hover) {
   .product-grid:has(.product-card:hover) .product-card:not(:hover) {
-    opacity: 0.4;
-    filter: grayscale(40%) blur(1px);
+    opacity: 0.55;
     transform: scale(0.98);
   }
 }
