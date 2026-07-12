@@ -1497,14 +1497,14 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 
   z-index: 900;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
   background: rgba(13, 13, 13, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  max-width: 320px;
+  max-width: 400px;
   animation: popupSlideIn 0.6s var(--ease-bounce) both;
   pointer-events: none;
 }
@@ -3251,7 +3251,10 @@ body.admin-route iframe[src*="smartsuppchat"] {
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
   
-  #smartsupp-widget-container {
+  #smartsupp-widget-container,
+  [id^="smartsupp-widget"],
+  iframe[name^="smartsupp"],
+  iframe[src*="smartsupp"] {
     bottom: calc(88px + env(safe-area-inset-bottom)) !important;
   }
   
@@ -3278,7 +3281,7 @@ body.admin-route iframe[src*="smartsuppchat"] {
   .social-proof-popup {
     bottom: calc(160px + env(safe-area-inset-bottom)) !important;
     left: 1rem !important;
-    padding: 0.5rem 0.75rem !important;
+    padding: 0.75rem 1rem !important;
     gap: 0.75rem !important;
     max-width: calc(100vw - 2rem) !important;
   }
