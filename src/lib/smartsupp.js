@@ -85,16 +85,9 @@ export function purgeSmartsuppFromAdminUI() {
     } catch (_) {}
   }
 
-  const sel = [
-    '#smartsupp-widget-container',
-    '[id^="smartsupp"]',
-    '[class*="smartsupp"]',
-    'iframe[src*="smartsupp"]',
-    'iframe[src*="smartsuppchat"]',
-    'iframe[name^="smartsupp"]',
-  ].join(',');
-
-  document.querySelectorAll(sel).forEach((el) => el.remove());
+  // We rely on CSS body.admin-route to display: none the widget container.
+  // Do NOT remove the DOM elements, as the loader script won't re-initialize them
+  // when navigating back to the storefront.
 }
 
 export function maybeShowSmartsuppAfterLeavingAdmin() {
