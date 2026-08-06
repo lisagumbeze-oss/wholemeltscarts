@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
 import { getOrderConfirmationTemplate, getAdminOrderAlertTemplate } from './utils/emailTemplates.js';
+import { isBitcoinPayment, requiresBitcoinOnly } from './utils/payments.js';
 
 // Initialize Supabase (Use Vercel env vars)
 const supabase = createClient(
@@ -36,6 +37,13 @@ export default async function handler(req, res) {
 
   const { orderId, cart, cartTotal, form, paymentMethod, finalTotal } = req.body;
 
+  if (requiresBitcoinOnly(finalTotal) && !isBitcoinPayment(paymentMethod)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Orders under $100 must be paid with Bitcoin.'
+    });
+  }
+
   try {
     // 1. Save order to Supabase
     const { error: supabaseError } = await supabase
@@ -57,40 +65,11 @@ export default async function handler(req, res) {
        throw supabaseError;
     }
 
-    // 2. CRYPTO INTEGRATION: Handle Plisio Invoice Generation
-    let invoiceUrl = null;
-    if (paymentMethod === 'Plisio (Crypto)') {
-      try {
-        const params = new URLSearchParams({
-          api_key: process.env.PLISIO_API_KEY,
-          order_number: orderId,
-          amount: finalTotal.toFixed(2),
-          currency: 'USD',
-          order_name: `Whole Melts Order #${orderId}`,
-          callback_url: `https://${req.headers.host}/api/plisio-callback`,
-          success_url: `https://${req.headers.host}/checkout/success?order_id=${orderId}`,
-          email: form.email
-        });
-
-        const plisioRes = await fetch(`https://plisio.net/api/v1/invoices/new?${params.toString()}`);
-        const plisioData = await plisioRes.json();
-
-        if (plisioData.status === 'success' && plisioData.data && plisioData.data.invoice_url) {
-          invoiceUrl = plisioData.data.invoice_url;
-        } else {
-          console.error("Plisio API Error:", plisioData);
-          // Don't throw yet, just fallback to manual crypto if possible, but for now we expect it to work.
-        }
-      } catch (plisioErr) {
-        console.error("Plisio Bridge Error:", plisioErr);
-      }
-    }
-
-    // 3. Prepare Emails with Premium Templates
+    // 2. Prepare Emails with Premium Templates
     const customerEmailHtml = getOrderConfirmationTemplate(orderId, form.firstName, cart, finalTotal, form, paymentMethod);
     const adminEmailHtml = getAdminOrderAlertTemplate(orderId, `${form.firstName} ${form.lastName}`, form.email, cart, finalTotal, paymentMethod, form);
 
-    // 4. Send Emails
+    // 3. Send Emails
     // Send to Customer
     await transporter.sendMail({
       from: '"Whole Melt Extracts" <sales@wholemeltscarts.us>',
@@ -109,8 +88,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Order processed and premium emails sent.',
-      invoiceUrl: invoiceUrl 
+      message: 'Order processed and premium emails sent.'
     });
 
   } catch (err) {

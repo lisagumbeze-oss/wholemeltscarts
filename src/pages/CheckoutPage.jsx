@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import PaymentMethods from '../components/PaymentMethods';
-import { CheckCircle, Truck, Bitcoin, ShieldCheck } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { CheckCircle, Truck, ShieldCheck, Bitcoin, Copy, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { isBitcoinPayment, BITCOIN_ADDRESS, getAvailablePaymentOptions, requiresBitcoinOnly, FULL_PAYMENT_THRESHOLD } from '../config/payments';
 
 const COUNTRIES = [
   "United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "Italy", "Spain", "Netherlands", "Norway", "Sweden", "Other"
@@ -11,7 +12,6 @@ const COUNTRIES = [
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
-  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,6 +31,9 @@ export default function CheckoutPage() {
   const [promoCode, setPromoCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState('');
+  const [paymentClaimed, setPaymentClaimed] = useState(false);
+  const [claimingPayment, setClaimingPayment] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -40,38 +43,18 @@ export default function CheckoutPage() {
         const payments = data.filter(d => d.type === 'payment');
         setPaymentOptions(payments);
         setCoupons(data.filter(d => d.type === 'coupon'));
-        if (payments.length > 0) setPaymentMethod(payments[0].config.name);
       }
     }
     fetchSettings();
   }, []);
 
-  useEffect(() => {
-    if (cart.length > 0 && cartTotal < 100) {
-      alert("Minimum order amount is $100. Redirecting to cart...");
-      navigate('/cart');
-    }
-  }, [cartTotal, cart.length, navigate]);
-
-  useEffect(() => {
-    // Auto-select first available shipping method based on region
-    const available = shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'));
-    if (available.length > 0 && !available.find(o => o.id === shippingMethod)) {
-      setShippingMethod(available[0].id);
-    } else if (available.length === 0) {
-      setShippingMethod('');
-    }
-  }, [form.country, shippingOptions]);
-
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const selectedShippingOpt = shippingOptions.find(o => o.id === shippingMethod);
   const shippingCost = selectedShippingOpt ? Number(selectedShippingOpt.config.rate) : 0;
-  
+
   // Coupon Math
   let discountAmount = 0;
   let calculatedShipping = shippingCost;
-  
+
   if (appliedCoupon) {
     const discountStr = appliedCoupon.config.discount.toLowerCase();
     if (discountStr.includes('%')) {
@@ -86,6 +69,32 @@ export default function CheckoutPage() {
   }
 
   const finalTotal = Math.max(0, cartTotal - discountAmount + calculatedShipping);
+  const availablePaymentOptions = getAvailablePaymentOptions(paymentOptions, finalTotal);
+  const cryptoOnlyCheckout = requiresBitcoinOnly(finalTotal);
+
+  useEffect(() => {
+    if (availablePaymentOptions.length === 0) return;
+
+    const selectedStillAvailable = availablePaymentOptions.some(
+      option => option.config.name === paymentMethod
+    );
+
+    if (!selectedStillAvailable) {
+      setPaymentMethod(availablePaymentOptions[0].config.name);
+    }
+  }, [availablePaymentOptions, paymentMethod]);
+
+  useEffect(() => {
+    // Auto-select first available shipping method based on region
+    const available = shippingOptions.filter(opt => (form.country === 'United States' ? opt.config.region === 'usa' : opt.config.region === 'intl'));
+    if (available.length > 0 && !available.find(o => o.id === shippingMethod)) {
+      setShippingMethod(available[0].id);
+    } else if (available.length === 0) {
+      setShippingMethod('');
+    }
+  }, [form.country, shippingOptions]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleApplyCoupon = () => {
     setCouponError('');
@@ -103,10 +112,52 @@ export default function CheckoutPage() {
     setAppliedCoupon(null);
   };
 
+  const handleCopyBitcoinAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(BITCOIN_ADDRESS);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
+  const handlePaymentClaimed = async () => {
+    if (!orderDetails) return;
+
+    setClaimingPayment(true);
+    try {
+      const response = await fetch('/api/confirm-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderDetails.id,
+          email: form.email
+        })
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to report payment.');
+      }
+
+      setPaymentClaimed(true);
+    } catch (err) {
+      alert(err.message || 'Could not confirm payment. Please email sales@wholemeltscarts.us with your order ID.');
+    } finally {
+      setClaimingPayment(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!paymentMethod) {
       alert("Please select a payment method.");
+      return;
+    }
+
+    if (cryptoOnlyCheckout && !isBitcoinPayment(paymentMethod)) {
+      alert(`Orders under $${FULL_PAYMENT_THRESHOLD} must be paid with Bitcoin.`);
       return;
     }
     
@@ -142,7 +193,7 @@ export default function CheckoutPage() {
           id: orderId,
           total: finalTotal,
           paymentMethod,
-          invoiceUrl: result.invoiceUrl // Store the URL from backend
+          email: form.email
         });
         setSubmitted(true);
         clearCart();
@@ -159,6 +210,8 @@ export default function CheckoutPage() {
   };
 
   if (submitted && orderDetails) {
+    const bitcoinOrder = isBitcoinPayment(orderDetails.paymentMethod);
+
     return (
       <div className="container section" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <CheckCircle size={60} style={{ color: 'var(--accent)', marginBottom: '1.5rem' }} />
@@ -168,30 +221,59 @@ export default function CheckoutPage() {
           Payment Method: <strong>{orderDetails.paymentMethod}</strong>
         </p>
 
-        {orderDetails.paymentMethod === 'Plisio (Crypto)' ? (
-          <div className="glass shadow-lg" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', maxWidth: '500px', width: '100%', textAlign: 'center', background: 'var(--bg-elevated)', border: '1px solid var(--primary)' }}>
+        {bitcoinOrder ? (
+          <div className="glass shadow-lg" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', maxWidth: '540px', width: '100%', textAlign: 'center', background: 'var(--bg-elevated)', border: '1px solid var(--primary)' }}>
             <Bitcoin size={48} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
-            <h3 style={{ marginBottom: '1rem' }}>Complete Your Crypto Payment</h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Your crypto invoice has been generated. Click the button below to proceed to our secure Plisio gateway.
+            <h3 style={{ marginBottom: '0.75rem' }}>Complete Your Bitcoin Payment</h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.25rem', lineHeight: 1.7 }}>
+              Send <strong>${orderDetails.total.toFixed(2)} USD equivalent</strong> in BTC to the address below. Include your Order ID <strong>{orderDetails.id}</strong> in the memo when possible.
             </p>
-            {orderDetails.invoiceUrl ? (
-              <a 
-                href={orderDetails.invoiceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+
+            <div style={{
+              padding: '1rem',
+              borderRadius: 'var(--radius-md)',
+              background: 'rgba(212, 175, 55, 0.06)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              marginBottom: '1.5rem',
+              textAlign: 'left'
+            }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+                BTC Address
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <code style={{ flex: 1, fontSize: '0.85rem', wordBreak: 'break-all', color: 'var(--primary)', fontFamily: 'monospace' }}>
+                  {BITCOIN_ADDRESS}
+                </code>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={handleCopyBitcoinAddress}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}
+                >
+                  {copiedAddress ? <Check size={14} /> : <Copy size={14} />}
+                  {copiedAddress ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {paymentClaimed ? (
+              <div className="status-badge paid" style={{ padding: '1rem', width: '100%' }}>
+                Payment reported. Our team will verify your transaction shortly.
+              </div>
+            ) : (
+              <button
+                type="button"
                 className="btn btn-primary btn-lg"
                 style={{ width: '100%' }}
+                onClick={handlePaymentClaimed}
+                disabled={claimingPayment}
               >
-                Pay With Crypto Now <Bitcoin size={18} />
-              </a>
-            ) : (
-              <div className="status-badge pending" style={{ padding: '1rem', width: '100%' }}>
-                Initializing Gateway...
-              </div>
+                {claimingPayment ? 'Submitting…' : 'I Have Paid'}
+              </button>
             )}
-            <p style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              If the redirect window didn't open, please click the button above.
+
+            <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              After sending BTC, click the button above so we can prioritize verifying your payment.
             </p>
           </div>
         ) : (
@@ -206,6 +288,7 @@ export default function CheckoutPage() {
             </div>
           </>
         )}
+
         <Link to="/" className="btn btn-outline" style={{ marginTop: '2rem' }}>Return Home</Link>
       </div>
     );
@@ -286,7 +369,12 @@ export default function CheckoutPage() {
 
               <div className="checkout-section">
                 <h2 className="checkout-section__title">Payment method</h2>
-                <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={paymentOptions} />
+                {cryptoOnlyCheckout && (
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: 1.7 }}>
+                    Orders under ${FULL_PAYMENT_THRESHOLD} are available with Bitcoin only. Choose another payment method once your total reaches ${FULL_PAYMENT_THRESHOLD} or more.
+                  </p>
+                )}
+                <PaymentMethods selectedMethod={paymentMethod} onSelect={setPaymentMethod} options={availablePaymentOptions} />
                 <div className="checkout-assurance">
                   <ShieldCheck size={18} />
                   <span>Orders are processed after payment confirmation. Include your order ID in payment memos.</span>

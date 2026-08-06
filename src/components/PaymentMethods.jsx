@@ -1,14 +1,67 @@
-import { DollarSign, Smartphone, CreditCard, Building, Banknote, Bitcoin, Wallet } from 'lucide-react';
+import { DollarSign, Smartphone, CreditCard, Building, Wallet, Bitcoin, Copy, Check } from 'lucide-react';
+import { useState } from 'react';
+import { isBitcoinPayment, BITCOIN_ADDRESS } from '../config/payments';
 
 const getIconForPayment = (name) => {
   const n = name.toLowerCase();
+  if (isBitcoinPayment(name)) return <Bitcoin size={20} />;
   if (n.includes('zelle')) return <DollarSign size={20} />;
   if (n.includes('cash')) return <Smartphone size={20} />;
   if (n.includes('venmo')) return <CreditCard size={20} />;
-  if (n.includes('crypto') || n.includes('plisio') || n.includes('btc')) return <Bitcoin size={20} />;
   if (n.includes('chime')) return <Building size={20} />;
   return <Wallet size={20} />;
 };
+
+function BitcoinAddressBlock({ readonly }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(BITCOIN_ADDRESS);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
+  return (
+    <div style={{
+      marginTop: '0.75rem',
+      padding: '1rem',
+      borderRadius: 'var(--radius-md)',
+      background: 'rgba(212, 175, 55, 0.06)',
+      border: '1px solid rgba(212, 175, 55, 0.25)'
+    }}>
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+        Bitcoin Address
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <code style={{
+          flex: 1,
+          fontSize: '0.85rem',
+          wordBreak: 'break-all',
+          color: 'var(--primary)',
+          fontFamily: 'monospace'
+        }}>
+          {BITCOIN_ADDRESS}
+        </code>
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={handleCopy}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <p style={{ margin: '0.75rem 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+        Send the exact order total in BTC to this address. Include your Order ID in the transaction memo when possible.
+      </p>
+    </div>
+  );
+}
 
 export default function PaymentMethods({ selectedMethod, onSelect, options = [], readonly = false }) {
   // If readonly, only show the selected method
@@ -59,7 +112,12 @@ export default function PaymentMethods({ selectedMethod, onSelect, options = [],
             </div>
             {(selectedMethod === m.config.name || readonly) && (
               <div style={{ marginTop: '1rem' }}>
-                <p className="payment-block__detail" style={{ fontSize: '0.95rem' }}><strong>{m.config.detail}</strong></p>
+                {!isBitcoinPayment(m.config.name) && m.config.detail && (
+                  <p className="payment-block__detail" style={{ fontSize: '0.95rem' }}><strong>{m.config.detail}</strong></p>
+                )}
+                {isBitcoinPayment(m.config.name) && (
+                  <BitcoinAddressBlock readonly={readonly} />
+                )}
               </div>
             )}
           </div>

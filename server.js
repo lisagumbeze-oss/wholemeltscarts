@@ -7,7 +7,8 @@ import {
   getWholesaleInquiryTemplate,
   getWholesaleConfirmationTemplate,
   getContactFormTemplate,
-  getContactConfirmationTemplate
+  getContactConfirmationTemplate,
+  getPaymentClaimedAdminTemplate
 } from './api/utils/emailTemplates.js';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
@@ -19,6 +20,7 @@ import {
   buildGoogleMerchantXml,
   buildGoogleMerchantCsv,
 } from './api/productFeed.js';
+import { isBitcoinPayment, requiresBitcoinOnly } from './api/utils/payments.js';
 
 dotenv.config();
 
@@ -164,6 +166,13 @@ const transporter = nodemailer.createTransport({
 app.post('/api/checkout', async (req, res) => {
   const { orderId, cart, cartTotal, form, paymentMethod, finalTotal } = req.body;
 
+  if (requiresBitcoinOnly(finalTotal) && !isBitcoinPayment(paymentMethod)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Orders under $100 must be paid with Bitcoin.'
+    });
+  }
+
   try {
     // 1. Save order to Supabase
     const { data, error } = await supabase
@@ -211,6 +220,68 @@ app.post('/api/checkout', async (req, res) => {
 
   } catch (err) {
     console.error('Checkout Error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/confirm-payment', async (req, res) => {
+  const { orderId, email } = req.body;
+
+  if (!orderId || !email) {
+    return res.status(400).json({ success: false, error: 'Order ID and email are required.' });
+  }
+
+  try {
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !order) {
+      return res.status(404).json({ success: false, error: 'Order not found.' });
+    }
+
+    if (order.shipping_details?.paymentClaimedAt) {
+      return res.status(200).json({ success: true, message: 'Payment already reported.' });
+    }
+
+    const paymentClaimedAt = new Date().toISOString();
+    const updatedShippingDetails = {
+      ...order.shipping_details,
+      paymentClaimedAt
+    };
+
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({ shipping_details: updatedShippingDetails })
+      .eq('id', orderId);
+
+    if (updateError) throw updateError;
+
+    const adminEmailHtml = getPaymentClaimedAdminTemplate(
+      orderId,
+      order.customer_name,
+      order.email,
+      order.total,
+      order.payment_method,
+      paymentClaimedAt
+    );
+
+    await transporter.sendMail({
+      from: '"Whole Melt Extracts" <sales@wholemeltscarts.us>',
+      to: 'sales@wholemeltscarts.us',
+      subject: `Payment Reported - ${orderId}`,
+      html: adminEmailHtml
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Payment reported. Our team will verify your transaction shortly.'
+    });
+  } catch (err) {
+    console.error('Confirm Payment Error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

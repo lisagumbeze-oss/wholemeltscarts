@@ -1,3 +1,5 @@
+import { isBitcoinPayment, getBitcoinPaymentInstructions, BITCOIN_ADDRESS } from './payments.js';
+
 export const getBaseTemplate = (content) => `
 <!DOCTYPE html>
 <html>
@@ -212,10 +214,12 @@ export const getOrderConfirmationTemplate = (orderId, customerName, items, total
             </p>
         </div>
 
+        ${isBitcoinPayment(paymentMethod) ? getBitcoinPaymentInstructions(orderId, total) : `
         <div class="highlight-box">
             <strong style="color: #D4AF37; text-transform: uppercase; display: block; margin-bottom: 8px;">Action Required:</strong> 
             If you selected a manual payment gateway (Zelle, CashApp, etc.), please dispatch a screenshot of your successful transaction to <a href="mailto:sales@wholemeltscarts.us" style="color: #fff; text-decoration: underline;">sales@wholemeltscarts.us</a> along with your <strong>Manifest ID</strong> to avoid dispatch delays.
         </div>
+        `}
         
         <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #8A8D9A;">
             Once verified, you will receive tracking coordinates for your shipment.
@@ -249,6 +253,10 @@ export const getAdminOrderAlertTemplate = (orderId, customerName, customerEmail,
             
             <div class="label">Proposed Payment</div>
             <div class="value">${paymentMethod}</div>
+            ${isBitcoinPayment(paymentMethod) ? `
+            <div class="label">Bitcoin Address</div>
+            <div class="value" style="font-family: monospace; font-size: 14px; word-break: break-all;">${BITCOIN_ADDRESS}</div>
+            ` : ''}
         </div>
 
         <h3>Inventory Requirements</h3>
@@ -266,6 +274,45 @@ export const getAdminOrderAlertTemplate = (orderId, customerName, customerEmail,
 
         <div style="text-align: center;">
             <a href="https://wholemeltscarts.us/admin" class="btn">Access Command Center</a>
+        </div>
+    `);
+}
+
+export const getPaymentClaimedAdminTemplate = (orderId, customerName, customerEmail, total, paymentMethod, paymentClaimedAt) => {
+    return getBaseTemplate(`
+        <h1 style="color: #fff; text-align: center;">Payment Reported</h1>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span style="background: rgba(212, 175, 55, 0.1); color: #D4AF37; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Customer Claims Payment Sent</span>
+        </div>
+
+        <div class="card">
+            <div class="label">Manifest ID</div>
+            <div class="value" style="color: #D4AF37;">${orderId}</div>
+
+            <div class="label">Customer Identity</div>
+            <div class="value">${customerName} (${customerEmail})</div>
+
+            <div class="label">Order Total</div>
+            <div class="value" style="font-size: 24px; color: #D4AF37;">$${parseFloat(total).toFixed(2)}</div>
+
+            <div class="label">Payment Method</div>
+            <div class="value">${paymentMethod}</div>
+
+            ${isBitcoinPayment(paymentMethod) ? `
+            <div class="label">Bitcoin Address</div>
+            <div class="value" style="font-family: monospace; font-size: 14px; word-break: break-all;">${BITCOIN_ADDRESS}</div>
+            ` : ''}
+
+            <div class="label">Reported At</div>
+            <div class="value">${new Date(paymentClaimedAt).toLocaleString()}</div>
+        </div>
+
+        <div class="highlight-box">
+            The customer clicked <strong>I Have Paid</strong>. Please verify the transaction on-chain or in your wallet before updating the order status.
+        </div>
+
+        <div style="text-align: center;">
+            <a href="https://wholemeltscarts.us/admin" class="btn">Review Order</a>
         </div>
     `);
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { FULL_PAYMENT_THRESHOLD } from '../config/payments';
 
 export default function CartPage() {
   const { cart, updateQty, removeFromCart, cartTotal, cartCount } = useCart();
@@ -128,26 +129,18 @@ export default function CartPage() {
                 <span style={{ color: 'var(--primary)' }}>${finalTotal.toFixed(2)}</span>
               </div>
 
-              {cartTotal < 100 && (
+              {cartTotal < FULL_PAYMENT_THRESHOLD && (
                 <p className="min-order-notice">
-                  Minimum order is $100. Add ${(100 - cartTotal).toFixed(2)} more to checkout.
+                  Orders under ${FULL_PAYMENT_THRESHOLD} checkout with Bitcoin only. Add ${(FULL_PAYMENT_THRESHOLD - cartTotal).toFixed(2)} more to unlock all payment methods.
                 </p>
               )}
 
               <Link
-                to={cartTotal >= 100 ? '/checkout' : '#'}
+                to="/checkout"
                 className="btn btn-primary"
                 style={{
                   width: '100%',
-                  marginTop: '1rem',
-                  opacity: cartTotal < 100 ? 0.5 : 1,
-                  cursor: cartTotal < 100 ? 'not-allowed' : 'pointer'
-                }}
-                onClick={(e) => {
-                  if (cartTotal < 100) {
-                    e.preventDefault();
-                    alert('Minimum order amount is $100. Please add more items to your cart.');
-                  }
+                  marginTop: '1rem'
                 }}
               >
                 Proceed to Checkout <ArrowRight size={16} />
